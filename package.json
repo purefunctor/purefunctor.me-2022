@@ -1,0 +1,30 @@
+{
+  "name": "purefunctor.me",
+  "version": "1.0.0",
+  "description": "My personal portfolio website written in PureScript and Haskell.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "spago build && parcel dev ./dev/index.html",
+    "build": "spago build && parcel build ./dev/index.html --out-dir ./static --public-url ./static --no-source-maps",
+    "test": "spago test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PureFunctor/purefunctor.me.git"
+  },
+  "keywords": [
+    "PureScript",
+    "Haskell",
+    "Halogen",
+    "Yesod"
+  ],
+  "author": "PureFunctor",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/PureFunctor/purefunctor.me/issues"
+  },
+  "homepage": "https://github.com/PureFunctor/purefunctor.me",
+  "devDependencies": {
+    "parcel": "^1.12.4"
+  }
+}

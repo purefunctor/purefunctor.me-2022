@@ -1,0 +1,38 @@
+cabal-version:       2.4
+
+name:                purefunctor-me
+version:             1.0.0.0
+synopsis:            My personal portfolio website written in PureScript and Haskell.
+description:         My personal portfolio website written in PureScript and Haskell.
+homepage:            https://github.com/PureFunctor/purefunctor.me
+bug-reports:         https://github.com/PureFunctor/purefunctor.me/issues
+license:             BSD-3-Clause
+license-file:        LICENSE
+author:              PureFunctor
+maintainer:          purefunctor@gmail.com
+copyright:           (c) 2020, PureFunctor
+category:            Web
+extra-source-files:  CHANGELOG.md, README.md
+
+library
+  exposed-modules:     MyLib
+  -- other-modules:
+  -- other-extensions:
+  build-depends:       base ^>=4.13.0.0
+  hs-source-dirs:      pf_site/src
+  default-language:    Haskell2010
+
+executable purefunctor-me
+  main-is:             Main.hs
+  -- other-modules:
+  -- other-extensions:
+  build-depends:       base ^>=4.13.0.0, purefunctor-me
+  hs-source-dirs:      pf_site/app
+  default-language:    Haskell2010
+
+test-suite purefunctor-me-test
+  default-language:    Haskell2010
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      pf_site/test
+  main-is:             MyLibTest.hs
+  build-depends:       base ^>=4.13.0.0
