@@ -4,8 +4,8 @@
   "description": "My personal portfolio website written in PureScript and Haskell.",
   "main": "index.js",
   "scripts": {
-    "dev": "spago build && parcel dev ./dev/index.html",
-    "build": "spago build && parcel build ./dev/index.html --out-dir ./static --public-url ./static --no-source-maps",
+    "dev": "spago build && parcel dev ./pf_app/dev/index.html",
+    "build": "spago build && parcel build ./pf_app/dev/index.html --out-dir ./static --public-url ./static --no-source-maps",
     "test": "spago test"
   },
   "repository": {
