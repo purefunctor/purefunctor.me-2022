@@ -2,10 +2,9 @@ module PF.Pages.Home where
 
 import Prelude
 
-import Data.List (intercalate)
 import Halogen as H
 import Halogen.HTML as HH
-import PF.Component.Utils (css)
+import PF.Component.Utils (classes)
 
 
 type State = Unit
@@ -41,23 +40,42 @@ render _ =
   ]
   where
   -- | Root container for the page
-  pageRoot = HH.div [ css "flex flex-col h-screen p-5 bg-gradient-to-br from-green-500 to-blue-900" ]
+  pageRoot = HH.div classList
+    where
+    classList = classes $
+      [ "flex"
+      , "flex-col"
+      , "h-screen"
+      , "p-5"
+      , "bg-gradient-to-br"
+      , "from-green-500"
+      , "to-blue-900"
+      ]
 
   -- | Parent container for the tiles
-  tileGrid = HH.div [ css "grid grid-cols-2 grid-rows-2 flex-1 gap-5" ]
+  tileGrid = HH.div classList
+    where
+    classList = classes $
+      [ "grid"
+      , "grid-cols-2"
+      , "grid-rows-2"
+      , "flex-1"
+      , "gap-5"
+      ]
 
   -- | Tile factory function
-  tile_ styles properties =
-    HH.div $ [ css $ intercalate " " $
-               [ "box-content"
-               , "text-left"
-               , "p-5"
-               , "text-6xl"
-               , "bg-gray-200"
-               , "border-4"
-               , "border-gray-900"
-               ] <> styles
-             ]
+  tile_ classList properties =
+    HH.div $ classList' <> properties
+    where
+    classList' = classes $
+      [ "box-content"
+      , "text-left"
+      , "p-5"
+      , "text-6xl"
+      , "bg-gray-200"
+      , "border-4"
+      , "border-gray-900"
+      ] <> classList
 
   -- | Tile with extra styles
   sTile = flip tile_ []
