@@ -26,5 +26,10 @@
   "homepage": "https://github.com/PureFunctor/purefunctor.me",
   "devDependencies": {
     "parcel": "^1.12.4"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.1.0",
+    "postcss": "^8.2.1",
+    "tailwindcss": "^2.0.2"
   }
 }
