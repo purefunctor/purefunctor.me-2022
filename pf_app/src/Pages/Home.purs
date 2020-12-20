@@ -54,7 +54,7 @@ initialState _ =
 
 
 render :: forall m. State -> H.ComponentHTML Action () m
-render _ =
+render state =
   pageRoot
   [ tileGrid
     [ tallTileBase
@@ -132,6 +132,7 @@ render _ =
         [ "relative"
         , "h-full"
         , "w-full"
+        , "garage-clip"
         ]
 
   tallTileBase = tileBase [ "row-span-2" ]
@@ -165,7 +166,14 @@ render _ =
       ] <> classList
 
   tileCover name =
-    tileCover_ [ "bg-green-500" ] [ HE.onClick \_ -> Just (Toggle name) ]
+    tileCover_
+      [ "bg-green-500", garageState ]
+      [ HE.onClick \_ -> Just (Toggle name) ]
+    where
+      garageState = case fromTileState name state of
+        Initial -> ""
+        Opened -> "close-to-open"
+        Closed -> "open-to-close"
 
 
 handleAction :: forall output m. Action -> H.HalogenM State Action () output m Unit
