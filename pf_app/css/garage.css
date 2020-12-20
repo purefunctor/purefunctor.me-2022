@@ -1,0 +1,31 @@
+.garage-clip {
+    clip-path: inset(0 0 0 0);
+}
+
+.close-to-open {
+    animation: close-to-open-animation 1s ease-in;
+    animation-fill-mode: forwards;
+}
+
+.open-to-close {
+    animation: open-to-close-animation 1s ease-in;
+    animation-fill-mode: forwards;
+}
+
+@keyframes close-to-open-animation {
+    from {
+        transform: translateY(0%);
+    }
+    to {
+        transform: translateY(-100%);
+    }
+}
+
+@keyframes open-to-close-animation {
+    from {
+        transform: translateY(-100%);
+    }
+    to {
+        transform: translateY(0%);
+    }
+}
