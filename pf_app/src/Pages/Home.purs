@@ -8,10 +8,22 @@ import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import PF.Component.Utils (css, classes)
+import Web.Event.Event (EventType(..))
 
 
-data Tile = Info | Projects | Socials
-data TileState = Initial | Opened | Closed
+data Tile
+  = Info
+  | Projects
+  | Socials
+
+data CoverState
+  = Open
+  | Shut
+
+data TileState
+  = Initial
+  | HaltedOn CoverState
+  | MovingTo CoverState
 
 type State =
   { infoTile :: TileState
@@ -19,12 +31,7 @@ type State =
   , socialsTile :: TileState
   }
 
-data Action = Toggle Tile
-
-
-toggleTile :: TileState -> TileState
-toggleTile Opened = Closed
-toggleTile _ = Opened
+data Action = SetTo Tile TileState
 
 
 fromTileState :: Tile -> State -> TileState
@@ -165,21 +172,34 @@ render state =
       , "z-10"
       ] <> classList
 
-  tileCover name =
+  tileCover tile =
     tileCover_
-      [ "bg-green-500", garageState ]
-      [ HE.onClick \_ -> Just (Toggle name) ]
+      [ "bg-green-500", tileAnimation ]
+      [ HE.onClick onClickEvent
+      , HE.handler (EventType "animationend") onAnimationEndEvent
+      ]
     where
-      garageState = case fromTileState name state of
-        Initial -> ""
-        Opened -> "close-to-open"
-        Closed -> "open-to-close"
+      tState = fromTileState tile state
+      tileAnimation = case tState of
+        (MovingTo Open) -> "close-to-open"
+        (MovingTo Shut) -> "open-to-close"
+        (HaltedOn Open) -> "close-to-open"
+        (HaltedOn Shut) -> "open-to-close"
+        _ -> ""
+      onClickEvent _ = case tState of
+        Initial -> Just $ SetTo tile (MovingTo Open)
+        (HaltedOn Open) -> Just $ SetTo tile (MovingTo Shut)
+        (HaltedOn Shut) -> Just $ SetTo tile (MovingTo Open)
+        _ -> Nothing
+      onAnimationEndEvent _ = case tState of
+        (MovingTo cover) -> Just $ SetTo tile (HaltedOn cover)
+        _ -> Nothing
 
 
 handleAction :: forall output m. Action -> H.HalogenM State Action () output m Unit
-handleAction (Toggle tile) = do
+handleAction (SetTo tile tState) = do
   state <- H.get
   case tile of
-    Info -> H.put $ state { infoTile = toggleTile state.infoTile }
-    Projects -> H.put $ state { projectsTile = toggleTile state.projectsTile }
-    Socials -> H.put $ state { socialsTile = toggleTile state.socialsTile }
+    Info -> H.put $ state { infoTile = tState }
+    Projects -> H.put $ state { projectsTile = tState }
+    Socials -> H.put $ state { socialsTile = tState }
