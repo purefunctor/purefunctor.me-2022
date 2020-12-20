@@ -11,14 +11,27 @@ import PF.Component.Utils (css, classes)
 
 
 data Tile = Info | Projects | Socials
+data TileState = Initial | Opened | Closed
 
 type State =
-  { infoOpened :: Boolean
-  , projectsOpened :: Boolean
-  , socialsOpened :: Boolean
+  { infoTile :: TileState
+  , projectsTile :: TileState
+  , socialsTile :: TileState
   }
 
 data Action = Toggle Tile
+
+
+toggleTile :: TileState -> TileState
+toggleTile Opened = Closed
+toggleTile _ = Opened
+
+
+fromTileState :: Tile -> State -> TileState
+fromTileState t s = case t of
+  Info -> s.infoTile
+  Projects -> s.projectsTile
+  Socials -> s.socialsTile
 
 
 component :: forall query input output m. H.Component HH.HTML query input output m
@@ -34,9 +47,9 @@ component =
 
 initialState :: forall input. input -> State
 initialState _ =
-  { infoOpened: false
-  , projectsOpened: false
-  , socialsOpened: false
+  { infoTile: Initial
+  , projectsTile: Initial
+  , socialsTile: Initial
   }
 
 
@@ -159,6 +172,6 @@ handleAction :: forall output m. Action -> H.HalogenM State Action () output m U
 handleAction (Toggle tile) = do
   state <- H.get
   case tile of
-    Info -> H.put $ state { infoOpened = not state.infoOpened }
-    Projects -> H.put $ state { projectsOpened = not state.projectsOpened }
-    Socials -> H.put $ state { socialsOpened = not state.socialsOpened }
+    Info -> H.put $ state { infoTile = toggleTile state.infoTile }
+    Projects -> H.put $ state { projectsTile = toggleTile state.projectsTile }
+    Socials -> H.put $ state { socialsTile = toggleTile state.socialsTile }
