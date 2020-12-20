@@ -50,7 +50,7 @@ render _ =
           [ HH.text "PureFunctor Cover"
           ]
         ]
-      , tileContent [ "bg-blue-500" ] [ ]
+      , tileContent Info
         [ HH.div [ css "p-5" ]
           [ HH.text "PureFunctor"
           ]
@@ -62,7 +62,7 @@ render _ =
           [ HH.text "Projects Cover"
           ]
         ]
-      , tileContent [ "bg-blue-500" ] [ ]
+      , tileContent Projects
         [ HH.div [ css "p-5" ]
           [ HH.text "Projects"
           ]
@@ -74,7 +74,7 @@ render _ =
           [ HH.text "Socials Cover"
           ]
         ]
-      , tileContent [ "bg-blue-500" ] [ ]
+      , tileContent Socials
         [ HH.div [ css "p-5" ]
           [ HH.text "Socials"
           ]
@@ -125,7 +125,7 @@ render _ =
   shortTileBase = tileBase [ ]
 
   -- | Base container for the tile contents
-  tileContent classList properties =
+  tileContent_ classList properties =
     HH.div $ classList' <> properties
     where
     classList' = classes $
@@ -135,6 +135,9 @@ render _ =
       , "w-full"
       , "z-0"
       ] <> classList
+
+  tileContent _ =
+    tileContent_ [ "bg-blue-500" ] [  ]
 
   -- | Base container for the tile cover
   tileCover_ classList properties =
