@@ -24,6 +24,8 @@ component =
   { initialState
   , render
   , eval: H.mkEval $ H.defaultEval
+    { handleAction = handleAction
+    }
   }
 
 
@@ -135,3 +137,12 @@ render _ =
       , "w-full"
       , "z-10"
       ] <> classList
+
+
+handleAction :: forall output m. Action -> H.HalogenM State Action () output m Unit
+handleAction (Toggle tile) = do
+  state <- H.get
+  case tile of
+    Info -> H.put $ state { infoOpened = not state.infoOpened }
+    Projects -> H.put $ state { projectsOpened = not state.projectsOpened }
+    Socials -> H.put $ state { socialsOpened = not state.socialsOpened }
