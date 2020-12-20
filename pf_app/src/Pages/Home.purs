@@ -7,7 +7,11 @@ import Halogen.HTML as HH
 import PF.Component.Utils (css, classes)
 
 
-type State = Unit
+type State =
+  { infoOpened :: Boolean
+  , projectsOpened :: Boolean
+  , socialsOpened :: Boolean
+  }
 
 
 component :: forall query input output m. H.Component HH.HTML query input output m
@@ -19,8 +23,12 @@ component =
   }
 
 
-initialState :: forall input. input -> Unit
-initialState _ = unit
+initialState :: forall input. input -> State
+initialState _ =
+  { infoOpened: false
+  , projectsOpened: false
+  , socialsOpened: false
+  }
 
 
 render :: forall action m. State -> H.ComponentHTML action () m
