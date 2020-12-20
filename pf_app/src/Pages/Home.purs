@@ -4,7 +4,7 @@ import Prelude
 
 import Halogen as H
 import Halogen.HTML as HH
-import PF.Component.Utils (classes)
+import PF.Component.Utils (css, classes)
 
 
 type State = Unit
@@ -27,14 +27,41 @@ render :: forall action m. State -> H.ComponentHTML action () m
 render _ =
   pageRoot
   [ tileGrid
-    [ sTile [ "row-span-2" ]
-      [ HH.text "PureFunctor"
+    [ tileBase [ "row-span-2" ] [  ]
+      [ tileCover [ "bg-green-500" ] [ ]
+        [ HH.div [ css "p-5" ]
+          [ HH.text "PureFunctor Cover"
+          ]
+        ]
+      , tileContent [ "bg-blue-500" ] [ ]
+        [ HH.div [ css "p-5" ]
+          [ HH.text "PureFunctor"
+          ]
+        ]
       ]
-    , dTile
-      [ HH.text "Projects"
+    , tileBase [ ] [ ]
+      [ tileCover [ "bg-green-500" ] [ ]
+        [ HH.div [ css "p-5" ]
+          [ HH.text "Projects Cover"
+          ]
+        ]
+      , tileContent [ "bg-blue-500" ] [ ]
+        [ HH.div [ css "p-5" ]
+          [ HH.text "Projects"
+          ]
+        ]
       ]
-    , dTile
-      [ HH.text "Socials"
+    , tileBase [ ] [ ]
+      [ tileCover [ "bg-green-500" ] [ ]
+        [ HH.div [ css "p-5" ]
+          [ HH.text "Socials Cover"
+          ]
+        ]
+      , tileContent [ "bg-blue-500" ] [ ]
+        [ HH.div [ css "p-5" ]
+          [ HH.text "Socials"
+          ]
+        ]
       ]
     ]
   ]
@@ -63,25 +90,36 @@ render _ =
       , "gap-5"
       ]
 
-  -- | Tile factory function
-  tile_ classList properties =
+  -- | Base container for each tile
+  tileBase classList properties =
     HH.div $ classList' <> properties
     where
     classList' = classes $
-      [ "box-content"
-      , "text-left"
-      , "p-5"
-      , "text-6xl"
-      , "bg-gray-200"
+      [ "relative"
       , "border-4"
       , "border-gray-900"
       ] <> classList
 
-  -- | Tile with extra styles
-  sTile = flip tile_ []
+  -- | Base container for the tile contents
+  tileContent classList properties =
+    HH.div $ classList' <> properties
+    where
+    classList' = classes $
+      [ "absolute"
+      , "box-content"
+      , "h-full"
+      , "w-full"
+      , "z-0"
+      ] <> classList
 
-  -- | Tile with extra properties
-  pTile = tile_ []
-
-  -- | Tile with no extras
-  dTile = tile_ [] []
+  -- | Base container for the tile cover
+  tileCover classList properties =
+    HH.div $ classList' <> properties
+    where
+    classList' = classes $
+      [ "absolute"
+      , "box-content"
+      , "h-full"
+      , "w-full"
+      , "z-10"
+      ] <> classList
