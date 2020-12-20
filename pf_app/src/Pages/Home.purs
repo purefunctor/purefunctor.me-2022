@@ -3,8 +3,10 @@ module PF.Pages.Home where
 import Prelude
 
 import Data.Array (singleton)
+import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.HTML as HH
+import Halogen.HTML.Events as HE
 import PF.Component.Utils (css, classes)
 
 
@@ -147,7 +149,7 @@ render _ =
       ] <> classList
 
   tileCover name =
-    tileCover_ [ "bg-green-500" ] [ ]
+    tileCover_ [ "bg-green-500" ] [ HE.onClick \_ -> Just (Toggle name) ]
 
 
 handleAction :: forall output m. Action -> H.HalogenM State Action () output m Unit
