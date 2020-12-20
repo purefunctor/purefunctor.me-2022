@@ -15,6 +15,8 @@ type State =
   , socialsOpened :: Boolean
   }
 
+data Action = Toggle Tile
+
 
 component :: forall query input output m. H.Component HH.HTML query input output m
 component =
@@ -33,7 +35,7 @@ initialState _ =
   }
 
 
-render :: forall action m. State -> H.ComponentHTML action () m
+render :: forall m. State -> H.ComponentHTML Action () m
 render _ =
   pageRoot
   [ tileGrid
