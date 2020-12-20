@@ -2,6 +2,7 @@ module PF.Pages.Home where
 
 import Prelude
 
+import Data.Array (singleton)
 import Halogen as H
 import Halogen.HTML as HH
 import PF.Component.Utils (css, classes)
@@ -41,7 +42,7 @@ render :: forall m. State -> H.ComponentHTML Action () m
 render _ =
   pageRoot
   [ tileGrid
-    [ tileBase [ "row-span-2" ] [  ]
+    [ tallTileBase
       [ tileCover [ "bg-green-500" ] [ ]
         [ HH.div [ css "p-5" ]
           [ HH.text "PureFunctor Cover"
@@ -53,7 +54,7 @@ render _ =
           ]
         ]
       ]
-    , tileBase [ ] [ ]
+    , shortTileBase
       [ tileCover [ "bg-green-500" ] [ ]
         [ HH.div [ css "p-5" ]
           [ HH.text "Projects Cover"
@@ -65,7 +66,7 @@ render _ =
           ]
         ]
       ]
-    , tileBase [ ] [ ]
+    , shortTileBase
       [ tileCover [ "bg-green-500" ] [ ]
         [ HH.div [ css "p-5" ]
           [ HH.text "Socials Cover"
@@ -105,14 +106,21 @@ render _ =
       ]
 
   -- | Base container for each tile
-  tileBase classList properties =
-    HH.div $ classList' <> properties
+  tileBase extras =
+    HH.div baseStyle <<< singleton <<< HH.div containerStyle
     where
-    classList' = classes $
-      [ "relative"
-      , "border-4"
-      , "border-gray-900"
-      ] <> classList
+      baseStyle = classes $
+        [ "border-4"
+        , "border-gray-900"
+        ] <> extras
+      containerStyle = classes
+        [ "relative"
+        , "h-full"
+        , "w-full"
+        ]
+
+  tallTileBase = tileBase [ "row-span-2" ]
+  shortTileBase = tileBase [ ]
 
   -- | Base container for the tile contents
   tileContent classList properties =
