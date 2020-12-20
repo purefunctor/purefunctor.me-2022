@@ -7,6 +7,8 @@ import Halogen.HTML as HH
 import PF.Component.Utils (css, classes)
 
 
+data Tile = Info | Projects | Socials
+
 type State =
   { infoOpened :: Boolean
   , projectsOpened :: Boolean
