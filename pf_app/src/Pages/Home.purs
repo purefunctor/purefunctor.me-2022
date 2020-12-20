@@ -43,7 +43,7 @@ render _ =
   pageRoot
   [ tileGrid
     [ tallTileBase
-      [ tileCover [ "bg-green-500" ] [ ]
+      [ tileCover Info
         [ HH.div [ css "p-5" ]
           [ HH.text "PureFunctor Cover"
           ]
@@ -55,7 +55,7 @@ render _ =
         ]
       ]
     , shortTileBase
-      [ tileCover [ "bg-green-500" ] [ ]
+      [ tileCover Projects
         [ HH.div [ css "p-5" ]
           [ HH.text "Projects Cover"
           ]
@@ -67,7 +67,7 @@ render _ =
         ]
       ]
     , shortTileBase
-      [ tileCover [ "bg-green-500" ] [ ]
+      [ tileCover Socials
         [ HH.div [ css "p-5" ]
           [ HH.text "Socials Cover"
           ]
@@ -135,7 +135,7 @@ render _ =
       ] <> classList
 
   -- | Base container for the tile cover
-  tileCover classList properties =
+  tileCover_ classList properties =
     HH.div $ classList' <> properties
     where
     classList' = classes $
@@ -145,6 +145,9 @@ render _ =
       , "w-full"
       , "z-10"
       ] <> classList
+
+  tileCover name =
+    tileCover_ [ "bg-green-500" ] [ ]
 
 
 handleAction :: forall output m. Action -> H.HalogenM State Action () output m Unit
