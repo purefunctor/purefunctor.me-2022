@@ -64,7 +64,7 @@ render :: forall m. State -> H.ComponentHTML Action () m
 render state =
   pageRoot
   [ tileGrid
-    [ tallTileBase
+    [ infoTileBase
       [ tileCover Info
         [ HH.div [ css "p-5" ]
           [ HH.text "PureFunctor Cover"
@@ -76,7 +76,7 @@ render state =
           ]
         ]
       ]
-    , shortTileBase
+    , projectsTileBase
       [ tileCover Projects
         [ HH.div [ css "p-5" ]
           [ HH.text "Projects Cover"
@@ -88,7 +88,7 @@ render state =
           ]
         ]
       ]
-    , shortTileBase
+    , socialsTileBase
       [ tileCover Socials
         [ HH.div [ css "p-5" ]
           [ HH.text "Socials Cover"
@@ -142,8 +142,9 @@ render state =
         , "garage-clip"
         ]
 
-  tallTileBase = tileBase [ "row-span-2" ]
-  shortTileBase = tileBase [ ]
+  infoTileBase = tileBase [ "row-span-2" ]
+  projectsTileBase = tileBase [ ]
+  socialsTileBase = tileBase [ ]
 
   -- | Base container for the tile contents
   tileContent_ classList properties =
