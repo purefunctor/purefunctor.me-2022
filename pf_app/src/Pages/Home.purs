@@ -159,7 +159,7 @@ render state =
       ] <> classList
 
   tileContent _ =
-    tileContent_ [ "bg-blue-500" ] [  ]
+    tileContent_ [ "bg-white" ] [  ]
 
   -- | Base container for the tile cover
   tileCover_ classList properties =
@@ -175,7 +175,7 @@ render state =
 
   tileCover tile =
     tileCover_
-      [ "bg-green-500", tileAnimation ]
+      [ "bg-gray-100", tileAnimation ]
       [ HE.onClick onClickEvent
       , HE.handler (EventType "animationend") onAnimationEndEvent
       ]
