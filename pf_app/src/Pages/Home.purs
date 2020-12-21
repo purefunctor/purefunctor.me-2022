@@ -2,6 +2,7 @@ module PF.Pages.Home where
 
 import Prelude
 
+import Data.Array (concat)
 import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.HTML as HH
@@ -127,15 +128,16 @@ render state =
 
     coverContainer = HH.div $ styles <> events
       where
-      styles = classes
+      styles = classes $
         [ "absolute"
         , "box-content"
         , "h-full"
         , "w-full"
         , "z-10"
         , "bg-gray-100"
-        , tileAnimation
-        ]
+        ] <> optionalStyles
+
+      optionalStyles = concat [ tileAnimation ]
 
       events =
         [ HE.onClick onClickEvent
@@ -145,11 +147,11 @@ render state =
       tState = fromTileState tile state
 
       tileAnimation = case tState of
-        (MovingTo Open) -> "close-to-open"
-        (MovingTo Shut) -> "open-to-close"
-        (HaltedOn Open) -> "close-to-open"
-        (HaltedOn Shut) -> "open-to-close"
-        _ -> ""
+        (MovingTo Open) -> [ "close-to-open" ]
+        (MovingTo Shut) -> [ "open-to-close" ]
+        (HaltedOn Open) -> [ "close-to-open" ]
+        (HaltedOn Shut) -> [ "open-to-close" ]
+        _ -> [ ]
 
       onClickEvent _ = case tState of
         Initial -> Just $ SetTo tile (MovingTo Open)
