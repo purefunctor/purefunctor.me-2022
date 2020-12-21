@@ -2,7 +2,6 @@ module PF.Pages.Home where
 
 import Prelude
 
-import Data.Array (singleton)
 import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.HTML as HH
@@ -64,136 +63,126 @@ render :: forall m. State -> H.ComponentHTML Action () m
 render state =
   pageRoot
   [ tileGrid
-    [ infoTileBase
-      [ tileCover Info
-        [ HH.div [ css "p-5" ]
-          [ HH.text "PureFunctor Cover"
-          ]
-        ]
-      , tileContent Info
-        [ HH.div [ css "p-5" ]
-          [ HH.text "PureFunctor"
-          ]
+    [ tileContainer Info
+      [ HH.div [ css "p-5" ]
+        [ HH.text "PureFunctor Cover"
         ]
       ]
-    , projectsTileBase
-      [ tileCover Projects
-        [ HH.div [ css "p-5" ]
-          [ HH.text "Projects Cover"
-          ]
-        ]
-      , tileContent Projects
-        [ HH.div [ css "p-5" ]
-          [ HH.text "Projects"
-          ]
+      [ HH.div [ css "p-5" ]
+        [ HH.text "PureFunctor"
         ]
       ]
-    , socialsTileBase
-      [ tileCover Socials
-        [ HH.div [ css "p-5" ]
-          [ HH.text "Socials Cover"
-          ]
+    , tileContainer Projects
+      [ HH.div [ css "p-5" ]
+        [ HH.text "Projects Cover"
         ]
-      , tileContent Socials
-        [ HH.div [ css "p-5" ]
-          [ HH.text "Socials"
-          ]
+      ]
+      [ HH.div [ css "p-5" ]
+        [ HH.text "Projects"
+        ]
+      ]
+    , tileContainer Socials
+      [ HH.div [ css "p-5" ]
+        [ HH.text "Socials Cover"
+        ]
+      ]
+      [ HH.div [ css "p-5" ]
+        [ HH.text "Socials"
         ]
       ]
     ]
   ]
   where
   -- | Root container for the page
-  pageRoot = HH.div classList
-    where
-    classList = classes $
-      [ "flex"
-      , "flex-col"
-      , "h-screen"
-      , "p-5"
-      , "bg-gradient-to-br"
-      , "from-green-500"
-      , "to-blue-900"
-      ]
+  pageRoot = HH.div $ classes
+    [ "flex"
+    , "flex-col"
+    , "h-screen"
+    , "p-5"
+    , "bg-gradient-to-br"
+    , "from-green-500"
+    , "to-blue-900"
+    ]
 
   -- | Parent container for the tiles
-  tileGrid = HH.div classList
-    where
-    classList = classes $
-      [ "grid"
-      , "grid-cols-2"
-      , "grid-rows-2"
-      , "flex-1"
-      , "gap-5"
-      ]
+  tileGrid = HH.div $ classes
+    [ "grid"
+    , "grid-cols-2"
+    , "grid-rows-2"
+    , "flex-1"
+    , "gap-5"
+    ]
 
-  -- | Base container for each tile
-  tileBase extras =
-    HH.div baseStyle <<< singleton <<< HH.div containerStyle
+  -- | Container for each tile
+  tileContainer tile cover content =
+    borderContainer
+    [ clipperContainer
+      [ coverContainer cover
+      , contentContainer content
+      ]
+    ]
     where
-      baseStyle = classes $
+    borderContainer = HH.div styles
+      where
+      styles = classes $
         [ "border-4"
         , "border-gray-900"
-        ] <> extras
-      containerStyle = classes
-        [ "relative"
-        , "h-full"
-        , "w-full"
-        , "garage-clip"
-        ]
+        ] <> tileStyles
 
-  infoTileBase = tileBase [ "row-span-2" ]
-  projectsTileBase = tileBase [ ]
-  socialsTileBase = tileBase [ ]
+      tileStyles = case tile of
+        Info -> [ "row-span-2" ]
+        _    -> [ ]
 
-  -- | Base container for the tile contents
-  tileContent_ classList properties =
-    HH.div $ classList' <> properties
-    where
-    classList' = classes $
+    clipperContainer = HH.div $ classes
+      [ "relative"
+      , "h-full"
+      , "w-full"
+      , "garage-clip"
+      ]
+
+    contentContainer = HH.div $ classes
       [ "absolute"
       , "box-content"
       , "h-full"
       , "w-full"
       , "z-0"
-      ] <> classList
-
-  tileContent _ =
-    tileContent_ [ "bg-white" ] [  ]
-
-  -- | Base container for the tile cover
-  tileCover_ classList properties =
-    HH.div $ classList' <> properties
-    where
-    classList' = classes $
-      [ "absolute"
-      , "box-content"
-      , "h-full"
-      , "w-full"
-      , "z-10"
-      ] <> classList
-
-  tileCover tile =
-    tileCover_
-      [ "bg-gray-100", tileAnimation ]
-      [ HE.onClick onClickEvent
-      , HE.handler (EventType "animationend") onAnimationEndEvent
+      , "bg-white"
       ]
-    where
+
+    coverContainer = HH.div $ styles <> events
+      where
+      styles = classes
+        [ "absolute"
+        , "box-content"
+        , "h-full"
+        , "w-full"
+        , "z-10"
+        , "bg-gray-100"
+        , tileAnimation
+        ]
+
+      events =
+        [ HE.onClick onClickEvent
+        , HE.handler (EventType "animationend") onAnimationEndEvent
+        ]
+
       tState = fromTileState tile state
+
       tileAnimation = case tState of
         (MovingTo Open) -> "close-to-open"
         (MovingTo Shut) -> "open-to-close"
         (HaltedOn Open) -> "close-to-open"
         (HaltedOn Shut) -> "open-to-close"
         _ -> ""
+
       onClickEvent _ = case tState of
         Initial -> Just $ SetTo tile (MovingTo Open)
         (HaltedOn Open) -> Just $ SetTo tile (MovingTo Shut)
         (HaltedOn Shut) -> Just $ SetTo tile (MovingTo Open)
         _ -> Nothing
+
       onAnimationEndEvent _ = case tState of
-        (MovingTo cover) -> Just $ SetTo tile (HaltedOn cover)
+        (MovingTo cState) -> Just $ SetTo tile (HaltedOn cState)
         _ -> Nothing
 
 
