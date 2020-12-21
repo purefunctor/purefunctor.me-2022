@@ -73,7 +73,7 @@ render state =
         ]
       ]
     , tileContainer Projects
-      [ HH.div [ css "text-6xl p-5" ]
+      [ HH.div [ css "font-sans font-extralight text-6xl p-5" ]
         [ HH.text "Projects"
         ]
       ]
@@ -82,7 +82,7 @@ render state =
         ]
       ]
     , tileContainer Socials
-      [ HH.div [ css "text-6xl p-5" ]
+      [ HH.div [ css "font-sans font-extralight text-6xl p-5" ]
         [ HH.text "Socials"
         ]
       ]
