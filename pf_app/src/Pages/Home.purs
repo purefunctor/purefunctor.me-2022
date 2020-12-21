@@ -63,33 +63,9 @@ render :: forall m. State -> H.ComponentHTML Action () m
 render state =
   pageRoot
   [ tileGrid
-    [ tileContainer Info
-      [ HH.div [ css "p-5" ]
-        [ HH.text "PureFunctor"
-        ]
-      ]
-      [ HH.div [ css "p-5" ]
-        [ HH.text "PureFunctor"
-        ]
-      ]
-    , tileContainer Projects
-      [ HH.div [ css "font-sans font-extralight text-6xl p-5" ]
-        [ HH.text "Projects"
-        ]
-      ]
-      [ HH.div [ css "p-5" ]
-        [ HH.text "Projects"
-        ]
-      ]
-    , tileContainer Socials
-      [ HH.div [ css "font-sans font-extralight text-6xl p-5" ]
-        [ HH.text "Socials"
-        ]
-      ]
-      [ HH.div [ css "p-5" ]
-        [ HH.text "Socials"
-        ]
-      ]
+    [ tileContainer Info infoCover infoContent
+    , tileContainer Projects projectsCover projectsContent
+    , tileContainer Socials socialsCover socialsContent
     ]
   ]
   where
@@ -184,6 +160,39 @@ render state =
       onAnimationEndEvent _ = case tState of
         (MovingTo cState) -> Just $ SetTo tile (HaltedOn cState)
         _ -> Nothing
+
+  infoCover =
+    [ HH.div [ css "p-5" ]
+      [ HH.text "PureFunctor"
+      ]
+    ]
+  infoContent =
+    [ HH.div [ css "p-5" ]
+      [ HH.text "PureFunctor"
+      ]
+    ]
+
+  projectsCover =
+    [ HH.div [ css "font-sans font-extralight text-6xl p-5" ]
+      [ HH.text "Projects"
+      ]
+    ]
+  projectsContent =
+    [ HH.div [ css "p-5" ]
+      [ HH.text "Projects"
+      ]
+    ]
+
+  socialsCover =
+    [ HH.div [ css "font-sans font-extralight text-6xl p-5" ]
+      [ HH.text "Socials"
+      ]
+    ]
+  socialsContent =
+    [ HH.div [ css "p-5" ]
+      [ HH.text "Socials"
+      ]
+    ]
 
 
 handleAction :: forall output m. Action -> H.HalogenM State Action () output m Unit
