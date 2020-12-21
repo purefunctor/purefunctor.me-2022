@@ -65,7 +65,7 @@ render state =
   [ tileGrid
     [ tileContainer Info
       [ HH.div [ css "p-5" ]
-        [ HH.text "PureFunctor Cover"
+        [ HH.text "PureFunctor"
         ]
       ]
       [ HH.div [ css "p-5" ]
@@ -73,8 +73,8 @@ render state =
         ]
       ]
     , tileContainer Projects
-      [ HH.div [ css "p-5" ]
-        [ HH.text "Projects Cover"
+      [ HH.div [ css "text-6xl p-5" ]
+        [ HH.text "Projects"
         ]
       ]
       [ HH.div [ css "p-5" ]
@@ -82,8 +82,8 @@ render state =
         ]
       ]
     , tileContainer Socials
-      [ HH.div [ css "p-5" ]
-        [ HH.text "Socials Cover"
+      [ HH.div [ css "text-6xl p-5" ]
+        [ HH.text "Socials"
         ]
       ]
       [ HH.div [ css "p-5" ]
