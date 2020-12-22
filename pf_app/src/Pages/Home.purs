@@ -170,16 +170,10 @@ render state =
         , infoName [ HH.text "PureFunctor" ]
         , infoSub [ HH.text "Student, Python, FP" ]
         ]
-      , infoArrow [ ]
+      , commonArrow [ ]
       ]
     ]
     where
-    fullFlex = HH.div $ classes
-      [ "flex"
-      , "flex-col"
-      , "h-full"
-      , "w-full"
-      ]
     infoFlex = HH.div $ classes
       [ "flex"
       , "flex-col"
@@ -205,13 +199,6 @@ render state =
       , "font-thin"
       , "select-none"
       ]
-    infoArrow = HH.i $ classes
-      [ "fas"
-      , "fa-chevron-down"
-      , "animate-bounce"
-      , "mx-auto"
-      , "mb-5"
-      ]
 
   infoContent =
     [ HH.div [ css "p-5" ]
@@ -226,16 +213,10 @@ render state =
           [ HH.text "Projects"
           ]
         ]
-      , projectsArrow [ ]
+      , commonArrow [ ]
       ]
     ]
     where
-    fullFlex = HH.div $ classes
-      [ "flex"
-      , "flex-col"
-      , "h-full"
-      , "w-full"
-      ]
     projectsFlex = HH.div $ classes
       [ "flex"
       , "flex-col"
@@ -246,13 +227,6 @@ render state =
       [ "font-sans"
       , "font-extralight"
       , "text-6xl"
-      ]
-    projectsArrow = HH.i $ classes
-      [ "fas"
-      , "fa-chevron-down"
-      , "animate-bounce"
-      , "mx-auto"
-      , "mb-5"
       ]
 
   projectsContent =
@@ -268,16 +242,10 @@ render state =
           [ HH.text "Socials"
           ]
         ]
-      , socialsArrow [ ]
+      , commonArrow [ ]
       ]
     ]
     where
-    fullFlex = HH.div $ classes
-      [ "flex"
-      , "flex-col"
-      , "h-full"
-      , "w-full"
-      ]
     socialsFlex = HH.div $ classes
       [ "flex"
       , "flex-col"
@@ -289,18 +257,26 @@ render state =
       , "font-extralight"
       , "text-6xl"
       ]
-    socialsArrow = HH.i $ classes
-      [ "fas"
-      , "fa-chevron-down"
-      , "animate-bounce"
-      , "mx-auto"
-      , "mb-5"
-      ]
 
   socialsContent =
     [ HH.div [ css "p-5" ]
       [ HH.text "Socials"
       ]
+    ]
+
+  fullFlex = HH.div $ classes
+    [ "flex"
+    , "flex-col"
+    , "h-full"
+    , "w-full"
+    ]
+
+  commonArrow = HH.i $ classes
+    [ "fas"
+    , "fa-chevron-down"
+    , "animate-bounce"
+    , "mx-auto"
+    , "mb-5"
     ]
 
 
