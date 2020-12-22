@@ -3,12 +3,12 @@
 }
 
 .close-to-open {
-    animation: close-to-open-animation 1s ease-in;
+    animation: close-to-open-animation 0.6s ease-in;
     animation-fill-mode: forwards;
 }
 
 .open-to-close {
-    animation: open-to-close-animation 1s ease-in;
+    animation: open-to-close-animation 0.6s ease-in;
     animation-fill-mode: forwards;
 }
 
