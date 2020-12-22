@@ -225,8 +225,9 @@ render state =
       ]
     projectsTitle = HH.div $ classes
       [ "font-sans"
-      , "font-extralight"
+      , "font-thin"
       , "text-6xl"
+      , "select-none"
       ]
 
   projectsContent =
@@ -254,8 +255,9 @@ render state =
       ]
     socialsTitle = HH.div $ classes
       [ "font-sans"
-      , "font-extralight"
+      , "font-thin"
       , "text-6xl"
+      , "select-none"
       ]
 
   socialsContent =
