@@ -220,10 +220,41 @@ render state =
     ]
 
   projectsCover =
-    [ HH.div [ css "font-sans font-extralight text-6xl p-5" ]
-      [ HH.text "Projects"
+    [ fullFlex
+      [ projectsFlex
+        [ projectsTitle
+          [ HH.text "Projects"
+          ]
+        ]
+      , projectsArrow [ ]
       ]
     ]
+    where
+    fullFlex = HH.div $ classes
+      [ "flex"
+      , "flex-col"
+      , "h-full"
+      , "w-full"
+      ]
+    projectsFlex = HH.div $ classes
+      [ "flex"
+      , "flex-col"
+      , "flex-grow"
+      , "m-5"
+      ]
+    projectsTitle = HH.div $ classes
+      [ "font-sans"
+      , "font-extralight"
+      , "text-6xl"
+      ]
+    projectsArrow = HH.i $ classes
+      [ "fas"
+      , "fa-chevron-down"
+      , "animate-bounce"
+      , "mx-auto"
+      , "mb-5"
+      ]
+
   projectsContent =
     [ HH.div [ css "p-5" ]
       [ HH.text "Projects"
@@ -231,10 +262,41 @@ render state =
     ]
 
   socialsCover =
-    [ HH.div [ css "font-sans font-extralight text-6xl p-5" ]
-      [ HH.text "Socials"
+    [ fullFlex
+      [ socialsFlex
+        [ socialsTitle
+          [ HH.text "Socials"
+          ]
+        ]
+      , socialsArrow [ ]
       ]
     ]
+    where
+    fullFlex = HH.div $ classes
+      [ "flex"
+      , "flex-col"
+      , "h-full"
+      , "w-full"
+      ]
+    socialsFlex = HH.div $ classes
+      [ "flex"
+      , "flex-col"
+      , "flex-grow"
+      , "m-5"
+      ]
+    socialsTitle = HH.div $ classes
+      [ "font-sans"
+      , "font-extralight"
+      , "text-6xl"
+      ]
+    socialsArrow = HH.i $ classes
+      [ "fas"
+      , "fa-chevron-down"
+      , "animate-bounce"
+      , "mx-auto"
+      , "mb-5"
+      ]
+
   socialsContent =
     [ HH.div [ css "p-5" ]
       [ HH.text "Socials"
