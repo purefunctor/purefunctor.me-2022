@@ -164,10 +164,55 @@ render state =
         _ -> Nothing
 
   infoCover =
-    [ HH.div [ css "p-5" ]
-      [ HH.text "PureFunctor"
+    [ fullFlex
+      [ infoFlex
+        [ infoImage [ ]
+        , infoName [ HH.text "PureFunctor" ]
+        , infoSub [ HH.text "Student, Python, FP" ]
+        ]
+      , infoArrow [ ]
       ]
     ]
+    where
+    fullFlex = HH.div $ classes
+      [ "flex"
+      , "flex-col"
+      , "h-full"
+      , "w-full"
+      ]
+    infoFlex = HH.div $ classes
+      [ "flex"
+      , "flex-col"
+      , "flex-grow"
+      , "items-center"
+      , "place-content-center"
+      , "space-y-5"
+      ]
+    infoImage = HH.div $ classes
+      [ "bg-green-500"
+      , "h-56"
+      , "w-56"
+      , "rounded-full"
+      , "shadow-2xl"
+      ]
+    infoName = HH.div $ classes
+      [ "text-4xl"
+      , "font-extralight"
+      , "select-none"
+      ]
+    infoSub = HH.div $ classes
+      [ "text-2xl"
+      , "font-thin"
+      , "select-none"
+      ]
+    infoArrow = HH.i $ classes
+      [ "fas"
+      , "fa-chevron-down"
+      , "animate-bounce"
+      , "mx-auto"
+      , "mb-5"
+      ]
+
   infoContent =
     [ HH.div [ css "p-5" ]
       [ HH.text "PureFunctor"
