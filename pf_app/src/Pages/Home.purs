@@ -64,9 +64,9 @@ render :: forall m. State -> H.ComponentHTML Action () m
 render state =
   pageRoot
   [ tileGrid
-    [ tileContainer Info infoCover infoContent
-    , tileContainer Projects projectsCover projectsContent
-    , tileContainer Socials socialsCover socialsContent
+    [ tileContainer Info (tileCover Info) infoContent
+    , tileContainer Projects (tileCover Projects) projectsContent
+    , tileContainer Socials (tileCover Socials) socialsContent
     ]
   ]
   where
@@ -163,42 +163,79 @@ render state =
         (MovingTo cState) -> Just $ SetTo tile (HaltedOn cState)
         _ -> Nothing
 
-  infoCover =
-    [ fullFlex
-      [ infoFlex
-        [ infoImage [ ]
-        , infoName [ HH.text "PureFunctor" ]
-        , infoSub [ HH.text "Student, Python, FP" ]
-        ]
-      , commonArrow [ ]
-      ]
-    ]
+  tileCover tile =
+    [ fullFlex [ coverFlex coverItems , chevron ] ]
     where
-    infoFlex = HH.div $ classes
+    fullFlex = HH.div $ classes
       [ "flex"
       , "flex-col"
-      , "flex-grow"
-      , "items-center"
-      , "place-content-center"
-      , "space-y-5"
+      , "h-full"
+      , "w-full"
       ]
-    infoImage = HH.div $ classes
-      [ "bg-green-500"
-      , "h-56"
-      , "w-56"
-      , "rounded-full"
-      , "shadow-2xl"
-      ]
-    infoName = HH.div $ classes
-      [ "text-4xl"
-      , "font-extralight"
-      , "select-none"
-      ]
-    infoSub = HH.div $ classes
-      [ "text-2xl"
-      , "font-thin"
-      , "select-none"
-      ]
+
+    coverFlex = case tile of
+      Info -> HH.div $ classes
+        [ "flex"
+        , "flex-col"
+        , "flex-grow"
+        , "items-center"
+        , "place-content-center"
+        , "space-y-5"
+        ]
+      _ -> HH.div $ classes
+        [ "flex"
+        , "flex-col"
+        , "flex-grow"
+        , "m-5"
+        ]
+
+    coverItems = case tile of
+      Info ->
+        [ image [  ]
+        , name [ HH.text "PureFunctor" ]
+        , sub [ HH.text "Student, Python, FP" ]
+        ]
+        where
+        image = HH.div $ classes
+          [ "bg-green-500"
+          , "h-56"
+          , "w-56"
+          , "rounded-full"
+          , "shadow-2xl"
+          ]
+        name = HH.div $ classes
+          [ "text-4xl"
+          , "font-extralight"
+          , "select-none"
+          ]
+        sub = HH.div $ classes
+          [ "text-2xl"
+          , "font-thin"
+          , "select-none"
+          ]
+      Projects ->
+        [ HH.div projectsSocialsStyles [ HH.text "Projects" ]
+        ]
+      Socials ->
+        [ HH.div projectsSocialsStyles [ HH.text "Socials" ]
+        ]
+      where
+      projectsSocialsStyles = classes
+        [ "font-sans"
+        , "font-thin"
+        , "text-6xl"
+        , "select-none"
+        ]
+
+    chevron = HH.i chevronStyles [ ]
+      where
+      chevronStyles = classes
+        [ "fas"
+        , "fa-chevron-down"
+        , "animate-bounce"
+        , "mx-auto"
+        , "mb-5"
+        ]
 
   infoContent =
     [ HH.div [ css "p-5" ]
@@ -206,79 +243,16 @@ render state =
       ]
     ]
 
-  projectsCover =
-    [ fullFlex
-      [ projectsFlex
-        [ projectsTitle
-          [ HH.text "Projects"
-          ]
-        ]
-      , commonArrow [ ]
-      ]
-    ]
-    where
-    projectsFlex = HH.div $ classes
-      [ "flex"
-      , "flex-col"
-      , "flex-grow"
-      , "m-5"
-      ]
-    projectsTitle = HH.div $ classes
-      [ "font-sans"
-      , "font-thin"
-      , "text-6xl"
-      , "select-none"
-      ]
-
   projectsContent =
     [ HH.div [ css "p-5" ]
       [ HH.text "Projects"
       ]
     ]
 
-  socialsCover =
-    [ fullFlex
-      [ socialsFlex
-        [ socialsTitle
-          [ HH.text "Socials"
-          ]
-        ]
-      , commonArrow [ ]
-      ]
-    ]
-    where
-    socialsFlex = HH.div $ classes
-      [ "flex"
-      , "flex-col"
-      , "flex-grow"
-      , "m-5"
-      ]
-    socialsTitle = HH.div $ classes
-      [ "font-sans"
-      , "font-thin"
-      , "text-6xl"
-      , "select-none"
-      ]
-
   socialsContent =
     [ HH.div [ css "p-5" ]
       [ HH.text "Socials"
       ]
-    ]
-
-  fullFlex = HH.div $ classes
-    [ "flex"
-    , "flex-col"
-    , "h-full"
-    , "w-full"
-    ]
-
-  commonArrow = HH.i $ classes
-    [ "fas"
-    , "fa-chevron-down"
-    , "animate-bounce"
-    , "mx-auto"
-    , "mb-5"
     ]
 
 
