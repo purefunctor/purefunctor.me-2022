@@ -63,20 +63,14 @@ initialState _ =
 
 render :: forall m. State -> H.ComponentHTML Action () m
 render state =
-  pageRoot
-  [ tileGrid
+  HH.div [ css "page-root" ]
+  [ HH.div [ css "tile-grid" ]
     [ tileContainer Info (tileCover Info) infoContent
     , tileContainer Projects (tileCover Projects) projectsContent
     , tileContainer Socials (tileCover Socials) socialsContent
     ]
   ]
   where
-  -- | Root container for the page
-  pageRoot = HH.div [ css "page-root" ]
-
-  -- | Parent container for the tiles
-  tileGrid = HH.div [ css "tile-grid" ]
-
   -- | Container for each tile
   tileContainer tile cover content =
     borderContainer
