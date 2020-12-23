@@ -26,6 +26,10 @@
     @apply absolute box-content h-full w-full z-0 bg-white;
 }
 
+.cover-container {
+    @apply absolute box-content h-full w-full z-10 bg-gray-100;
+}
+
 .full-flex {
     @apply flex flex-col h-full w-full cursor-pointer;
 }
