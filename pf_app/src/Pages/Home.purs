@@ -155,14 +155,10 @@ render state =
 
     coverItems = case tile of
       Info ->
-        [ image [  ]
-        , name [ HH.text "PureFunctor" ]
-        , sub [ HH.text "Student, Python, FP" ]
+        [ HH.div [ css "cover-items-info-image" ] [  ]
+        , HH.div [ css "cover-items-info-name" ] [ HH.text "PureFunctor" ]
+        , HH.div [ css "cover-items-info-sub" ] [ HH.text "Student, Python, FP" ]
         ]
-        where
-        image = HH.div [ css "cover-items-info-image" ]
-        name = HH.div [ css "cover-items-info-name" ]
-        sub = HH.div [ css "cover-items-info-sub" ]
       Projects ->
         [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Projects" ]
         ]
