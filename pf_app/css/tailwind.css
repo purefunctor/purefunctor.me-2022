@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.page-root {
+    @apply flex flex-col h-screen p-5 bg-gradient-to-br from-green-500 to-blue-900;
+}

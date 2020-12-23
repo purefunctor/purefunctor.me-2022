@@ -72,15 +72,7 @@ render state =
   ]
   where
   -- | Root container for the page
-  pageRoot = HH.div $ classes
-    [ "flex"
-    , "flex-col"
-    , "h-screen"
-    , "p-5"
-    , "bg-gradient-to-br"
-    , "from-green-500"
-    , "to-blue-900"
-    ]
+  pageRoot = HH.div [ css "page-root" ]
 
   -- | Parent container for the tiles
   tileGrid = HH.div $ classes
