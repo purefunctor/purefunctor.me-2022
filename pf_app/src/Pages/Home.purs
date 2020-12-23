@@ -75,13 +75,7 @@ render state =
   pageRoot = HH.div [ css "page-root" ]
 
   -- | Parent container for the tiles
-  tileGrid = HH.div $ classes
-    [ "grid"
-    , "grid-cols-2"
-    , "grid-rows-2"
-    , "flex-1"
-    , "gap-5"
-    ]
+  tileGrid = HH.div [ css "tile-grid" ]
 
   -- | Container for each tile
   tileContainer tile cover content =
@@ -92,32 +86,15 @@ render state =
       ]
     ]
     where
-    borderContainer = HH.div styles
+    borderContainer = HH.div tileStyles
       where
-      styles = classes $
-        [ "border-4"
-        , "border-gray-900"
-        ] <> tileStyles
-
       tileStyles = case tile of
-        Info -> [ "row-span-2" ]
-        _    -> [ ]
+        Info -> [ css "border-container-info" ]
+        _    -> [ css "border-container" ]
 
-    clipperContainer = HH.div $ classes
-      [ "relative"
-      , "h-full"
-      , "w-full"
-      , "garage-clip"
-      ]
+    clipperContainer = HH.div [ css "clipper-container garage-clip" ]
 
-    contentContainer = HH.div $ classes
-      [ "absolute"
-      , "box-content"
-      , "h-full"
-      , "w-full"
-      , "z-0"
-      , "bg-white"
-      ]
+    contentContainer = HH.div [ css "content-container" ]
 
     coverContainer = HH.div $ styles <> events
       where
@@ -159,15 +136,8 @@ render state =
   tileCover tile =
     [ fullFlex [ coverFlex coverItems , chevron ] ]
     where
-    fullFlex = HH.div $ styles <> events
+    fullFlex = HH.div $ [ css "full-flex" ] <> events
       where
-      styles = classes
-        [ "flex"
-        , "flex-col"
-        , "h-full"
-        , "w-full"
-        , "cursor-pointer"
-        ]
       events =
         [ HE.onMouseOver onMouseOverEvent
         , HE.onMouseOut onMouseOutEvent
@@ -187,20 +157,8 @@ render state =
         _ -> Nothing
 
     coverFlex = case tile of
-      Info -> HH.div $ classes
-        [ "flex"
-        , "flex-col"
-        , "flex-grow"
-        , "items-center"
-        , "place-content-center"
-        , "space-y-5"
-        ]
-      _ -> HH.div $ classes
-        [ "flex"
-        , "flex-col"
-        , "flex-grow"
-        , "m-5"
-        ]
+      Info -> HH.div [ css "cover-flex-info" ]
+      _ -> HH.div [ css "cover-flex" ]
 
     coverItems = case tile of
       Info ->
@@ -209,35 +167,14 @@ render state =
         , sub [ HH.text "Student, Python, FP" ]
         ]
         where
-        image = HH.div $ classes
-          [ "bg-green-500"
-          , "h-56"
-          , "w-56"
-          , "rounded-full"
-          , "shadow-2xl"
-          ]
-        name = HH.div $ classes
-          [ "text-4xl"
-          , "font-extralight"
-          , "select-none"
-          ]
-        sub = HH.div $ classes
-          [ "text-2xl"
-          , "font-thin"
-          , "select-none"
-          ]
+        image = HH.div [ css "cover-items-info-image" ]
+        name = HH.div [ css "cover-items-info-name" ]
+        sub = HH.div [ css "cover-items-info-sub" ]
       Projects ->
-        [ HH.div projectsSocialsStyles [ HH.text "Projects" ]
+        [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Projects" ]
         ]
       Socials ->
-        [ HH.div projectsSocialsStyles [ HH.text "Socials" ]
-        ]
-      where
-      projectsSocialsStyles = classes
-        [ "font-sans"
-        , "font-thin"
-        , "text-6xl"
-        , "select-none"
+        [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Socials" ]
         ]
 
     chevron = HH.i chevronStyles [ ]

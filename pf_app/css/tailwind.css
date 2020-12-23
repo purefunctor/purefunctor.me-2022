@@ -5,3 +5,51 @@
 .page-root {
     @apply flex flex-col h-screen p-5 bg-gradient-to-br from-green-500 to-blue-900;
 }
+
+.tile-grid {
+    @apply grid grid-cols-2 grid-rows-2 flex-1 gap-5;
+}
+
+.border-container {
+    @apply border-4 border-gray-900;
+}
+
+.border-container-info {
+    @apply border-container row-span-2;
+}
+
+.clipper-container {
+    @apply relative h-full w-full;
+}
+
+.content-container {
+    @apply absolute box-content h-full w-full z-0 bg-white;
+}
+
+.full-flex {
+    @apply flex flex-col h-full w-full cursor-pointer;
+}
+
+.cover-flex {
+    @apply flex flex-col flex-grow m-5;
+}
+
+.cover-flex-info {
+    @apply flex flex-col flex-grow items-center place-content-center space-y-5;
+}
+
+.cover-items-info-image {
+    @apply bg-green-500 h-56 w-56 rounded-full shadow-2xl;
+}
+
+.cover-items-info-name {
+    @apply text-4xl font-extralight select-none;
+}
+
+.cover-items-info-sub {
+    @apply text-2xl font-thin select-none;
+}
+
+.cover-items-projects-socials {
+    @apply font-sans font-thin text-6xl select-none;
+}
