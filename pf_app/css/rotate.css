@@ -1,5 +1,17 @@
+.rotate-0 {
+    animation: rotate-0-anim 0.1s linear;
+    animation-fill-mode: forwards;
+}
+
+@keyframes rotate-0-anim {
+    0% {
+        transform: rotate(-180deg);
+    }
+}
+
 .rotate-180 {
-    animation: rotate-180-anim 0.25s linear;
+    animation: rotate-180-anim 0.1s linear;
+    animation-fill-mode: forwards;
 }
 
 @keyframes rotate-180-anim {

@@ -24,6 +24,7 @@ data TileState
   = Initial
   | HaltedOn CoverState
   | MovingTo CoverState
+  | Expected CoverState
 
 type State =
   { infoTile :: TileState
@@ -149,14 +150,14 @@ render state =
       tileAnimation = case tState of
         (MovingTo Open) -> [ "close-to-open" ]
         (MovingTo Shut) -> [ "open-to-close" ]
-        (HaltedOn Open) -> [ "close-to-open" ]
-        (HaltedOn Shut) -> [ "open-to-close" ]
+        (HaltedOn Open) -> [ "open" ]
+        (HaltedOn Shut) -> [ "shut" ]
         _ -> [ ]
 
       onClickEvent _ = case tState of
         Initial -> Just $ SetTo tile (MovingTo Open)
-        (HaltedOn Open) -> Just $ SetTo tile (MovingTo Shut)
-        (HaltedOn Shut) -> Just $ SetTo tile (MovingTo Open)
+        (Expected Shut) -> Just $ SetTo tile (MovingTo Shut)
+        (Expected Open) -> Just $ SetTo tile (MovingTo Open)
         _ -> Nothing
 
       onAnimationEndEvent _ = case tState of
@@ -166,12 +167,32 @@ render state =
   tileCover tile =
     [ fullFlex [ coverFlex coverItems , chevron ] ]
     where
-    fullFlex = HH.div $ classes
-      [ "flex"
-      , "flex-col"
-      , "h-full"
-      , "w-full"
-      ]
+    fullFlex = HH.div $ styles <> events
+      where
+      styles = classes
+        [ "flex"
+        , "flex-col"
+        , "h-full"
+        , "w-full"
+        , "cursor-pointer"
+        ]
+      events =
+        [ HE.onMouseOver onMouseOverEvent
+        , HE.onMouseOut onMouseOutEvent
+        ]
+
+      tState = fromTileState tile state
+
+      onMouseOverEvent _ = case tState of
+        Initial -> Just $ SetTo tile (Expected Open)
+        (HaltedOn Open) -> Just $ SetTo tile (Expected Shut)
+        (HaltedOn Shut) -> Just $ SetTo tile (Expected Open)
+        _ -> Nothing
+
+      onMouseOutEvent _ = case tState of
+        (Expected Open) -> Just $ SetTo tile (HaltedOn Shut)
+        (Expected Shut) -> Just $ SetTo tile (HaltedOn Open)
+        _ -> Nothing
 
     coverFlex = case tile of
       Info -> HH.div $ classes
@@ -229,13 +250,23 @@ render state =
 
     chevron = HH.i chevronStyles [ ]
       where
-      chevronStyles = classes
+      chevronStyles = classes $
         [ "fas"
         , "fa-chevron-down"
         , "animate-bounce"
         , "mx-auto"
         , "mb-5"
-        ]
+        ] <> optionalStyles
+
+      tState = fromTileState tile state
+
+      optionalStyles = concat [ chevronAnimation ]
+
+      chevronAnimation = case tState of
+        (Expected _) -> [ "rotate-180" ]
+        (MovingTo _) -> [ "rotate-180" ]
+        (HaltedOn _) -> [ "rotate-0" ]
+        _ -> [ ]
 
   infoContent =
     [ HH.div [ css "p-5" ]
