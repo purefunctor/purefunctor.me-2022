@@ -4,8 +4,13 @@
   "description": "My personal portfolio website written in PureScript and Haskell.",
   "main": "index.js",
   "scripts": {
-    "dev": "spago build && parcel dev ./pf_app/dev/index.html",
-    "build": "spago build && parcel build ./pf_app/dev/index.html --out-dir ./static --public-url ./static --no-source-maps",
+    "buildpurs": "spago build",
+    "buildcss": "tailwindcss build pf_app/css/tailwind.css -o pf_app/css/style.css",
+    "parceldev": "parcel dev ./pf_app/dev/index.html",
+    "parcelprod": "parcel build ./pf_app/dev/index.html --out-dir ./static --public-url ./static --no-source-maps",
+    "dev": "npm run buildpurs && npm run buildcss && npm run parceldev",
+    "prod": "npm run buildpurs && npm run buildcss && npm run parcelprod",
+    "purge": "git clean -fdx && rm -rf .spago",
     "test": "spago test"
   },
   "repository": {
