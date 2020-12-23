@@ -73,27 +73,23 @@ render state =
   where
   -- | Container for each tile
   tileContainer tile cover content =
-    borderContainer
-    [ clipperContainer
-      [ coverContainer cover
-      , contentContainer content
+    HH.div borderContainer
+    [ HH.div clipperContainer
+      [ HH.div coverContainer cover
+      , HH.div contentContainer content
       ]
     ]
     where
-    borderContainer = HH.div tileStyles
-      where
-      tileStyles = case tile of
-        Info -> [ css "border-container-info" ]
-        _    -> [ css "border-container" ]
+    borderContainer = case tile of
+      Info -> [ css "border-container-info" ]
+      _    -> [ css "border-container" ]
 
-    clipperContainer = HH.div [ css "clipper-container garage-clip" ]
+    clipperContainer = [ css "clipper-container garage-clip" ]
+    contentContainer = [ css "content-container" ]
 
-    contentContainer = HH.div [ css "content-container" ]
-
-    coverContainer = HH.div $ styles <> events
+    coverContainer = styles <> events
       where
       styles = [ css $ intercalate " " ["cover-container", optionalStyles ] ]
-
       optionalStyles = intercalate " " [ tileAnimation ]
 
       events =
@@ -121,9 +117,13 @@ render state =
         _ -> Nothing
 
   tileCover tile =
-    [ fullFlex [ coverFlex coverItems , chevron ] ]
+    [ HH.div fullFlex
+      [ HH.div coverFlex coverItems
+      , HH.i chevron [ ]
+      ]
+    ]
     where
-    fullFlex = HH.div $ [ css "full-flex" ] <> events
+    fullFlex = [ css "full-flex" ] <> events
       where
       events =
         [ HE.onMouseOver onMouseOverEvent
@@ -144,8 +144,8 @@ render state =
         _ -> Nothing
 
     coverFlex = case tile of
-      Info -> HH.div [ css "cover-flex-info" ]
-      _ -> HH.div [ css "cover-flex" ]
+      Info -> [ css "cover-flex-info" ]
+      _    -> [ css "cover-flex" ]
 
     coverItems = case tile of
       Info ->
@@ -160,7 +160,7 @@ render state =
         [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Socials" ]
         ]
 
-    chevron = HH.i chevronStyles [ ]
+    chevron = chevronStyles
       where
       chevronStyles = classes $
         [ "fas"
