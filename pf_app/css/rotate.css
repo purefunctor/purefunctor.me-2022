@@ -1,0 +1,9 @@
+.rotate-180 {
+    animation: rotate-180-anim 0.25s linear;
+}
+
+@keyframes rotate-180-anim {
+    100% {
+        transform: rotate(-180deg);
+    }
+}
