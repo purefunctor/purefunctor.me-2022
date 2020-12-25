@@ -64,18 +64,18 @@ render :: forall m. State -> H.ComponentHTML Action () m
 render state =
   HH.div [ css "page-root" ]
   [ HH.div [ css "tile-grid" ]
-    [ tileContainer Info infoContent
-    , tileContainer Projects  projectsContent
-    , tileContainer Socials socialsContent
+    [ tileContainer Info
+    , tileContainer Projects
+    , tileContainer Socials
     ]
   ]
   where
   -- | Container for each tile
-  tileContainer tile content =
+  tileContainer tile =
     HH.div borderContainer
     [ HH.div clipperContainer
       [ HH.div coverContainer tileCover
-      , HH.div contentContainer content
+      , HH.div contentContainer tileContent
       ]
     ]
     where
@@ -172,23 +172,22 @@ render state =
           (HaltedOn _) -> [ "rotate-0" ]
           _ -> [ ]
 
-  infoContent =
-    [ HH.div [ css "p-5" ]
-      [ HH.text "PureFunctor"
-      ]
-    ]
-
-  projectsContent =
-    [ HH.div [ css "p-5" ]
-      [ HH.text "Projects"
-      ]
-    ]
-
-  socialsContent =
-    [ HH.div [ css "p-5" ]
-      [ HH.text "Socials"
-      ]
-    ]
+    tileContent = case tile of
+      Info ->
+        [ HH.div [ css "p-5" ]
+          [ HH.text "PureFunctor"
+          ]
+        ]
+      Projects ->
+        [ HH.div [ css "p-5" ]
+          [ HH.text "Projects"
+          ]
+        ]
+      Socials ->
+        [ HH.div [ css "p-5" ]
+          [ HH.text "Socials"
+          ]
+        ]
 
 
 handleAction :: forall output m. Action -> H.HalogenM State Action () output m Unit
