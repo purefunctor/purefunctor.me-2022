@@ -2,7 +2,6 @@ module PF.Pages.Home where
 
 import Prelude
 
-import Data.Array (concat, intercalate)
 import Data.Maybe (Maybe(..))
 import Halogen as H
 import Halogen.HTML as HH
@@ -65,21 +64,23 @@ render :: forall m. State -> H.ComponentHTML Action () m
 render state =
   HH.div [ css "page-root" ]
   [ HH.div [ css "tile-grid" ]
-    [ tileContainer Info (tileCover Info) infoContent
-    , tileContainer Projects (tileCover Projects) projectsContent
-    , tileContainer Socials (tileCover Socials) socialsContent
+    [ tileContainer Info infoContent
+    , tileContainer Projects  projectsContent
+    , tileContainer Socials socialsContent
     ]
   ]
   where
   -- | Container for each tile
-  tileContainer tile cover content =
+  tileContainer tile content =
     HH.div borderContainer
     [ HH.div clipperContainer
-      [ HH.div coverContainer cover
+      [ HH.div coverContainer tileCover
       , HH.div contentContainer content
       ]
     ]
     where
+    tState = fromTileState tile state
+
     borderContainer = case tile of
       Info -> [ css "border-container-info" ]
       _    -> [ css "border-container" ]
@@ -89,22 +90,19 @@ render state =
 
     coverContainer = styles <> events
       where
-      styles = [ css $ intercalate " " ["cover-container", optionalStyles ] ]
-      optionalStyles = intercalate " " [ tileAnimation ]
+      styles = classes $ [ "cover-container" ] <> animation
 
       events =
         [ HE.onClick onClickEvent
         , HE.handler (EventType "animationend") onAnimationEndEvent
         ]
 
-      tState = fromTileState tile state
-
-      tileAnimation = case tState of
-        (MovingTo Open) -> "close-to-open"
-        (MovingTo Shut) -> "open-to-close"
-        (HaltedOn Open) -> "open"
-        (HaltedOn Shut) -> "shut"
-        _ -> ""
+      animation = case tState of
+        (MovingTo Open) -> [ "close-to-open" ]
+        (MovingTo Shut) -> [ "open-to-close" ]
+        (HaltedOn Open) -> [ "open" ]
+        (HaltedOn Shut) -> [ "shut" ]
+        _ -> [ ]
 
       onClickEvent _ = case tState of
         Initial -> Just $ SetTo tile (MovingTo Open)
@@ -116,69 +114,63 @@ render state =
         (MovingTo cState) -> Just $ SetTo tile (HaltedOn cState)
         _ -> Nothing
 
-  tileCover tile =
-    [ HH.div fullFlex
-      [ HH.div coverFlex coverItems
-      , HH.i chevron [ ]
+    tileCover =
+      [ HH.div fullFlex
+        [ HH.div coverFlex coverItems
+        , HH.i chevron [ ]
+        ]
       ]
-    ]
-    where
-    fullFlex = [ css "full-flex" ] <> events
       where
-      events =
-        [ HE.onMouseOver onMouseOverEvent
-        , HE.onMouseOut onMouseOutEvent
-        ]
+      fullFlex = [ css "full-flex" ] <> events
+        where
+        events =
+          [ HE.onMouseOver onMouseOverEvent
+          , HE.onMouseOut onMouseOutEvent
+          ]
 
-      tState = fromTileState tile state
+        onMouseOverEvent _ = case tState of
+          Initial -> Just $ SetTo tile (Expected Open)
+          (HaltedOn Open) -> Just $ SetTo tile (Expected Shut)
+          (HaltedOn Shut) -> Just $ SetTo tile (Expected Open)
+          _ -> Nothing
 
-      onMouseOverEvent _ = case tState of
-        Initial -> Just $ SetTo tile (Expected Open)
-        (HaltedOn Open) -> Just $ SetTo tile (Expected Shut)
-        (HaltedOn Shut) -> Just $ SetTo tile (Expected Open)
-        _ -> Nothing
+        onMouseOutEvent _ = case tState of
+          (Expected Open) -> Just $ SetTo tile (HaltedOn Shut)
+          (Expected Shut) -> Just $ SetTo tile (HaltedOn Open)
+          _ -> Nothing
 
-      onMouseOutEvent _ = case tState of
-        (Expected Open) -> Just $ SetTo tile (HaltedOn Shut)
-        (Expected Shut) -> Just $ SetTo tile (HaltedOn Open)
-        _ -> Nothing
+      coverFlex = case tile of
+        Info -> [ css "cover-flex-info" ]
+        _    -> [ css "cover-flex" ]
 
-    coverFlex = case tile of
-      Info -> [ css "cover-flex-info" ]
-      _    -> [ css "cover-flex" ]
+      coverItems = case tile of
+        Info ->
+          [ HH.div [ css "cover-items-info-image" ] [  ]
+          , HH.div [ css "cover-items-info-name" ] [ HH.text "PureFunctor" ]
+          , HH.div [ css "cover-items-info-sub" ] [ HH.text "Student, Python, FP" ]
+          ]
+        Projects ->
+          [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Projects" ]
+          ]
+        Socials ->
+          [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Socials" ]
+          ]
 
-    coverItems = case tile of
-      Info ->
-        [ HH.div [ css "cover-items-info-image" ] [  ]
-        , HH.div [ css "cover-items-info-name" ] [ HH.text "PureFunctor" ]
-        , HH.div [ css "cover-items-info-sub" ] [ HH.text "Student, Python, FP" ]
-        ]
-      Projects ->
-        [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Projects" ]
-        ]
-      Socials ->
-        [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Socials" ]
-        ]
+      chevron = chevronStyles
+        where
+        chevronStyles = classes $
+          [ "fas"
+          , "fa-chevron-down"
+          , "animate-bounce"
+          , "mx-auto"
+          , "mb-5"
+          ] <> animation
 
-    chevron = chevronStyles
-      where
-      chevronStyles = classes $
-        [ "fas"
-        , "fa-chevron-down"
-        , "animate-bounce"
-        , "mx-auto"
-        , "mb-5"
-        ] <> optionalStyles
-
-      tState = fromTileState tile state
-
-      optionalStyles = concat [ chevronAnimation ]
-
-      chevronAnimation = case tState of
-        (Expected _) -> [ "rotate-180" ]
-        (MovingTo _) -> [ "rotate-180" ]
-        (HaltedOn _) -> [ "rotate-0" ]
-        _ -> [ ]
+        animation = case tState of
+          (Expected _) -> [ "rotate-180" ]
+          (MovingTo _) -> [ "rotate-180" ]
+          (HaltedOn _) -> [ "rotate-0" ]
+          _ -> [ ]
 
   infoContent =
     [ HH.div [ css "p-5" ]
