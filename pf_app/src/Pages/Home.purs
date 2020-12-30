@@ -134,11 +134,16 @@ render state =
           } Just
           where
             renderInner =
-              HH.div [ css "full-flex" , HE.onClick \_ -> Just $ HN.Raise $ TileClicked tile ]
+              HH.div tileCover
               [ HH.div coverFlex coverItems
               , HH.div chevron [ ]
               ]
               where
+                tileCover =
+                  [ css "full-flex"
+                  , HE.onClick \_ -> Just $ HN.Raise $ TileClicked tile
+                  ]
+
                 coverFlex = case tile of
                   Info -> [ css "cover-flex-info" ]
                   _    -> [ css "cover-flex" ]
