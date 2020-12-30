@@ -88,8 +88,8 @@ render state =
   where
     -- | Container for each tile
     tileContainer tile =
-      HH.div borderContainer
-      [ HH.div clipperContainer
+      HH.div border
+      [ HH.div clipper
         [ cover
         , content
         ]
@@ -97,11 +97,11 @@ render state =
       where
         tState = fromTileState tile state
 
-        borderContainer = case tile of
+        border = case tile of
           Info -> [ css "border-container-info" ]
           _    -> [ css "border-container" ]
 
-        clipperContainer = [ css "clipper-container garage-clip" ]
+        clipper = [ css "clipper-container garage-clip" ]
 
         content = HH.div [ css "content-container" ] tileContent
           where
