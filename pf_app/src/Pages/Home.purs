@@ -120,6 +120,16 @@ render state =
                     [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Socials" ]
                     ]
 
+                -- Does not work currently because of purescript-halogen-animations.
+                _chevron =
+                  HH.slot _tile_hover tile HN.component
+                  { start: "rotate-0"
+                  , toFinal: "rotate-180"
+                  , final: "rotate-180"
+                  , toStart: "rotate-0"
+                  , render: HH.div [ css "fas fa-chevron-down animate-bounce mx-auto mb-5" ] [ ]
+                  } Just
+
         content = HH.div [ css "content-container" ] inner
           where
             inner = case tile of
