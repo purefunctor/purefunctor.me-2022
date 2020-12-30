@@ -89,7 +89,7 @@ render state =
     -- | Container for each tile
     mkTile tile =
       HH.div border
-      [ HH.div clipper
+      [ HH.div [ css "clipper-container garage-clip" ]
         [ cover
         , content
         ]
@@ -98,8 +98,6 @@ render state =
         border = case tile of
           Info -> [ css "border-container-info" ]
           _    -> [ css "border-container" ]
-
-        clipper = [ css "clipper-container garage-clip" ]
 
         content = HH.div [ css "content-container" ] tileContent
           where
@@ -136,7 +134,7 @@ render state =
             renderInner =
               HH.div tileCover
               [ HH.div coverFlex coverItems
-              , HH.div chevron [ ]
+              , HH.div [ css "fas fa-chevron-down animate-bounce mx-auto mb-5" ] [ ]
               ]
               where
                 tileCover =
@@ -160,8 +158,6 @@ render state =
                   Socials ->
                     [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Socials" ]
                     ]
-
-                chevron = [ css "fas fa-chevron-down animate-bounce mx-auto mb-5" ]
 
 
 handleAction :: forall output m. Action -> H.HalogenM State Action ChildSlots output m Unit
