@@ -99,25 +99,6 @@ render state =
           Info -> [ css "border-container-info" ]
           _    -> [ css "border-container" ]
 
-        content = HH.div [ css "content-container" ] tileContent
-          where
-            tileContent = case tile of
-              Info ->
-                [ HH.div [ css "p-5" ]
-                  [ HH.text "PureFunctor"
-                  ]
-                ]
-              Projects ->
-                [ HH.div [ css "p-5" ]
-                  [ HH.text "Projects"
-                  ]
-                ]
-              Socials ->
-                [ HH.div [ css "p-5" ]
-                  [ HH.text "Socials"
-                  ]
-                ]
-
         -- Temporary workaround as I've styled this in a very odd
         -- manner; I could fix this upstream but I can also add a
         -- special class just for this use-case; alternatively, I
@@ -158,6 +139,25 @@ render state =
                   Socials ->
                     [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Socials" ]
                     ]
+
+        content = HH.div [ css "content-container" ] tileContent
+          where
+            tileContent = case tile of
+              Info ->
+                [ HH.div [ css "p-5" ]
+                  [ HH.text "PureFunctor"
+                  ]
+                ]
+              Projects ->
+                [ HH.div [ css "p-5" ]
+                  [ HH.text "Projects"
+                  ]
+                ]
+              Socials ->
+                [ HH.div [ css "p-5" ]
+                  [ HH.text "Socials"
+                  ]
+                ]
 
 
 handleAction :: forall output m. Action -> H.HalogenM State Action ChildSlots output m Unit
