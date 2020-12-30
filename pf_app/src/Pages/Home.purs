@@ -80,14 +80,14 @@ render :: forall m. State -> H.ComponentHTML Action ChildSlots m
 render state =
   HH.div [ css "page-root" ]
   [ HH.div [ css "tile-grid" ]
-    [ tileContainer Info
-    , tileContainer Projects
-    , tileContainer Socials
+    [ mkTile Info
+    , mkTile Projects
+    , mkTile Socials
     ]
   ]
   where
     -- | Container for each tile
-    tileContainer tile =
+    mkTile tile =
       HH.div border
       [ HH.div clipper
         [ cover
