@@ -130,10 +130,10 @@ render state =
           , toFinal: "close-to-open cover-container"
           , final: "open cover-container"
           , toStart: "open-to-close cover-container"
-          , render: tileCover
+          , render: renderInner
           } Just
           where
-            tileCover =
+            renderInner =
               HH.div [ css "full-flex" , HE.onClick \_ -> Just $ HN.Raise $ TileClicked tile ]
               [ HH.div coverFlex coverItems
               , HH.div chevron [ ]
