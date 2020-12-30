@@ -27,11 +27,18 @@ type State = Unit
 data Action = TileClicked Tile | TileHovered Tile
 
 
-type ChildSlots = (_tile_cover :: HN.Slot Action Tile)
+type ChildSlots =
+  ( _tile_cover :: HN.Slot Action Tile
+  , _tile_hover :: HN.Slot Action Tile
+  )
 
 
 _tile_cover :: SProxy "_tile_cover"
 _tile_cover = SProxy
+
+
+_tile_hover :: SProxy "_tile_hover"
+_tile_hover = SProxy
 
 
 component :: forall query input output m. H.Component HH.HTML query input output m
@@ -136,4 +143,4 @@ render state =
 handleAction :: forall output m. Action -> H.HalogenM State Action ChildSlots output m Unit
 handleAction = case _ of
   (TileClicked tile) -> void $ H.query _tile_cover tile $ H.tell HN.ToggleAnimation
-  (TileHovered tile) -> pure unit
+  (TileHovered tile) -> void $ H.query _tile_hover tile $ H.tell HN.ToggleAnimation
