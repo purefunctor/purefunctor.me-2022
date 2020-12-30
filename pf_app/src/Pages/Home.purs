@@ -16,12 +16,15 @@ data Tile
   | Projects
   | Socials
 
+
 derive instance eqTile :: Eq Tile
 derive instance ordTile :: Ord Tile
+
 
 data CoverState
   = Open
   | Shut
+
 
 data TileState
   = Initial
@@ -29,15 +32,19 @@ data TileState
   | MovingTo CoverState
   | Expected CoverState
 
+
 type State =
   { infoTile :: TileState
   , projectsTile :: TileState
   , socialsTile :: TileState
   }
 
+
 data Action = SetTo Tile TileState | TileClicked Tile
 
+
 type ChildSlots = (_tile_cover :: HN.Slot Action Tile)
+
 
 _tile_cover :: SProxy "_tile_cover"
 _tile_cover = SProxy
@@ -67,6 +74,7 @@ initialState _ =
   , projectsTile: Initial
   , socialsTile: Initial
   }
+
 
 render :: forall m. State -> H.ComponentHTML Action ChildSlots m
 render state =
