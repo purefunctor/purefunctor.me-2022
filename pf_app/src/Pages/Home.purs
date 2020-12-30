@@ -90,8 +90,8 @@ render state =
     tileContainer tile =
       HH.div borderContainer
       [ HH.div clipperContainer
-        [ coverContainer
-        , contentContainer
+        [ cover
+        , content
         ]
       ]
       where
@@ -103,7 +103,7 @@ render state =
 
         clipperContainer = [ css "clipper-container garage-clip" ]
 
-        contentContainer = HH.div [ css "content-container" ] tileContent
+        content = HH.div [ css "content-container" ] tileContent
           where
             tileContent = case tile of
               Info ->
@@ -126,7 +126,7 @@ render state =
         -- manner; I could fix this upstream but I can also add a
         -- special class just for this use-case; alternatively, I
         -- could also just simplify my current hierarchy.
-        coverContainer =
+        cover =
           HH.slot _tile_cover tile HN.component
           { start: "shut cover-container"
           , toFinal: "close-to-open cover-container"
