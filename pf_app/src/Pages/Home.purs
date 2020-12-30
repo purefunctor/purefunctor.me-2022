@@ -50,13 +50,6 @@ _tile_cover :: SProxy "_tile_cover"
 _tile_cover = SProxy
 
 
-fromTileState :: Tile -> State -> TileState
-fromTileState t s = case t of
-  Info -> s.infoTile
-  Projects -> s.projectsTile
-  Socials -> s.socialsTile
-
-
 component :: forall query input output m. H.Component HH.HTML query input output m
 component =
   H.mkComponent
