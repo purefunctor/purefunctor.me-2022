@@ -91,7 +91,7 @@ render state =
       HH.div borderContainer
       [ HH.div clipperContainer
         [ coverContainer
-        , HH.div contentContainer tileContent
+        , contentContainer
         ]
       ]
       where
@@ -102,7 +102,25 @@ render state =
           _    -> [ css "border-container" ]
 
         clipperContainer = [ css "clipper-container garage-clip" ]
-        contentContainer = [ css "content-container" ]
+
+        contentContainer = HH.div [ css "content-container" ] tileContent
+          where
+            tileContent = case tile of
+              Info ->
+                [ HH.div [ css "p-5" ]
+                  [ HH.text "PureFunctor"
+                  ]
+                ]
+              Projects ->
+                [ HH.div [ css "p-5" ]
+                  [ HH.text "Projects"
+                  ]
+                ]
+              Socials ->
+                [ HH.div [ css "p-5" ]
+                  [ HH.text "Socials"
+                  ]
+                ]
 
         -- Temporary workaround as I've styled this in a very odd
         -- manner; I could fix this upstream but I can also add a
@@ -141,23 +159,6 @@ render state =
                     ]
 
                 chevron = [ css "fas fa-chevron-down animate-bounce mx-auto mb-5" ]
-
-        tileContent = case tile of
-          Info ->
-            [ HH.div [ css "p-5" ]
-              [ HH.text "PureFunctor"
-              ]
-            ]
-          Projects ->
-            [ HH.div [ css "p-5" ]
-              [ HH.text "Projects"
-              ]
-            ]
-          Socials ->
-            [ HH.div [ css "p-5" ]
-              [ HH.text "Socials"
-              ]
-            ]
 
 
 handleAction :: forall output m. Action -> H.HalogenM State Action ChildSlots output m Unit
