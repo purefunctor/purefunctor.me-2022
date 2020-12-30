@@ -140,9 +140,9 @@ render state =
                     [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Socials" ]
                     ]
 
-        content = HH.div [ css "content-container" ] tileContent
+        content = HH.div [ css "content-container" ] inner
           where
-            tileContent = case tile of
+            inner = case tile of
               Info ->
                 [ HH.div [ css "p-5" ]
                   [ HH.text "PureFunctor"
