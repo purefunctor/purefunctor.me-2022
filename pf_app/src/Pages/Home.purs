@@ -119,20 +119,20 @@ render state =
                   Info -> [ css "cover-flex-info" ]
                   _    -> [ css "cover-flex" ]
 
-            coverItems = case tile of
-              Info ->
-                [ HH.div [ css "cover-items-info-image" ] [  ]
-                , HH.div [ css "cover-items-info-name" ] [ HH.text "PureFunctor" ]
-                , HH.div [ css "cover-items-info-sub" ] [ HH.text "Student, Python, FP" ]
-                ]
-              Projects ->
-                [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Projects" ]
-                ]
-              Socials ->
-                [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Socials" ]
-                ]
+                coverItems = case tile of
+                  Info ->
+                    [ HH.div [ css "cover-items-info-image" ] [  ]
+                    , HH.div [ css "cover-items-info-name" ] [ HH.text "PureFunctor" ]
+                    , HH.div [ css "cover-items-info-sub" ] [ HH.text "Student, Python, FP" ]
+                    ]
+                  Projects ->
+                    [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Projects" ]
+                    ]
+                  Socials ->
+                    [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Socials" ]
+                    ]
 
-            chevron = [ css "fas fa-chevron-down animate-bounce mx-auto mb-5" ]
+                chevron = [ css "fas fa-chevron-down animate-bounce mx-auto mb-5" ]
 
         tileContent = case tile of
           Info ->
