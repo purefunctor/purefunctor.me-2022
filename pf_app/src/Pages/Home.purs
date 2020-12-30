@@ -95,8 +95,6 @@ render state =
         ]
       ]
       where
-        tState = fromTileState tile state
-
         border = case tile of
           Info -> [ css "border-container-info" ]
           _    -> [ css "border-container" ]
