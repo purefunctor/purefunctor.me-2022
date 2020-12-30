@@ -2,12 +2,11 @@ module PF.Pages.Home where
 
 import Prelude
 
-import Data.Maybe (Maybe(..))
+import Data.Symbol (SProxy(..))
 import Halogen as H
+import Halogen.Animated as HN
 import Halogen.HTML as HH
-import Halogen.HTML.Events as HE
-import PF.Component.Utils (css, classes)
-import Web.Event.Event (EventType(..))
+import PF.Component.Utils (css)
 
 
 data Tile
@@ -32,6 +31,11 @@ type State =
   }
 
 data Action = SetTo Tile TileState
+
+type ChildSlots = (_tile_cover :: HN.Slot Void Int)
+
+_tile_cover :: SProxy "_tile_cover"
+_tile_cover = SProxy
 
 
 fromTileState :: Tile -> State -> TileState
@@ -59,8 +63,7 @@ initialState _ =
   , socialsTile: Initial
   }
 
-
-render :: forall m. State -> H.ComponentHTML Action () m
+render :: forall m. State -> H.ComponentHTML Action ChildSlots m
 render state =
   HH.div [ css "page-root" ]
   [ HH.div [ css "tile-grid" ]
@@ -74,7 +77,7 @@ render state =
   tileContainer tile =
     HH.div borderContainer
     [ HH.div clipperContainer
-      [ HH.div coverContainer tileCover
+      [ coverContainer
       , HH.div contentContainer tileContent
       ]
     ]
@@ -88,89 +91,39 @@ render state =
     clipperContainer = [ css "clipper-container garage-clip" ]
     contentContainer = [ css "content-container" ]
 
-    coverContainer = styles <> events
+    coverContainer =
+      HH.slot _tile_cover 0 HN.component
+      { start: "close"
+      , toFinal: "close-to-open"
+      , final: "open"
+      , toStart: "open-to-close"
+      , render: HH.div [ css "cover-container" ] [ tileCover ]
+      } absurd
       where
-      styles = classes $ [ "cover-container" ] <> animation
-
-      events =
-        [ HE.onClick onClickEvent
-        , HE.handler (EventType "animationend") onAnimationEndEvent
-        ]
-
-      animation = case tState of
-        (MovingTo Open) -> [ "close-to-open" ]
-        (MovingTo Shut) -> [ "open-to-close" ]
-        (HaltedOn Open) -> [ "open" ]
-        (HaltedOn Shut) -> [ "shut" ]
-        _ -> [ ]
-
-      onClickEvent _ = case tState of
-        Initial -> Just $ SetTo tile (MovingTo Open)
-        (Expected Shut) -> Just $ SetTo tile (MovingTo Shut)
-        (Expected Open) -> Just $ SetTo tile (MovingTo Open)
-        _ -> Nothing
-
-      onAnimationEndEvent _ = case tState of
-        (MovingTo cState) -> Just $ SetTo tile (HaltedOn cState)
-        _ -> Nothing
-
-    tileCover =
-      [ HH.div fullFlex
+      tileCover =
+        HH.div [ css "full-flex" ]
         [ HH.div coverFlex coverItems
-        , HH.i chevron [ ]
+        , HH.div chevron [ ]
         ]
-      ]
-      where
-      fullFlex = [ css "full-flex" ] <> events
         where
-        events =
-          [ HE.onMouseOver onMouseOverEvent
-          , HE.onMouseOut onMouseOutEvent
-          ]
+        coverFlex = case tile of
+          Info -> [ css "cover-flex-info" ]
+          _    -> [ css "cover-flex" ]
 
-        onMouseOverEvent _ = case tState of
-          Initial -> Just $ SetTo tile (Expected Open)
-          (HaltedOn Open) -> Just $ SetTo tile (Expected Shut)
-          (HaltedOn Shut) -> Just $ SetTo tile (Expected Open)
-          _ -> Nothing
+        coverItems = case tile of
+          Info ->
+            [ HH.div [ css "cover-items-info-image" ] [  ]
+            , HH.div [ css "cover-items-info-name" ] [ HH.text "PureFunctor" ]
+            , HH.div [ css "cover-items-info-sub" ] [ HH.text "Student, Python, FP" ]
+            ]
+          Projects ->
+            [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Projects" ]
+            ]
+          Socials ->
+            [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Socials" ]
+            ]
 
-        onMouseOutEvent _ = case tState of
-          (Expected Open) -> Just $ SetTo tile (HaltedOn Shut)
-          (Expected Shut) -> Just $ SetTo tile (HaltedOn Open)
-          _ -> Nothing
-
-      coverFlex = case tile of
-        Info -> [ css "cover-flex-info" ]
-        _    -> [ css "cover-flex" ]
-
-      coverItems = case tile of
-        Info ->
-          [ HH.div [ css "cover-items-info-image" ] [  ]
-          , HH.div [ css "cover-items-info-name" ] [ HH.text "PureFunctor" ]
-          , HH.div [ css "cover-items-info-sub" ] [ HH.text "Student, Python, FP" ]
-          ]
-        Projects ->
-          [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Projects" ]
-          ]
-        Socials ->
-          [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Socials" ]
-          ]
-
-      chevron = chevronStyles
-        where
-        chevronStyles = classes $
-          [ "fas"
-          , "fa-chevron-down"
-          , "animate-bounce"
-          , "mx-auto"
-          , "mb-5"
-          ] <> animation
-
-        animation = case tState of
-          (Expected _) -> [ "rotate-180" ]
-          (MovingTo _) -> [ "rotate-180" ]
-          (HaltedOn _) -> [ "rotate-0" ]
-          _ -> [ ]
+        chevron = [ css "fas fa-chevron-down animate-bounce mx-auto mb-5" ]
 
     tileContent = case tile of
       Info ->
@@ -190,7 +143,7 @@ render state =
         ]
 
 
-handleAction :: forall output m. Action -> H.HalogenM State Action () output m Unit
+handleAction :: forall output m. Action -> H.HalogenM State Action ChildSlots output m Unit
 handleAction (SetTo tile tState) = do
   state <- H.get
   case tile of
