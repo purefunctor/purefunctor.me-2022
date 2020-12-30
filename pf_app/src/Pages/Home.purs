@@ -21,26 +21,10 @@ derive instance eqTile :: Eq Tile
 derive instance ordTile :: Ord Tile
 
 
-data CoverState
-  = Open
-  | Shut
+type State = Unit
 
 
-data TileState
-  = Initial
-  | HaltedOn CoverState
-  | MovingTo CoverState
-  | Expected CoverState
-
-
-type State =
-  { infoTile :: TileState
-  , projectsTile :: TileState
-  , socialsTile :: TileState
-  }
-
-
-data Action = SetTo Tile TileState | TileClicked Tile
+data Action = TileClicked Tile
 
 
 type ChildSlots = (_tile_cover :: HN.Slot Action Tile)
@@ -62,11 +46,7 @@ component =
 
 
 initialState :: forall input. input -> State
-initialState _ =
-  { infoTile: Initial
-  , projectsTile: Initial
-  , socialsTile: Initial
-  }
+initialState _ = unit
 
 
 render :: forall m. State -> H.ComponentHTML Action ChildSlots m
@@ -156,4 +136,3 @@ render state =
 handleAction :: forall output m. Action -> H.HalogenM State Action ChildSlots output m Unit
 handleAction = case _ of
   (TileClicked tile) -> void $ H.query _tile_cover tile $ H.tell HN.ToggleAnimation
-  _ -> pure unit
