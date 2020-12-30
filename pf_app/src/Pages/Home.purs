@@ -78,78 +78,78 @@ render state =
     ]
   ]
   where
-  -- | Container for each tile
-  tileContainer tile =
-    HH.div borderContainer
-    [ HH.div clipperContainer
-      [ coverContainer
-      , HH.div contentContainer tileContent
-      ]
-    ]
-    where
-    tState = fromTileState tile state
-
-    borderContainer = case tile of
-      Info -> [ css "border-container-info" ]
-      _    -> [ css "border-container" ]
-
-    clipperContainer = [ css "clipper-container garage-clip" ]
-    contentContainer = [ css "content-container" ]
-
-    -- Temporary workaround as I've styled this in a very odd
-    -- manner; I could fix this upstream but I can also add a
-    -- special class just for this use-case; alternatively, I
-    -- could also just simplify my current hierarchy.
-    coverContainer =
-      HH.slot _tile_cover tile HN.component
-      { start: "shut cover-container"
-      , toFinal: "close-to-open cover-container"
-      , final: "open cover-container"
-      , toStart: "open-to-close cover-container"
-      , render: HH.div [ css "h-full w-full" , HE.onClick \_ -> Just $ HN.Raise $ TileClicked tile ] [ tileCover ]
-      } Just
-      where
-      tileCover =
-        HH.div [ css "full-flex" ]
-        [ HH.div coverFlex coverItems
-        , HH.div chevron [ ]
+    -- | Container for each tile
+    tileContainer tile =
+      HH.div borderContainer
+      [ HH.div clipperContainer
+        [ coverContainer
+        , HH.div contentContainer tileContent
         ]
-        where
-        coverFlex = case tile of
-          Info -> [ css "cover-flex-info" ]
-          _    -> [ css "cover-flex" ]
+      ]
+      where
+        tState = fromTileState tile state
 
-        coverItems = case tile of
+        borderContainer = case tile of
+          Info -> [ css "border-container-info" ]
+          _    -> [ css "border-container" ]
+
+        clipperContainer = [ css "clipper-container garage-clip" ]
+        contentContainer = [ css "content-container" ]
+
+        -- Temporary workaround as I've styled this in a very odd
+        -- manner; I could fix this upstream but I can also add a
+        -- special class just for this use-case; alternatively, I
+        -- could also just simplify my current hierarchy.
+        coverContainer =
+          HH.slot _tile_cover tile HN.component
+          { start: "shut cover-container"
+          , toFinal: "close-to-open cover-container"
+          , final: "open cover-container"
+          , toStart: "open-to-close cover-container"
+          , render: HH.div [ css "h-full w-full" , HE.onClick \_ -> Just $ HN.Raise $ TileClicked tile ] [ tileCover ]
+          } Just
+          where
+            tileCover =
+              HH.div [ css "full-flex" ]
+              [ HH.div coverFlex coverItems
+              , HH.div chevron [ ]
+              ]
+              where
+                coverFlex = case tile of
+                  Info -> [ css "cover-flex-info" ]
+                  _    -> [ css "cover-flex" ]
+
+            coverItems = case tile of
+              Info ->
+                [ HH.div [ css "cover-items-info-image" ] [  ]
+                , HH.div [ css "cover-items-info-name" ] [ HH.text "PureFunctor" ]
+                , HH.div [ css "cover-items-info-sub" ] [ HH.text "Student, Python, FP" ]
+                ]
+              Projects ->
+                [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Projects" ]
+                ]
+              Socials ->
+                [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Socials" ]
+                ]
+
+            chevron = [ css "fas fa-chevron-down animate-bounce mx-auto mb-5" ]
+
+        tileContent = case tile of
           Info ->
-            [ HH.div [ css "cover-items-info-image" ] [  ]
-            , HH.div [ css "cover-items-info-name" ] [ HH.text "PureFunctor" ]
-            , HH.div [ css "cover-items-info-sub" ] [ HH.text "Student, Python, FP" ]
+            [ HH.div [ css "p-5" ]
+              [ HH.text "PureFunctor"
+              ]
             ]
           Projects ->
-            [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Projects" ]
+            [ HH.div [ css "p-5" ]
+              [ HH.text "Projects"
+              ]
             ]
           Socials ->
-            [ HH.div [ css "cover-items-projects-socials" ] [ HH.text "Socials" ]
+            [ HH.div [ css "p-5" ]
+              [ HH.text "Socials"
+              ]
             ]
-
-        chevron = [ css "fas fa-chevron-down animate-bounce mx-auto mb-5" ]
-
-    tileContent = case tile of
-      Info ->
-        [ HH.div [ css "p-5" ]
-          [ HH.text "PureFunctor"
-          ]
-        ]
-      Projects ->
-        [ HH.div [ css "p-5" ]
-          [ HH.text "Projects"
-          ]
-        ]
-      Socials ->
-        [ HH.div [ css "p-5" ]
-          [ HH.text "Socials"
-          ]
-        ]
 
 
 handleAction :: forall output m. Action -> H.HalogenM State Action ChildSlots output m Unit
