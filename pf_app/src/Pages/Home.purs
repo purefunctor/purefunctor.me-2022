@@ -24,7 +24,7 @@ derive instance ordTile :: Ord Tile
 type State = Unit
 
 
-data Action = TileClicked Tile
+data Action = TileClicked Tile | TileHovered Tile
 
 
 type ChildSlots = (_tile_cover :: HN.Slot Action Tile)
@@ -136,3 +136,4 @@ render state =
 handleAction :: forall output m. Action -> H.HalogenM State Action ChildSlots output m Unit
 handleAction = case _ of
   (TileClicked tile) -> void $ H.query _tile_cover tile $ H.tell HN.ToggleAnimation
+  (TileHovered tile) -> pure unit
