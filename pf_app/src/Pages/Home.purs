@@ -2,10 +2,12 @@ module PF.Pages.Home where
 
 import Prelude
 
+import Data.Maybe (Maybe(..))
 import Data.Symbol (SProxy(..))
 import Halogen as H
 import Halogen.Animated as HN
 import Halogen.HTML as HH
+import Halogen.HTML.Events as HE
 import PF.Component.Utils (css)
 
 
@@ -13,6 +15,9 @@ data Tile
   = Info
   | Projects
   | Socials
+
+derive instance eqTile :: Eq Tile
+derive instance ordTile :: Ord Tile
 
 data CoverState
   = Open
@@ -30,9 +35,9 @@ type State =
   , socialsTile :: TileState
   }
 
-data Action = SetTo Tile TileState
+data Action = SetTo Tile TileState | TileClicked Tile
 
-type ChildSlots = (_tile_cover :: HN.Slot Void Int)
+type ChildSlots = (_tile_cover :: HN.Slot Action Tile)
 
 _tile_cover :: SProxy "_tile_cover"
 _tile_cover = SProxy
@@ -91,14 +96,18 @@ render state =
     clipperContainer = [ css "clipper-container garage-clip" ]
     contentContainer = [ css "content-container" ]
 
+    -- Temporary workaround as I've styled this in a very odd
+    -- manner; I could fix this upstream but I can also add a
+    -- special class just for this use-case; alternatively, I
+    -- could also just simplify my current hierarchy.
     coverContainer =
-      HH.slot _tile_cover 0 HN.component
-      { start: "close"
-      , toFinal: "close-to-open"
-      , final: "open"
-      , toStart: "open-to-close"
-      , render: HH.div [ css "cover-container" ] [ tileCover ]
-      } absurd
+      HH.slot _tile_cover tile HN.component
+      { start: "shut cover-container"
+      , toFinal: "close-to-open cover-container"
+      , final: "open cover-container"
+      , toStart: "open-to-close cover-container"
+      , render: HH.div [ css "h-full w-full" , HE.onClick \_ -> Just $ HN.Raise $ TileClicked tile ] [ tileCover ]
+      } Just
       where
       tileCover =
         HH.div [ css "full-flex" ]
@@ -144,9 +153,6 @@ render state =
 
 
 handleAction :: forall output m. Action -> H.HalogenM State Action ChildSlots output m Unit
-handleAction (SetTo tile tState) = do
-  state <- H.get
-  case tile of
-    Info -> H.put $ state { infoTile = tState }
-    Projects -> H.put $ state { projectsTile = tState }
-    Socials -> H.put $ state { socialsTile = tState }
+handleAction = case _ of
+  (TileClicked tile) -> void $ H.query _tile_cover tile $ H.tell HN.ToggleAnimation
+  _ -> pure unit
