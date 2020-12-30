@@ -8,6 +8,7 @@ You can edit this file as you like.
   , "effect"
   , "halogen"
   , "psci-support"
+  , "purescript-halogen-animations"
   , "routing"
   , "routing-duplex"
   ]
