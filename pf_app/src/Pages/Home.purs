@@ -4,7 +4,6 @@ import Prelude
 
 import Halogen as H
 import Halogen.HTML as HH
-import Halogen.HTML.Properties as HP
 import PF.Component.Utils (css)
 
 
@@ -26,9 +25,9 @@ initialState _ = unit
 
 render :: forall action m. State -> H.ComponentHTML action () m
 render _ =
-  HH.div [ css "bg-gray-100 h-screen overflow-auto" , HP.style "scroll-snap-type: y mandatory;" ]
+  HH.div [ css "bg-gray-100 h-screen overflow-auto scroll-snap-y-mandatory"  ]
   [ HH.div [ css "h-auto w-full lg:w-11/12 mx-auto" ]
-    [ HH.div [ css "h-screen flex flex-col justify-center items-center space-y-5" , HP.style "scroll-snap-align: start;" ]
+    [ HH.div [ css "h-screen flex flex-col justify-center items-center space-y-5 scroll-snap-align-start" ]
       [ HH.div [ css "h-56 w-56 bg-green-200 rounded-full shadow-xl" ]
         [
         ]
@@ -39,10 +38,10 @@ render _ =
         [ HH.text "Student, Python, FP"
         ]
       ]
-    , HH.div [ css "h-screen p-5 text-4xl" , HP.style "scroll-snap-align: start;" ]
+    , HH.div [ css "h-screen p-5 text-4xl scroll-snap-align-start" ]
       [ HH.text "About"
       ]
-    , HH.div [ css "h-screen p-5 text-4xl" , HP.style "scroll-snap-align: start;" ]
+    , HH.div [ css "h-screen p-5 text-4xl scroll-snap-align-start" ]
       [ HH.text "Contact"
       ]
     ]
