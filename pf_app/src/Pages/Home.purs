@@ -41,6 +41,9 @@ render _ =
     , subsection "About" [ css "text-lg p-5" ]
       [ HH.text "Text"
       ]
+    , subsection "Projects" [ css "text-lg p-5" ]
+      [ HH.text "Text"
+      ]
     , subsection "Contact" [ css "text-lg p-5" ]
       [ HH.text "Text"
       ]
