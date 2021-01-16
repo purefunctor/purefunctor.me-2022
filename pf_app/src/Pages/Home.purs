@@ -38,21 +38,19 @@ render _ =
         [ HH.text "Student, Python, FP"
         ]
       ]
-    , HH.div [ css "h-screen p-5 scroll-snap-align-start divide-y-2" ]
-      [ HH.div [ css "text-4xl p-5" ]
-        [ HH.text "About"
-        ]
-      , HH.div [ css "text-lg p-5" ]
-        [ HH.text  "Text"
-        ]
+    , subsection "About" [ css "text-lg p-5" ]
+      [ HH.text "Text"
       ]
-    , HH.div [ css "h-screen p-5 scroll-snap-align-start divide-y-2" ]
-      [ HH.div [ css "text-4xl p-5" ]
-        [ HH.text "Contact"
-        ]
-      , HH.div [ css "text-lg p-5" ]
-        [ HH.text  "Text"
-        ]
+    , subsection "Contact" [ css "text-lg p-5" ]
+      [ HH.text "Text"
       ]
     ]
   ]
+  where
+    subsection title props content =
+      HH.div [ css "h-screen p-5 scroll-snap-align-start divide-y-2" ]
+      [ HH.div [ css "text-4xl p-5" ]
+        [ HH.text title
+        ]
+      , HH.div props content
+      ]
