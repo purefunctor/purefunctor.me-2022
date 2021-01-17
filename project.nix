@@ -1,11 +1,11 @@
-{ mkDerivation, base, persistent, stdenv, yesod }:
+{ mkDerivation, aeson, base, persistent, stdenv, yesod }:
 mkDerivation {
   pname = "purefunctor-me";
   version = "1.0.0.0";
   src = ./.;
   isLibrary = true;
   isExecutable = true;
-  libraryHaskellDepends = [ base persistent yesod ];
+  libraryHaskellDepends = [ aeson base persistent yesod ];
   executableHaskellDepends = [ base ];
   testHaskellDepends = [ base ];
   homepage = "https://github.com/PureFunctor/purefunctor.me";
