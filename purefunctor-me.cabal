@@ -21,6 +21,7 @@ library
   build-depends:       base ^>=4.13.0.0,
                        aeson,
                        persistent,
+                       time,
                        yesod,
   hs-source-dirs:      pf_site/src
   default-language:    Haskell2010
