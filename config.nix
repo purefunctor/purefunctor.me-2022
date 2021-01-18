@@ -23,6 +23,7 @@ let
                     pkgs.lib.mapAttrs' toPackage (builtins.readDir ./nix);
 
                 manualOverrides = self: super: {
+                  # Does not compile properly with tests enabled.
                   base64 = pkgs.haskell.lib.dontCheck pkgs.haskell.packages."${compiler}".base64;
                 };
               in
