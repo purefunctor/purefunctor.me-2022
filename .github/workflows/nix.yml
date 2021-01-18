@@ -1,10 +1,22 @@
 name: Nix Builds
 
 on:
+
   push:
-    branches: [ develop ]
+    branches:
+    - develop
+    - stable
+
+    paths:
+    - '**.nix'
+      
   pull_request:
-    branches: [ develop ]
+    branches:
+    - develop
+    - stable
+
+    paths:
+    - '**.nix'
 
   workflow_dispatch:
 
