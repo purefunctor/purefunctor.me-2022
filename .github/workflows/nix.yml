@@ -12,15 +12,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Repository Checkout
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
 
-    - name: Build using Nix
-    - uses: cachix/install-nix-action@v12
-    - run: nix-build
+    - name: Nix
+      uses: cachix/install-nix-action@v12
     
-    - name: Store to Cachix
-    - uses: cachix/cachix-action@v8
-    - with:
+    - name: Cachix
+      uses: cachix/cachix-action@v8
+      with:
         name: ${{ env.CACHIX_CACHE_NAME }}
         authToken: ${{ env.CACHIX_AUTH_TOKEN }}
