@@ -9,7 +9,7 @@
     "parceldev": "parcel dev ./pf_app/dev/index.html",
     "parcelprod": "parcel build ./pf_app/dev/index.html --out-dir ./static --public-url ./static --no-source-maps",
     "dev": "npm run buildpurs && npm run buildcss && npm run parceldev",
-    "prod": "npm run buildpurs && npm run buildcss && npm run parcelprod",
+    "prod": "npm run buildpurs && NODE_ENV=production npm run buildcss && npm run parcelprod",
     "purge": "git clean -fdx && rm -rf .spago",
     "test": "spago test"
   },

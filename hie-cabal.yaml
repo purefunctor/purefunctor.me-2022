@@ -1,0 +1,10 @@
+cradle:
+  cabal:
+    - path: "./pf_site/src"
+      component: "lib:purefunctor-me"
+
+    - path: "./pf_site/app/Main.hs"
+      component: "purefunctor-me:exe:purefunctor-me"
+
+    - path: "./pf_site/test"
+      component: "purefunctor-me:test:purefunctor-me-test"
