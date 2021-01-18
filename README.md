@@ -69,9 +69,10 @@ To build the project:
 
 #### Nix-powered Cabal Builds
 The project also provides `nix` expressions for easier builds and dependency caching.
-* [release.nix](./release.nix) - Determines how the package is built by `cabal`, as well as any possible dependency overrides.
+* [config.nix](./config.nix) - Determines package overrides and general configuration options for the project itself.
+* [release.nix](./release.nix) - Determines how the package is built by `nix-build` using `cabal`.
 * [project.nix](./project.nix) - Generated through the `cabal2nix` tool every time a `cabal` dependency is updated.
-* [shell.nix](./shell.nix) - Generated through the `cabal2nix` tool every time a `cabal` dependency is updated. Provides a shell for development that tricks `cabal` and other tools like `haskell-language-server` (when invoked inside of `nix-shell`) to use Nix packages when building the project.
+* [shell.nix](./shell.nix) - Provides a development shell that tricks `cabal` and other tools like `haskell-language-server` (when invoked inside of `nix-shell`) to use Nix packages when building the project.
 
 To build the project:
 ```sh
@@ -127,9 +128,8 @@ Haskell dependencies must first be added to the [purefunctor-me.cabal](./purefun
 ```sh
 λ cabal2nix . > project.nix
 ```
-Updating [shell.nix](./shell.nix) must also be taken into account.
 
-These steps ensure that vanilla builds through `cabal` and `stack` stays in sync with Nix-powered `cabal` builds.
+This step ensures that vanilla builds through `cabal` and `stack` stays in sync with Nix-powered `cabal` builds.
 
 #### Nix Garbage Collection
 If Nix ever has the need to compile Haskell dependencies for the project, it's advised, especially for lower-end machines, to have this package installed in order to make sure that the built dependencies don't get garbage collected:
