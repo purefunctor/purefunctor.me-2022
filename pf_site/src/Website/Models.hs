@@ -1,19 +1,21 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Website.Models
-  ( Repository(..)
+  ( BlogPost(..)
+  , Repository(..)
   )
   where
 
 
 import Data.Aeson ( object, KeyValue((.=)), ToJSON(toJSON) )
+import Data.Time ( UTCTime )
 
 
 data BlogPost = BlogPost
   { fullTitle  :: String
   , shortTitle :: String
   , contents   :: String
-  , published  :: String
-  , updated    :: String
+  , published  :: UTCTime
+  , updated    :: UTCTime
   } deriving ( Eq, Show )
 
 
