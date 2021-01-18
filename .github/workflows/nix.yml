@@ -19,7 +19,7 @@ jobs:
       uses: cachix/install-nix-action@v12
     
     - name: Run Nix
-      run: nix-build
+      run: nix-build release.nix
     
     - name: Install Cachix
       uses: cachix/cachix-action@v8
