@@ -6,7 +6,7 @@ let
 
   haskellPackages = config.nixpkgs.haskell.packages.${config.compiler};
 
-  project = haskellPackages.callPackage ./project.nix { };
+  project = haskellPackages.callPackage ./nix/purefunctor-me.nix { };
 
 in
 
