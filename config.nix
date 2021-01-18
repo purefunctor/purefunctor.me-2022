@@ -10,7 +10,7 @@ let
           "${compiler}" = pkgs.haskell.packages."${compiler}".override {
             overrides = haskellPackagesNew: haskellPackagesOld: rec {
               purefunctor-me =
-                haskellPackagesNew.callPackage ./project.nix {  };
+                haskellPackagesNew.callPackage ./nix/purefunctor-me.nix {  };
             };
           };
         };
