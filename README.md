@@ -71,7 +71,7 @@ To build the project:
 The project also provides `nix` expressions for easier builds and dependency caching.
 * [release.nix](./release.nix) - Determines how the package is built by `cabal`, as well as any possible dependency overrides.
 * [project.nix](./project.nix) - Generated through the `cabal2nix` tool every time a `cabal` dependency is updated.
-* [shell.nix](./shell.nix) - Shell configuration for development that makes use of `ghcWithPackages` to trick `cabal` and other tools like `haskell-language-server` (when invoked inside of `nix-shell`) to use Nix packages when building the project.
+* [shell.nix](./shell.nix) - Generated through the `cabal2nix` tool every time a `cabal` dependency is updated. Provides a shell for development that tricks `cabal` and other tools like `haskell-language-server` (when invoked inside of `nix-shell`) to use Nix packages when building the project.
 
 To build the project:
 ```sh
