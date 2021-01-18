@@ -8,14 +8,25 @@ let
       haskell = pkgs.haskell // {
         packages = pkgs.haskell.packages // {
           "${compiler}" = pkgs.haskell.packages."${compiler}".override {
-            overrides = haskellPackagesNew: _:
+            overrides = 
               let
-                toPackage = file: _: {
-                  name = builtins.replaceStrings [ ".nix" ] [ "" ] file;
-                  value = haskell.lib.dontCheck (haskellPackagesNew.callPackage (./. + "/nix/${file}") {  });
+                collapseOverrides = 
+                  pkgs.lib.fold pkgs.lib.composeExtensions (_: _: {});
+
+                autoOverrides = self: super:
+                  let
+                    toPackage = file: _: {
+                      name = builtins.replaceStrings [ ".nix" ] [ "" ] file;
+                      value = haskell.lib.dontCheck (self.callPackage (./. + "/nix/${file}") {  });
+                    };
+                  in
+                    pkgs.lib.mapAttrs' toPackage (builtins.readDir ./nix);
+
+                manualOverrides = self: super: {
+                  base64 = pkgs.haskell.lib.dontCheck pkgs.haskell.packages."${compiler}".base64;
                 };
               in
-                pkgs.lib.mapAttrs' toPackage (builtins.readDir ./nix);
+                collapseOverrides [ autoOverrides manualOverrides ];
           };
         };
       };
