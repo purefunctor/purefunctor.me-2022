@@ -20,7 +20,9 @@ library
   -- other-extensions:
   build-depends:       base ^>=4.13.0.0,
                        aeson,
+                       password,
                        persistent,
+                       text,
                        time,
                        yesod,
   hs-source-dirs:      pf_site/src
