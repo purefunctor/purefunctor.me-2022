@@ -8,10 +8,14 @@ let
       haskell = pkgs.haskell // {
         packages = pkgs.haskell.packages // {
           "${compiler}" = pkgs.haskell.packages."${compiler}".override {
-            overrides = haskellPackagesNew: haskellPackagesOld: rec {
-              purefunctor-me =
-                haskellPackagesNew.callPackage ./nix/purefunctor-me.nix {  };
-            };
+            overrides = haskellPackagesNew: _:
+              let
+                toPackage = file: _: {
+                  name = builtins.replaceStrings [ ".nix" ] [ "" ] file;
+                  value = haskell.lib.dontCheck (haskellPackagesNew.callPackage (./. + "/nix/${file}") {  });
+                };
+              in
+                pkgs.lib.mapAttrs' toPackage (builtins.readDir ./nix);
           };
         };
       };
