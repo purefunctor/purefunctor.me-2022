@@ -15,11 +15,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Nix
+    - name: Install Nix
       uses: cachix/install-nix-action@v12
     
-    - name: Cachix
+    - name: Run Nix
+      run: nix-build
+    
+    - name: Install Cachix
       uses: cachix/cachix-action@v8
       with:
-        name: ${{ env.CACHIX_CACHE_NAME }}
-        authToken: ${{ env.CACHIX_AUTH_TOKEN }}
+        name: ${{ secrets.CACHIX_CACHE_NAME }}
+        authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
