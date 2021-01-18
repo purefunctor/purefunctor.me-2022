@@ -4,7 +4,7 @@
 mkDerivation {
   pname = "purefunctor-me";
   version = "1.0.0.0";
-  src = ./.;
+  src = ./..;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [
