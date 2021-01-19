@@ -35,5 +35,5 @@ let
   };
 in
   { compiler = compiler;
-    nixpkgs = import <nixpkgs> { inherit config; };
+    nixpkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/a1bb960c13a05c95821a5f44a09881f21325a475.tar.gz") { inherit config; };
   }
