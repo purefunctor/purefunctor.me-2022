@@ -1,14 +1,14 @@
-{ mkDerivation, aeson, base, password, persistent, stdenv, text
-, time, yesod
+{ mkDerivation, aeson, base, password, persistent
+, persistent-template, stdenv, text, time, yesod
 }:
 mkDerivation {
   pname = "purefunctor-me";
   version = "1.0.0.0";
-  src = ./..;
+  src = ./.;
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [
-    aeson base password persistent text time yesod
+    aeson base password persistent persistent-template text time yesod
   ];
   executableHaskellDepends = [ base ];
   testHaskellDepends = [ base ];
