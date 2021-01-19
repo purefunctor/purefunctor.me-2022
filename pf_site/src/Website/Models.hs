@@ -1,4 +1,16 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE DataKinds                  #-}
+{-# LANGUAGE DerivingStrategies         #-}
+{-# LANGUAGE FlexibleInstances          #-}
+{-# LANGUAGE GADTs                      #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE QuasiQuotes                #-}
+{-# LANGUAGE RecordWildCards            #-}
+{-# LANGUAGE StandaloneDeriving         #-}
+{-# LANGUAGE TemplateHaskell            #-}
+{-# LANGUAGE TypeFamilies               #-}
+{-# LANGUAGE UndecidableInstances       #-}
 module Website.Models
   ( BlogPost(..)
   , Repository(..)
@@ -6,43 +18,22 @@ module Website.Models
   where
 
 
-import Data.Aeson ( object, KeyValue((.=)), ToJSON(toJSON) )
+import Data.Text ( Text )
 import Data.Time ( UTCTime )
+import qualified Database.Persist.TH as PTH
 
 
-data BlogPost = BlogPost
-  { fullTitle  :: String
-  , shortTitle :: String
-  , contents   :: String
-  , published  :: UTCTime
-  , updated    :: UTCTime
-  } deriving ( Eq, Show )
-
-
-instance ToJSON BlogPost where
-  toJSON blogPost = object
-    [ "fullTitle"  .= fullTitle blogPost
-    , "shortTitle" .= shortTitle blogPost
-    , "contents"   .= contents blogPost
-    , "published"  .= published blogPost
-    , "updated"    .= updated blogPost
-    ]
-
-
-data Repository = Repository
-  { name    :: String
-  , owner   :: String
-  , url     :: String
-  , stars   :: Int
-  , commits :: Int
-  } deriving ( Eq, Show )
-
-
-instance ToJSON Repository where
-  toJSON repository = object
-    [ "name"    .= name repository
-    , "owner"   .= owner repository
-    , "url"     .= url repository
-    , "stars"   .= stars repository
-    , "commits" .= commits repository
-    ]
+PTH.share [PTH.mkPersist PTH.sqlSettings, PTH.mkMigrate "migrateAll"] [PTH.persistLowerCase|
+  BlogPost json sql=post
+    fullTitle Text
+    shortTitle Text
+    contents Text
+    published UTCTime
+    updated UTCTime
+  Repository json sql=repo
+    name Text
+    owner Text
+    url Text
+    stars Int
+    commits Int
+|]
