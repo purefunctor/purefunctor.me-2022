@@ -6,6 +6,7 @@ on:
     branches:
     - develop
     - stable
+    - 'feature/**'
 
     paths:
     - '**.nix'
