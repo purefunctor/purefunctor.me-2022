@@ -25,6 +25,7 @@ library
                        persistent-sqlite,
                        persistent-template,
                        servant,
+                       servant-server,
                        text,
                        time,
   hs-source-dirs:      pf_site/src
