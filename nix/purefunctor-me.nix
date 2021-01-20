@@ -1,6 +1,6 @@
 { mkDerivation, aeson, base, password, persistent
 , persistent-sqlite, persistent-template, servant, servant-server
-, stdenv, text, time
+, stdenv, text, time, warp
 }:
 mkDerivation {
   pname = "purefunctor-me";
@@ -10,7 +10,7 @@ mkDerivation {
   isExecutable = true;
   libraryHaskellDepends = [
     aeson base password persistent persistent-sqlite
-    persistent-template servant servant-server text time
+    persistent-template servant servant-server text time warp
   ];
   executableHaskellDepends = [ base ];
   testHaskellDepends = [ base ];
