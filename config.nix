@@ -25,6 +25,10 @@ let
                 manualOverrides = self: super: {
                   # Does not compile properly with tests enabled.
                   base64 = pkgs.haskell.lib.dontCheck pkgs.haskell.packages."${compiler}".base64;
+
+                  # Don't forget that persistent-sqlite uses a system dependency.
+                  persistent-sqlite = pkgs.haskell.lib.dontCheck
+                    (self.callPackage (./. + "/nix/persistent-sqlite.nix") { sqlite = pkgs.sqlite; });
                 };
               in
                 collapseOverrides [ autoOverrides manualOverrides ];
