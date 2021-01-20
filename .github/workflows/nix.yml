@@ -10,7 +10,9 @@ on:
 
     paths:
     - '**.nix'
-      
+    - '**.hs'
+    - '**.cabal'
+
   pull_request:
     branches:
     - develop
