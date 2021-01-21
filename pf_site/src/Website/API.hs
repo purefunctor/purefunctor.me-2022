@@ -9,12 +9,9 @@ import Control.Monad.Logger
 import Data.Proxy
 import Data.Text
 import Data.Time
-import Data.Time.Calendar.Julian
 import Database.Persist.Sqlite
 import Network.Wai.Handler.Warp
 import Servant
-import Servant.API
-import Servant.Server
 import Website.Models
 
 
