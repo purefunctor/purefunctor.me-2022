@@ -26,35 +26,23 @@ type RepoAPI =
 type SiteAPI = BlogAPI :<|> RepoAPI
 
 
-getBlogPost :: ConnectionPool -> Text -> IO (Maybe BlogPost)
-getBlogPost pool postName = flip runSqlPersistMPool pool $ do
-  post <- selectFirst [ BlogPostShortTitle ==. postName ] [ ]
-  return $ case post of
-    (Just post') -> Just . entityVal $ post'
-    Nothing      -> Nothing
-
-
 getBlogPostH :: ConnectionPool -> Text -> Handler BlogPost
 getBlogPostH pool postName = do
-  post <- liftIO $ getBlogPost pool postName
+  post <- liftIO $ flip runSqlPersistMPool pool $
+    selectFirst [ BlogPostShortTitle ==. postName ] [ ]
+
   case post of
-    (Just post') -> return post'
+    (Just post') -> return $ entityVal post'
     Nothing      -> throwError err404
-
-
-getRepoInfo :: ConnectionPool -> Text -> IO (Maybe Repository)
-getRepoInfo pool repoName = flip runSqlPersistMPool pool $ do
-  repo <- selectFirst [ RepositoryName ==. repoName ] [ ]
-  return $ case repo of
-    (Just repo') -> Just . entityVal $ repo'
-    Nothing      -> Nothing
 
 
 getRepoInfoH :: ConnectionPool -> Text -> Handler Repository
 getRepoInfoH pool repoName = do
-  repo <- liftIO $ getRepoInfo pool repoName
+  repo <- liftIO $ flip runSqlPersistMPool pool $
+    selectFirst [ RepositoryName ==. repoName ] [ ]
+
   case repo of
-    (Just repo') -> return repo'
+    (Just repo') -> return $ entityVal repo'
     Nothing      -> throwError err404
 
 
