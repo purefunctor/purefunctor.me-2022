@@ -4,6 +4,7 @@
 module Website.API where
 
 
+import Control.Monad.IO.Class
 import Data.Proxy
 import Data.Time
 import Data.Time.Calendar.Julian
@@ -17,14 +18,10 @@ type BlogAPI =
   "blog" :> Capture "blogid" Int :> Get '[JSON] BlogPost
 
 
-blogPostZero :: BlogPost
-blogPostZero = BlogPost "Haskell Is Simple" "haskell-is-simple" "SOON™" timeZero timeZero
-  where
-    timeZero = UTCTime (fromJulian 2020 25 12) (secondsToDiffTime 0)
-
-
-handleBlogPost :: Int -> Handler BlogPost
-handleBlogPost _ = return blogPostZero
+handleBlogPost :: Handler BlogPost
+handleBlogPost = do
+  time <- liftIO getCurrentTime
+  return $ BlogPost "Haskell Is Simple" "haskell-is-simple" "SOON™" time time
 
 
 blogAPI :: Proxy BlogAPI
@@ -32,7 +29,7 @@ blogAPI = Proxy
 
 
 blogServer :: Server BlogAPI
-blogServer = return (handleBlogPost 0)
+blogServer = return handleBlogPost
 
 
 blogApp :: Application
