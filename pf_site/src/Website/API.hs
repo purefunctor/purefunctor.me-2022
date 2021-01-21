@@ -7,6 +7,7 @@ module Website.API where
 import Control.Monad.IO.Class
 import Control.Monad.Logger
 import Data.Proxy
+import Data.Text
 import Data.Time
 import Data.Time.Calendar.Julian
 import Database.Persist.Sqlite
@@ -18,21 +19,20 @@ import Website.Models
 
 
 type BlogAPI =
-  "blog" :> Capture "blogid" Int :> Get '[JSON] BlogPost
+  "blog" :> Capture "post-name" Text :> Get '[JSON] BlogPost
 
 
-
-getBlogPost :: ConnectionPool -> IO (Maybe BlogPost)
-getBlogPost pool = flip runSqlPersistMPool pool $ do
-    post <- selectFirst [ BlogPostShortTitle ==. "haskell-is-simple" ] [ ]
+getBlogPost :: ConnectionPool -> Text -> IO (Maybe BlogPost)
+getBlogPost pool postName = flip runSqlPersistMPool pool $ do
+    post <- selectFirst [ BlogPostShortTitle ==. postName ] [ ]
     return $ case post of
       (Just post') -> Just . entityVal $ post'
       Nothing      -> Nothing
 
 
-getBlogPostH :: ConnectionPool -> Handler BlogPost
-getBlogPostH pool = do
-    post <- liftIO $ getBlogPost pool
+getBlogPostH :: ConnectionPool -> Text -> Handler BlogPost
+getBlogPostH pool postName = do
+    post <- liftIO $ getBlogPost pool postName
     case post of
        (Just post') -> return post'
        Nothing      -> throwError err404
@@ -43,7 +43,7 @@ blogAPI = Proxy
 
 
 blogServer :: ConnectionPool -> Server BlogAPI
-blogServer = return . getBlogPostH
+blogServer = getBlogPostH
 
 
 blogApp :: ConnectionPool -> Application
