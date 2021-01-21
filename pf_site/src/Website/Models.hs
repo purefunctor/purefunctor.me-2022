@@ -11,11 +11,7 @@
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
 {-# LANGUAGE UndecidableInstances       #-}
-module Website.Models
-  ( BlogPost(..)
-  , Repository(..)
-  )
-  where
+module Website.Models where
 
 
 import Data.Text ( Text )
