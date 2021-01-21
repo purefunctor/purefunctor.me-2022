@@ -19,6 +19,13 @@ type BlogAPI =
   "blog" :> Capture "post-name" Text :> Get '[JSON] BlogPost
 
 
+type RepoAPI =
+  "repo" :> Capture "repo-name" Text :> Get '[JSON] Repository
+
+
+type SiteAPI = BlogAPI :<|> RepoAPI
+
+
 getBlogPost :: ConnectionPool -> Text -> IO (Maybe BlogPost)
 getBlogPost pool postName = flip runSqlPersistMPool pool $ do
     post <- selectFirst [ BlogPostShortTitle ==. postName ] [ ]
@@ -35,20 +42,36 @@ getBlogPostH pool postName = do
        Nothing      -> throwError err404
 
 
-blogAPI :: Proxy BlogAPI
-blogAPI = Proxy
+getRepoInfo :: ConnectionPool -> Text -> IO (Maybe Repository)
+getRepoInfo pool repoName = flip runSqlPersistMPool pool $ do
+  repo <- selectFirst [ RepositoryName ==. repoName ] [ ]
+  return $ case repo of
+    (Just repo') -> Just . entityVal $ repo'
+    Nothing      -> Nothing
 
 
-blogServer :: ConnectionPool -> Server BlogAPI
-blogServer = getBlogPostH
+getRepoInfoH :: ConnectionPool -> Text -> Handler Repository
+getRepoInfoH pool repoName = do
+  repo <- liftIO $ getRepoInfo pool repoName
+  case repo of
+    (Just repo') -> return repo'
+    Nothing      -> throwError err404
 
 
-blogApp :: ConnectionPool -> Application
-blogApp = serve blogAPI . blogServer
+siteAPI :: Proxy SiteAPI
+siteAPI = Proxy
 
 
-mkBlogApp :: IO Application
-mkBlogApp = do
+siteServer :: ConnectionPool -> Server SiteAPI
+siteServer pool = getBlogPostH pool :<|> getRepoInfoH pool
+
+
+siteApp :: ConnectionPool -> Application
+siteApp = serve siteAPI . siteServer
+
+
+mkSiteApp :: IO Application
+mkSiteApp = do
     pool <- runStderrLoggingT $ do
         createSqlitePool "db.sqlite" 5
 
@@ -57,9 +80,10 @@ mkBlogApp = do
     flip runSqlPool pool $ do
         runMigration migrateAll
         insert $ BlogPost "Haskell Is Simple" "haskell-is-simple" "SOON™" time time
+        insert $ Repository "amalgam-lisp" "PureFunctor" "https://github.com/PureFunctor/amalgam-lisp" 3 453
 
-    return $ blogApp pool
+    return $ siteApp pool
 
 
 debug :: IO ()
-debug = run 3000 =<< mkBlogApp
+debug = run 3000 =<< mkSiteApp
