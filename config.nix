@@ -3,6 +3,19 @@
 let
   compiler = "ghc884";
 
+  # Place dependencies not bundled with GHC here
+  dependencies = [
+    "aeson"
+    "monad-logger"
+    "password"
+    "persistent"
+    "persistent-sqlite"
+    "persistent-template"
+    "servant"
+    "servant-server"
+    "warp"
+  ];
+
   config = {
     packageOverrides = pkgs: rec {
       haskell = pkgs.haskell // {
@@ -15,20 +28,19 @@ let
 
                 autoOverrides = self: super:
                   let
-                    toPackage = file: _: {
-                      name = builtins.replaceStrings [ ".nix" ] [ "" ] file;
-                      value = haskell.lib.dontCheck (self.callPackage (./. + "/nix/${file}") {  });
+                    toPackage = name: {
+                      inherit name;
+                      value = pkgs.haskell.lib.dontCheck (pkgs.haskell.packages."${compiler}"."${name}");
                     };
                   in
-                    pkgs.lib.mapAttrs' toPackage (builtins.readDir ./nix);
+                    builtins.listToAttrs (map toPackage dependencies);
 
                 manualOverrides = self: super: {
                   # Does not compile properly with tests enabled.
                   base64 = pkgs.haskell.lib.dontCheck pkgs.haskell.packages."${compiler}".base64;
 
-                  # Don't forget that persistent-sqlite uses a system dependency.
-                  persistent-sqlite = pkgs.haskell.lib.dontCheck
-                    (self.callPackage (./. + "/nix/persistent-sqlite.nix") { sqlite = pkgs.sqlite; });
+                  # Make sure that our project has its own derivation.
+                  purefunctor-me = pkgs.haskell.packages."${compiler}".callCabal2nix "purefunctor-me" ./. { };
                 };
               in
                 collapseOverrides [ autoOverrides manualOverrides ];
