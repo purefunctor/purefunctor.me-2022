@@ -15,7 +15,8 @@ category:            Web
 extra-source-files:  CHANGELOG.md, README.md
 
 library
-  exposed-modules:     Website.Models
+  exposed-modules:     Website.API,
+                       Website.Models
   -- other-modules:
   -- other-extensions:
   build-depends:       base ^>=4.13.0.0,
