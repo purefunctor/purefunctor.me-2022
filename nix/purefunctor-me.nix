@@ -1,4 +1,4 @@
-{ mkDerivation, aeson, base, password, persistent
+{ mkDerivation, aeson, base, monad-logger, password, persistent
 , persistent-sqlite, persistent-template, servant, servant-server
 , stdenv, text, time, warp
 }:
@@ -9,7 +9,7 @@ mkDerivation {
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [
-    aeson base password persistent persistent-sqlite
+    aeson base monad-logger password persistent persistent-sqlite
     persistent-template servant servant-server text time warp
   ];
   executableHaskellDepends = [ base ];
