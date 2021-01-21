@@ -28,18 +28,18 @@ type SiteAPI = BlogAPI :<|> RepoAPI
 
 getBlogPost :: ConnectionPool -> Text -> IO (Maybe BlogPost)
 getBlogPost pool postName = flip runSqlPersistMPool pool $ do
-    post <- selectFirst [ BlogPostShortTitle ==. postName ] [ ]
-    return $ case post of
-      (Just post') -> Just . entityVal $ post'
-      Nothing      -> Nothing
+  post <- selectFirst [ BlogPostShortTitle ==. postName ] [ ]
+  return $ case post of
+    (Just post') -> Just . entityVal $ post'
+    Nothing      -> Nothing
 
 
 getBlogPostH :: ConnectionPool -> Text -> Handler BlogPost
 getBlogPostH pool postName = do
-    post <- liftIO $ getBlogPost pool postName
-    case post of
-       (Just post') -> return post'
-       Nothing      -> throwError err404
+  post <- liftIO $ getBlogPost pool postName
+  case post of
+    (Just post') -> return post'
+    Nothing      -> throwError err404
 
 
 getRepoInfo :: ConnectionPool -> Text -> IO (Maybe Repository)
@@ -72,17 +72,17 @@ siteApp = serve siteAPI . siteServer
 
 mkSiteApp :: IO Application
 mkSiteApp = do
-    pool <- runStderrLoggingT $ do
-        createSqlitePool "db.sqlite" 5
+  pool <- runStderrLoggingT $ do
+    createSqlitePool "db.sqlite" 5
 
-    time <- getCurrentTime
+  time <- getCurrentTime
 
-    flip runSqlPool pool $ do
-        runMigration migrateAll
-        insert $ BlogPost "Haskell Is Simple" "haskell-is-simple" "SOON™" time time
-        insert $ Repository "amalgam-lisp" "PureFunctor" "https://github.com/PureFunctor/amalgam-lisp" 3 453
+  flip runSqlPool pool $ do
+    runMigration migrateAll
+    insert $ BlogPost "Haskell Is Simple" "haskell-is-simple" "SOON™" time time
+    insert $ Repository "amalgam-lisp" "PureFunctor" "https://github.com/PureFunctor/amalgam-lisp" 3 453
 
-    return $ siteApp pool
+  return $ siteApp pool
 
 
 debug :: IO ()
