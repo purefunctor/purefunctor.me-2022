@@ -16,10 +16,12 @@ import Website.Models
 
 
 type BlogAPI =
+  "blog" :> "all-posts" :> Get '[JSON] [BlogPost] :<|>
   "blog" :> Capture "post-name" Text :> Get '[JSON] BlogPost
 
 
 type RepoAPI =
+  "repo" :> "all-repos" :> Get '[JSON] [Repository] :<|>
   "repo" :> Capture "repo-name" Text :> Get '[JSON] Repository
 
 
@@ -36,6 +38,14 @@ getBlogPostH pool postName = do
     Nothing      -> throwError err404
 
 
+getAllPostsH :: ConnectionPool -> Handler [BlogPost]
+getAllPostsH pool = do
+  posts <- liftIO $ flip runSqlPersistMPool pool $
+    selectList [ ] [ ]
+  return $ entityVal <$> posts
+
+
+
 getRepoInfoH :: ConnectionPool -> Text -> Handler Repository
 getRepoInfoH pool repoName = do
   repo <- liftIO $ flip runSqlPersistMPool pool $
@@ -46,12 +56,22 @@ getRepoInfoH pool repoName = do
     Nothing      -> throwError err404
 
 
+getAllReposH :: ConnectionPool -> Handler [Repository]
+getAllReposH pool = do
+  repos <- liftIO $ flip runSqlPersistMPool pool $
+    selectList [ ] [ ]
+  return $ entityVal <$> repos
+
+
 siteAPI :: Proxy SiteAPI
 siteAPI = Proxy
 
 
 siteServer :: ConnectionPool -> Server SiteAPI
-siteServer pool = getBlogPostH pool :<|> getRepoInfoH pool
+siteServer pool = blogServer :<|> repoServer
+  where
+    blogServer = getAllPostsH pool :<|> getBlogPostH pool 
+    repoServer = getAllReposH pool :<|> getRepoInfoH pool 
 
 
 siteApp :: ConnectionPool -> Application
@@ -68,7 +88,9 @@ mkSiteApp = do
   flip runSqlPool pool $ do
     runMigration migrateAll
     insert $ BlogPost "Haskell Is Simple" "haskell-is-simple" "SOON™" time time
+    insert $ BlogPost "Python Is Awesome" "python-is-awesome" "SOON™" time time
     insert $ Repository "amalgam-lisp" "PureFunctor" "https://github.com/PureFunctor/amalgam-lisp" 3 453
+    insert $ Repository "purefunctor.me" "PureFunctor" "https://github.com/PureFunctor/purefunctor.me" 3 149
 
   return $ siteApp pool
 
