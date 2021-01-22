@@ -30,17 +30,17 @@ let
                   let
                     toPackage = name: {
                       inherit name;
-                      value = pkgs.haskell.lib.dontCheck (pkgs.haskell.packages."${compiler}"."${name}");
+                      value = pkgs.haskell.lib.dontCheck super."${name}";
                     };
                   in
                     builtins.listToAttrs (map toPackage dependencies);
 
                 manualOverrides = self: super: {
                   # Does not compile properly with tests enabled.
-                  base64 = pkgs.haskell.lib.dontCheck pkgs.haskell.packages."${compiler}".base64;
+                  base64 = pkgs.haskell.lib.dontCheck self.base64;
 
                   # Make sure that our project has its own derivation.
-                  purefunctor-me = pkgs.haskell.packages."${compiler}".callCabal2nix "purefunctor-me" ./. { };
+                  purefunctor-me = self.callCabal2nix "purefunctor-me" ./. { };
                 };
               in
                 collapseOverrides [ autoOverrides manualOverrides ];
