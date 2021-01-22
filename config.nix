@@ -37,10 +37,10 @@ let
 
                 manualOverrides = self: super: {
                   # Does not compile properly with tests enabled.
-                  base64 = pkgs.haskell.lib.dontCheck self.base64;
+                  base64 = pkgs.haskell.lib.dontCheck super.base64;
 
                   # Make sure that our project has its own derivation.
-                  purefunctor-me = self.callCabal2nix "purefunctor-me" ./. { };
+                  purefunctor-me = super.callCabal2nix "purefunctor-me" ./. { };
                 };
               in
                 collapseOverrides [ autoOverrides manualOverrides ];
