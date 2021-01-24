@@ -16,6 +16,7 @@ let
     "servant-server"
     "servant-auth"
     "servant-auth-server"
+    "wai"
     "warp"
   ];
 
