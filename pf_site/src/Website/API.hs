@@ -77,8 +77,8 @@ type RepositoryAPI =
 
 
 data CreateRepositoryData = CreateRepositoryData
-  { name    :: Text
-  , owner   :: Text
+  { name  :: Text
+  , owner :: Text
   } deriving (Generic, FromJSON, ToJSON)
 
 
