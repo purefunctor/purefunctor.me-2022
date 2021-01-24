@@ -36,3 +36,5 @@ static
 
 # Misc
 .cache
+.envrc
+result
