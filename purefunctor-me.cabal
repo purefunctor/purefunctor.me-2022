@@ -21,6 +21,7 @@ library
   -- other-extensions:
   build-depends:       base ^>=4.13.0.0,
                        aeson,
+                       jose,
                        monad-logger,
                        password,
                        persistent,
@@ -28,6 +29,8 @@ library
                        persistent-template,
                        servant,
                        servant-server,
+                       servant-auth,
+                       servant-auth-server,
                        text,
                        time,
                        warp,

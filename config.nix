@@ -6,6 +6,7 @@ let
   # Place dependencies not bundled with GHC here
   dependencies = [
     "aeson"
+    "jose"
     "monad-logger"
     "password"
     "persistent"
@@ -13,6 +14,8 @@ let
     "persistent-template"
     "servant"
     "servant-server"
+    "servant-auth"
+    "servant-auth-server"
     "warp"
   ];
 
