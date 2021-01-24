@@ -23,9 +23,9 @@ import Website.Models
 
 
 type BlogPostAPI =
-  "post" :> Get '[JSON] [BlogPost] :<|>
-  "post" :> Capture "short-title" Text :> Get '[JSON] BlogPost :<|>
-  "post" :> ReqBody '[JSON] CreateBlogPostData :> Post '[JSON] BlogPost
+  "blog" :> Get '[JSON] [BlogPost] :<|>
+  "blog" :> Capture "short-title" Text :> Get '[JSON] BlogPost :<|>
+  "blog" :> ReqBody '[JSON] CreateBlogPostData :> Post '[JSON] BlogPost
 
 
 data CreateBlogPostData = CreateBlogPostData
