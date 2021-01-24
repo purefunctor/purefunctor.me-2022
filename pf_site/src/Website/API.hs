@@ -8,6 +8,7 @@ import Control.Monad.Logger (runStderrLoggingT)
 import Data.Proxy (Proxy)
 import Data.Time (getCurrentTime)
 import Database.Persist.Sqlite
+import Network.Wai (Application)
 import Network.Wai.Handler.Warp (run)
 import Servant
 import Website.API.Blog
