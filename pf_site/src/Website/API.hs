@@ -11,6 +11,7 @@ import Control.Monad.IO.Class
 import Control.Monad.Logger
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Proxy
+import Data.Maybe
 import Data.Text (Text)
 import qualified Data.Text as Text
 import Data.Time
@@ -30,6 +31,7 @@ type BlogPostAPI =
 data CreateBlogPostData = CreateBlogPostData
   { title   :: Text
   , content :: Text
+  , short   :: Maybe Text
   } deriving (Generic, FromJSON, ToJSON)
 
 
@@ -51,15 +53,17 @@ blogPostServer pool = getPosts :<|> getPost :<|> mkPost
         Nothing -> throwError err404
 
     mkPost :: CreateBlogPostData -> Handler BlogPost
-    mkPost (CreateBlogPostData title content) = do
+    mkPost (CreateBlogPostData title content short) = do
       now <- liftIO getCurrentTime
 
-      let short = Text.intercalate "_"
-                . take 3
-                . Text.words
-                $ title
+      let alt = Text.intercalate "_"
+              . take 3
+              . Text.words
+              $ title
 
-      let post  = BlogPost title short content now now
+      let short' = fromMaybe alt short
+
+      let post = BlogPost title short' content now now
 
       void $ liftIO $ flip runSqlPersistMPool pool $ insert post
 
