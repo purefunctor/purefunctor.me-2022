@@ -2,6 +2,7 @@
 {-# LANGUAGE DeriveAnyClass    #-}
 {-# LANGUAGE DeriveGeneric     #-}
 {-# LANGUAGE TypeOperators     #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Website.API where
 
 
@@ -10,7 +11,8 @@ import Control.Monad.IO.Class
 import Control.Monad.Logger
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Proxy
-import Data.Text
+import Data.Text (Text)
+import qualified Data.Text as Text
 import Data.Time
 import Database.Persist.Sqlite
 import GHC.Generics
@@ -32,8 +34,36 @@ data CreateBlogPostData = CreateBlogPostData
 
 
 blogPostServer :: ConnectionPool -> Server BlogPostAPI
-blogPostServer = undefined
+blogPostServer pool = getPosts :<|> getPost :<|> mkPost
+  where
+    getPosts :: Handler [BlogPost]
+    getPosts = do
+      posts <- liftIO $ flip runSqlPersistMPool pool $
+        selectList [ ] [ ]
+      return $ entityVal <$> posts
 
+    getPost :: Text -> Handler BlogPost
+    getPost t = do
+      post <- liftIO $ flip runSqlPersistMPool pool $
+        selectFirst [ BlogPostShortTitle ==. t ] [ ]
+      case post of
+        (Just post') -> return $ entityVal post'
+        Nothing -> throwError err404
+
+    mkPost :: CreateBlogPostData -> Handler BlogPost
+    mkPost (CreateBlogPostData title content) = do
+      now <- liftIO getCurrentTime
+
+      let short = Text.intercalate "_"
+                . take 3
+                . Text.words
+                $ title
+                
+      let post  = BlogPost title short content now now
+
+      void $ liftIO $ flip runSqlPersistMPool pool $ insert post
+      
+      return post
 
 
 type RepositoryAPI =
