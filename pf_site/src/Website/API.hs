@@ -58,11 +58,11 @@ blogPostServer pool = getPosts :<|> getPost :<|> mkPost
                 . take 3
                 . Text.words
                 $ title
-                
+
       let post  = BlogPost title short content now now
 
       void $ liftIO $ flip runSqlPersistMPool pool $ insert post
-      
+
       return post
 
 
@@ -79,8 +79,30 @@ data CreateRepositoryData = CreateRepositoryData
 
 
 repositoryServer :: ConnectionPool -> Server RepositoryAPI
-repositoryServer = undefined
+repositoryServer pool = getRepositories :<|> getRepository :<|> mkRepository
+  where
+    getRepositories :: Handler [Repository]
+    getRepositories = do
+      repositories <- liftIO $ flip runSqlPersistMPool pool $
+        selectList [ ] [ ]
+      return $ entityVal <$> repositories
 
+    getRepository :: Text -> Handler Repository
+    getRepository n = do
+      repository <- liftIO $ flip runSqlPersistMPool pool $
+        selectFirst [ RepositoryName ==. n ] [ ]
+      case repository of
+        (Just repository') -> return $ entityVal repository'
+        Nothing -> throwError err404
+
+    mkRepository :: CreateRepositoryData -> Handler Repository
+    mkRepository (CreateRepositoryData name owner) = do
+      let url  = Text.concat [ "https://github.com/" , owner , "/" , name ]
+      let repo = Repository name owner url (-1) (-1)
+      
+      void $ liftIO $ flip runSqlPersistMPool pool $ insert repo
+
+      return repo
 
 
 type WebsiteAPI = BlogPostAPI :<|> RepositoryAPI
