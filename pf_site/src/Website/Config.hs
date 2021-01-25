@@ -2,8 +2,10 @@ module Website.Config where
 
 
 import Control.Monad.Logger (runStderrLoggingT)
+import Control.Monad.Reader (ReaderT)
 import Data.Text (Text, pack)
 import Database.Persist.Sqlite (ConnectionPool, createSqlitePool)
+import Servant (Handler)
 import System.Environment (getEnv)
 
 
@@ -23,3 +25,6 @@ mkConfiguration = do
   con <- runStderrLoggingT $ createSqlitePool dbn dbc
   
   return $ Configuration jwt con
+
+
+type WebsiteM = ReaderT Configuration Handler
