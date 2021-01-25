@@ -44,7 +44,7 @@ mkWebsiteApp = snd <$> mkWebsiteApp_
 
 debug :: IO ()
 debug = do
-  (Configuration _ pool, app) <- mkWebsiteApp_
+  (Configuration _ _ _ pool, app) <- mkWebsiteApp_
 
   now <- getCurrentTime
 
