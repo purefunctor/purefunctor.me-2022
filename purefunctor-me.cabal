@@ -27,6 +27,7 @@ library
                        aeson,
                        jose,
                        monad-logger,
+                       mtl,
                        password,
                        persistent,
                        persistent-sqlite,
