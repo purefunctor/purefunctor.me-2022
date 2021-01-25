@@ -18,7 +18,8 @@ library
   exposed-modules:     Website.API,
                        Website.API.Auth,
                        Website.API.Blog,
-                       Website.API.Repo, 
+                       Website.API.Repo,
+                       Website.Config,
                        Website.Models
   -- other-modules:
   -- other-extensions:
