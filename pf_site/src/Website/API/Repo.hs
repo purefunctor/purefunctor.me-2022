@@ -7,6 +7,7 @@ module Website.API.Repo where
 
 import Control.Monad (void)
 import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Reader
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
@@ -15,6 +16,7 @@ import Data.Time (getCurrentTime)
 import Database.Persist.Sqlite
 import GHC.Generics (Generic)
 import Servant
+import Website.Config
 import Website.Models
 
 
@@ -30,25 +32,33 @@ data CreateRepositoryData = CreateRepositoryData
   } deriving (Generic, FromJSON, ToJSON)
 
 
-repositoryServer :: ConnectionPool -> Server RepositoryAPI
-repositoryServer pool = getRepositories :<|> getRepository :<|> mkRepository
+repositoryServer :: ServerT RepositoryAPI WebsiteM
+repositoryServer = getRepositories :<|> getRepository :<|> mkRepository
   where
-    getRepositories :: Handler [Repository]
+    getRepositories :: WebsiteM [Repository]
     getRepositories = do
+      (Configuration _ pool) <- ask
+      
       repositories <- liftIO $ flip runSqlPersistMPool pool $
         selectList [ ] [ ]
+        
       return $ entityVal <$> repositories
 
-    getRepository :: Text -> Handler Repository
+    getRepository :: Text -> WebsiteM Repository
     getRepository n = do
+      (Configuration _ pool) <- ask
+      
       repository <- liftIO $ flip runSqlPersistMPool pool $
         selectFirst [ RepositoryName ==. n ] [ ]
+        
       case repository of
         (Just repository') -> return $ entityVal repository'
         Nothing -> throwError err404
 
-    mkRepository :: CreateRepositoryData -> Handler Repository
+    mkRepository :: CreateRepositoryData -> WebsiteM Repository
     mkRepository (CreateRepositoryData name owner) = do
+      (Configuration _ pool) <- ask
+      
       let url  = Text.concat [ "https://github.com/" , owner , "/" , name ]
       let repo = Repository name owner url (-1) (-1)
       
