@@ -13,25 +13,29 @@ import Network.Wai.Handler.Warp (run)
 import Servant
 import Website.API.Blog
 import Website.API.Repo
+import Website.Config
 import Website.Models
 
 
 type WebsiteAPI = BlogPostAPI :<|> RepositoryAPI
 
 
-websiteServer :: ConnectionPool -> Server WebsiteAPI
-websiteServer pool = blogPostServer pool :<|> repositoryServer pool
+websiteServer :: ServerT WebsiteAPI WebsiteM
+websiteServer = blogPostServer :<|> repositoryServer
 
 
-websiteApp :: ConnectionPool -> Application
-websiteApp = serve (Proxy :: Proxy WebsiteAPI) . websiteServer
+websiteApp :: Configuration -> Application
+websiteApp config = serve api $ hoistServer api (runWebsiteM config) websiteServer
+  where
+    api :: Proxy WebsiteAPI
+    api = Proxy
 
 
-mkWebsiteApp_ :: IO (ConnectionPool, Application)
+mkWebsiteApp_ :: IO (Configuration, Application)
 mkWebsiteApp_ = do
-  pool <- runStderrLoggingT $ createSqlitePool "database.sqlite" 2
-  return (pool, websiteApp pool)
-
+  config <- mkConfiguration
+  return (config, websiteApp config)
+  
 
 mkWebsiteApp :: IO Application
 mkWebsiteApp = snd <$> mkWebsiteApp_
@@ -39,7 +43,7 @@ mkWebsiteApp = snd <$> mkWebsiteApp_
 
 debug :: IO ()
 debug = do
-  (pool, app) <- mkWebsiteApp_
+  (Configuration _ pool, app) <- mkWebsiteApp_
 
   now <- getCurrentTime
 
