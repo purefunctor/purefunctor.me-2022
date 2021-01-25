@@ -20,7 +20,8 @@ library
                        Website.API.Blog,
                        Website.API.Repo,
                        Website.Config,
-                       Website.Models
+                       Website.Models,
+                       Website.WebsiteM
   -- other-modules:
   -- other-extensions:
   build-depends:       base ^>=4.13.0.0,

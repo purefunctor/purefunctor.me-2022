@@ -15,6 +15,7 @@ import Website.API.Blog
 import Website.API.Repo
 import Website.Config
 import Website.Models
+import Website.WebsiteM
 
 
 type WebsiteAPI = BlogPostAPI :<|> RepositoryAPI
