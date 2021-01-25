@@ -7,6 +7,7 @@ module Website.API.Blog where
 
 import Control.Monad (void)
 import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Reader
 import Data.Aeson (FromJSON, ToJSON)
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
@@ -15,6 +16,7 @@ import Data.Time (getCurrentTime)
 import Database.Persist.Sqlite
 import GHC.Generics (Generic)
 import Servant
+import Website.Config
 import Website.Models
 
 
@@ -31,25 +33,33 @@ data CreateBlogPostData = CreateBlogPostData
   } deriving (Generic, FromJSON, ToJSON)
 
 
-blogPostServer :: ConnectionPool -> Server BlogPostAPI
-blogPostServer pool = getPosts :<|> getPost :<|> mkPost
+blogPostServer :: ServerT BlogPostAPI WebsiteM
+blogPostServer = getPosts :<|> getPost :<|> mkPost
   where
-    getPosts :: Handler [BlogPost]
+    getPosts :: WebsiteM [BlogPost]
     getPosts = do
+      (Configuration _ pool) <- ask
+      
       posts <- liftIO $ flip runSqlPersistMPool pool $
         selectList [ ] [ ]
+        
       return $ entityVal <$> posts
 
-    getPost :: Text -> Handler BlogPost
+    getPost :: Text -> WebsiteM BlogPost
     getPost t = do
+      (Configuration _ pool) <- ask
+      
       post <- liftIO $ flip runSqlPersistMPool pool $
         selectFirst [ BlogPostShortTitle ==. t ] [ ]
+        
       case post of
         (Just post') -> return $ entityVal post'
         Nothing -> throwError err404
 
-    mkPost :: CreateBlogPostData -> Handler BlogPost
+    mkPost :: CreateBlogPostData -> WebsiteM BlogPost
     mkPost (CreateBlogPostData title content short) = do
+      (Configuration _ pool) <- ask
+      
       now <- liftIO getCurrentTime
 
       let alt = Text.intercalate "_"
