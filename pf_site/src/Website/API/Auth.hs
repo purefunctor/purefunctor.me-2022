@@ -46,9 +46,11 @@ login cookieSettings jwtSettings = verify
     verify payload@(LoginPayload username password) = do
       config <- ask
 
+      let cookieSettings' = cookieSettings { cookieSameSite = SameSiteStrict }
+
       if adminUser config == username && adminPass config == password
         then do
-          mApplyCookies <- liftIO $ acceptLogin cookieSettings jwtSettings payload
+          mApplyCookies <- liftIO $ acceptLogin cookieSettings' jwtSettings payload
           case mApplyCookies of
              Just applyCookies -> return $ applyCookies NoContent
              Nothing -> throwError err401
@@ -64,7 +66,7 @@ debugProtected (Authenticated payload) = return "Success!"
 debugProtected _ = throwError err401
 
 
-type DebugServerAPI = (Auth '[JWT] LoginPayload :> DebugProtectedAPI) :<|> LoginAPI
+type DebugServerAPI = (Auth '[JWT, Cookie] LoginPayload :> DebugProtectedAPI) :<|> LoginAPI
 
 
 debugServer :: CookieSettings -> JWTSettings -> ServerT DebugServerAPI WebsiteM
