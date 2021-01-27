@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE TypeOperators     #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Website.API where
+module Website.App where
 
 import Control.Monad (void)
 import Control.Monad.Logger (runStderrLoggingT)

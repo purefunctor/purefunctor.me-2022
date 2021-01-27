@@ -15,7 +15,7 @@ category:            Web
 extra-source-files:  CHANGELOG.md, README.md
 
 library
-  exposed-modules:     Website.API,
+  exposed-modules:     Website.App,
                        Website.API.Auth,
                        Website.API.Blog,
                        Website.API.Repo,
