@@ -13,6 +13,7 @@ import Network.Wai.Handler.Warp (run)
 import Servant
 import Servant.Auth
 import Servant.Auth.Server
+import Website.API.Auth
 import Website.API.Blog
 import Website.API.Repo
 import Website.Config
@@ -46,7 +47,7 @@ mkWebsiteApp_ = do
   config <- mkConfiguration
   jwtSettings <- defaultJWTSettings <$> generateKey
   return (config, websiteApp jwtSettings config)
-  
+
 
 mkWebsiteApp :: IO Application
 mkWebsiteApp = snd <$> mkWebsiteApp_
@@ -54,7 +55,13 @@ mkWebsiteApp = snd <$> mkWebsiteApp_
 
 debug :: IO ()
 debug = do
-  (Configuration _ _ pool, app) <- mkWebsiteApp_
+  pool <- runStderrLoggingT $ createSqlitePool ":memory:" 1
+  jwk <- generateKey
+
+  let (user, pass) = ("pure", "pure")
+  let jwtSettings = defaultJWTSettings jwk
+  let config = Configuration user pass pool
+  let app = websiteApp jwtSettings config
 
   now <- getCurrentTime
 
@@ -64,5 +71,9 @@ debug = do
     insert $ BlogPost "Python Is Awesome" "python-is-awesome" "SOON™" now now
     insert $ Repository "amalgam-lisp" "PureFunctor" "https://github.com/PureFunctor/amalgam-lisp" 0 0
     insert $ Repository "purefunctor.me" "PureFunctor" "https://github.com/PureFunctor/purefunctor.me" 0 0
+
+  (Right jwt) <- makeJWT (LoginPayload user pass) jwtSettings Nothing
+
+  putStrLn $ "Authorization: Bearer " <> filter (/= '"') (show jwt)
 
   void $ run 3000 app

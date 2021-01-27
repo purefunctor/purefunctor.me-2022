@@ -75,8 +75,8 @@ debugServer cookieSettings jwtSettings = debugProtected :<|> login cookieSetting
 
 debugAuth :: IO ()
 debugAuth = do
-  pool <- runStderrLoggingT $ createSqlitePool ":memory:" 1
-  
+  pool <- runStderrLoggingT $ createSqlitePool "database.sqlite" 1
+
   jwtSettings <- defaultJWTSettings <$> generateKey
 
   (Right token) <- makeJWT (LoginPayload "pure" "pure") jwtSettings Nothing
@@ -84,14 +84,13 @@ debugAuth = do
   print token
 
   let api    = Proxy :: Proxy DebugServerAPI
-  
+
   let ctx    = defaultCookieSettings :. jwtSettings :. EmptyContext
   let ctx'   = Proxy :: Proxy '[CookieSettings, JWTSettings]
-  
+
   let config = Configuration "pure" "pure" pool
   let server = debugServer defaultCookieSettings jwtSettings
-  
+
   let app    = serveWithContext api ctx $ hoistServerWithContext api ctx' (runWebsiteM config) server
-  
+
   void $ run 3000 app
- 
