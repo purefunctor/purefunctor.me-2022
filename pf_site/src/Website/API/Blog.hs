@@ -16,15 +16,27 @@ import Data.Time (getCurrentTime)
 import Database.Persist.Sqlite
 import GHC.Generics (Generic)
 import Servant
+import Servant.Auth
+import Servant.Auth.Server
+import Website.API.Auth
 import Website.Config
 import Website.Models
 import Website.WebsiteM
 
 
 type BlogPostAPI =
-  "blog" :> Get '[JSON] [BlogPost] :<|>
-  "blog" :> Capture "short-title" Text :> Get '[JSON] BlogPost :<|>
-  "blog" :> ReqBody '[JSON] CreateBlogPostData :> Post '[JSON] BlogPost
+  "blog" :>
+
+    ( Get '[JSON] [BlogPost] :<|>
+
+      Capture "short-title" Text :> Get '[JSON] BlogPost :<|>
+
+      ( Auth '[JWT, Cookie] LoginPayload :>
+        ( ReqBody '[JSON] CreateBlogPostData :> Post '[JSON] BlogPost
+        )
+      )
+
+    )
 
 
 data CreateBlogPostData = CreateBlogPostData
@@ -39,28 +51,28 @@ blogPostServer = getPosts :<|> getPost :<|> mkPost
   where
     getPosts :: WebsiteM [BlogPost]
     getPosts = do
-      (Configuration _ pool) <- ask
-      
+      pool <- asks connPool
+
       posts <- liftIO $ flip runSqlPersistMPool pool $
         selectList [ ] [ ]
-        
+
       return $ entityVal <$> posts
 
     getPost :: Text -> WebsiteM BlogPost
     getPost t = do
-      (Configuration _ pool) <- ask
-      
+      pool <- asks connPool
+
       post <- liftIO $ flip runSqlPersistMPool pool $
         selectFirst [ BlogPostShortTitle ==. t ] [ ]
-        
+
       case post of
         (Just post') -> return $ entityVal post'
         Nothing -> throwError err404
 
-    mkPost :: CreateBlogPostData -> WebsiteM BlogPost
-    mkPost (CreateBlogPostData title content short) = do
-      (Configuration _ pool) <- ask
-      
+    mkPost ::  AuthResult LoginPayload -> CreateBlogPostData -> WebsiteM BlogPost
+    mkPost (Authenticated login) (CreateBlogPostData title content short) = do
+      pool <- asks connPool
+
       now <- liftIO getCurrentTime
 
       let alt = Text.intercalate "_"
@@ -75,3 +87,5 @@ blogPostServer = getPosts :<|> getPost :<|> mkPost
       void $ liftIO $ flip runSqlPersistMPool pool $ insert post
 
       return post
+
+    mkPost _ _ = throwError err401
