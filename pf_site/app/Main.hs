@@ -1,6 +1,6 @@
 module Main where
 
+import Website.App (run)
 
 main :: IO ()
-main = do
-  putStrLn "Hello, Haskell!"
+main = run 3000
