@@ -51,7 +51,7 @@ blogPostServer = getPosts :<|> getPost :<|> mkPost
   where
     getPosts :: WebsiteM [BlogPost]
     getPosts = do
-      pool <- asks connection
+      pool <- asks connPool
 
       posts <- liftIO $ flip runSqlPersistMPool pool $
         selectList [ ] [ ]
@@ -60,7 +60,7 @@ blogPostServer = getPosts :<|> getPost :<|> mkPost
 
     getPost :: Text -> WebsiteM BlogPost
     getPost t = do
-      pool <- asks connection
+      pool <- asks connPool
 
       post <- liftIO $ flip runSqlPersistMPool pool $
         selectFirst [ BlogPostShortTitle ==. t ] [ ]
@@ -71,7 +71,7 @@ blogPostServer = getPosts :<|> getPost :<|> mkPost
 
     mkPost ::  AuthResult LoginPayload -> CreateBlogPostData -> WebsiteM BlogPost
     mkPost (Authenticated login) (CreateBlogPostData title content short) = do
-      pool <- asks connection
+      pool <- asks connPool
 
       now <- liftIO getCurrentTime
 

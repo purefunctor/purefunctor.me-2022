@@ -7,9 +7,9 @@ import System.Environment (getEnv)
 
 
 data Configuration = Configuration
-  { adminUser   :: Text
-  , adminPass   :: Text
-  , connection  :: ConnectionPool
+  { adminUser :: Text
+  , adminPass :: Text
+  , connPool  :: ConnectionPool
   } deriving Show
 
 

@@ -50,7 +50,7 @@ repositoryServer = getRepositories :<|> getRepository :<|> mkRepository
   where
     getRepositories :: WebsiteM [Repository]
     getRepositories = do
-      pool <- asks connection
+      pool <- asks connPool
 
       repositories <- liftIO $ flip runSqlPersistMPool pool $
         selectList [ ] [ ]
@@ -59,7 +59,7 @@ repositoryServer = getRepositories :<|> getRepository :<|> mkRepository
 
     getRepository :: Text -> WebsiteM Repository
     getRepository n = do
-      pool <- asks connection
+      pool <- asks connPool
 
       repository <- liftIO $ flip runSqlPersistMPool pool $
         selectFirst [ RepositoryName ==. n ] [ ]
@@ -70,7 +70,7 @@ repositoryServer = getRepositories :<|> getRepository :<|> mkRepository
 
     mkRepository :: AuthResult LoginPayload -> CreateRepositoryData -> WebsiteM Repository
     mkRepository (Authenticated login) (CreateRepositoryData name owner) = do
-      pool <- asks connection
+      pool <- asks connPool
 
       let url  = Text.concat [ "https://github.com/" , owner , "/" , name ]
       let repo = Repository name owner url (-1) (-1)
