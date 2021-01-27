@@ -88,7 +88,7 @@ debugAuth = do
   let ctx    = defaultCookieSettings :. jwtSettings :. EmptyContext
   let ctx'   = Proxy :: Proxy '[CookieSettings, JWTSettings]
   
-  let config = Configuration "" "pure" "pure" pool
+  let config = Configuration "pure" "pure" pool
   let server = debugServer defaultCookieSettings jwtSettings
   
   let app    = serveWithContext api ctx $ hoistServerWithContext api ctx' (runWebsiteM config) server
