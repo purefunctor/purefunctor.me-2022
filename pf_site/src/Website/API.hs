@@ -11,6 +11,8 @@ import Database.Persist.Sqlite
 import Network.Wai (Application)
 import Network.Wai.Handler.Warp (run)
 import Servant
+import Servant.Auth
+import Servant.Auth.Server
 import Website.API.Blog
 import Website.API.Repo
 import Website.Config
@@ -25,17 +27,25 @@ websiteServer :: ServerT WebsiteAPI WebsiteM
 websiteServer = blogPostServer :<|> repositoryServer
 
 
-websiteApp :: Configuration -> Application
-websiteApp config = serve api $ hoistServer api (runWebsiteM config) websiteServer
+websiteApp :: JWTSettings -> Configuration -> Application
+websiteApp jwtSettings config =
+  serveWithContext api ctx $ hoistServerWithContext api ctx' (runWebsiteM config) websiteServer
   where
     api :: Proxy WebsiteAPI
     api = Proxy
+
+    ctx :: Context '[CookieSettings, JWTSettings]
+    ctx = defaultCookieSettings :. jwtSettings :. EmptyContext
+
+    ctx' :: Proxy '[CookieSettings, JWTSettings]
+    ctx' = Proxy
 
 
 mkWebsiteApp_ :: IO (Configuration, Application)
 mkWebsiteApp_ = do
   config <- mkConfiguration
-  return (config, websiteApp config)
+  jwtSettings <- defaultJWTSettings <$> generateKey
+  return (config, websiteApp jwtSettings config)
   
 
 mkWebsiteApp :: IO Application
