@@ -16,15 +16,27 @@ import Data.Time (getCurrentTime)
 import Database.Persist.Sqlite
 import GHC.Generics (Generic)
 import Servant
+import Servant.Auth
+import Servant.Auth.Server
+import Website.API.Auth
 import Website.Config
 import Website.Models
 import Website.WebsiteM
 
 
 type RepositoryAPI =
-  "repo" :> Get '[JSON] [Repository] :<|>
-  "repo" :> Capture "name" Text :> Get '[JSON] Repository :<|>
-  "repo" :> ReqBody '[JSON] CreateRepositoryData:> Post '[JSON] Repository
+  "repo" :>
+
+    ( Get '[JSON] [Repository] :<|>
+
+      Capture "name" Text :> Get '[JSON] Repository :<|>
+
+      ( Auth '[JWT, Cookie] LoginPayload :>
+        ( ReqBody '[JSON] CreateRepositoryData :> Post '[JSON] Repository
+        )
+      )
+
+    )
 
 
 data CreateRepositoryData = CreateRepositoryData
@@ -38,31 +50,33 @@ repositoryServer = getRepositories :<|> getRepository :<|> mkRepository
   where
     getRepositories :: WebsiteM [Repository]
     getRepositories = do
-      (Configuration _ _ _ pool) <- ask
-      
+      pool <- asks connection
+
       repositories <- liftIO $ flip runSqlPersistMPool pool $
         selectList [ ] [ ]
-        
+
       return $ entityVal <$> repositories
 
     getRepository :: Text -> WebsiteM Repository
     getRepository n = do
-      (Configuration _ _ _ pool) <- ask
-      
+      pool <- asks connection
+
       repository <- liftIO $ flip runSqlPersistMPool pool $
         selectFirst [ RepositoryName ==. n ] [ ]
-        
+
       case repository of
         (Just repository') -> return $ entityVal repository'
         Nothing -> throwError err404
 
-    mkRepository :: CreateRepositoryData -> WebsiteM Repository
-    mkRepository (CreateRepositoryData name owner) = do
-      (Configuration _ _ _ pool) <- ask
-      
+    mkRepository :: AuthResult LoginPayload -> CreateRepositoryData -> WebsiteM Repository
+    mkRepository (Authenticated login) (CreateRepositoryData name owner) = do
+      pool <- asks connection
+
       let url  = Text.concat [ "https://github.com/" , owner , "/" , name ]
       let repo = Repository name owner url (-1) (-1)
-      
+
       void $ liftIO $ flip runSqlPersistMPool pool $ insert repo
 
       return repo
+
+    mkRepository _ _ = throwError err401
