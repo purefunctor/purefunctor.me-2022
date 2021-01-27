@@ -9,7 +9,8 @@ import Data.Proxy (Proxy)
 import Data.Time (getCurrentTime)
 import Database.Persist.Sqlite
 import Network.Wai (Application)
-import Network.Wai.Handler.Warp (run)
+import Network.Wai.Handler.Warp (Port)
+import qualified Network.Wai.Handler.Warp as Warp
 import Servant
 import Servant.Auth
 import Servant.Auth.Server
@@ -42,15 +43,12 @@ websiteApp jwtSettings config =
     ctx' = Proxy
 
 
-mkWebsiteApp_ :: IO (Configuration, Application)
-mkWebsiteApp_ = do
+run :: Port -> IO ()
+run port = do
   config <- mkConfiguration
   jwtSettings <- defaultJWTSettings <$> generateKey
-  return (config, websiteApp jwtSettings config)
-
-
-mkWebsiteApp :: IO Application
-mkWebsiteApp = snd <$> mkWebsiteApp_
+  runSqlPool (runMigration migrateAll) (connPool config)
+  void $ Warp.run port (websiteApp jwtSettings config)
 
 
 debug :: IO ()
@@ -76,4 +74,4 @@ debug = do
 
   putStrLn $ "Authorization: Bearer " <> filter (/= '"') (show jwt)
 
-  void $ run 3000 app
+  void $ Warp.run 3000 app
