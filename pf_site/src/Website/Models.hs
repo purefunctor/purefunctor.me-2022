@@ -14,8 +14,9 @@
 module Website.Models where
 
 
-import           Data.Text ( Text )
-import           Data.Time ( UTCTime )
+import Data.Text ( Text )
+import Data.Time ( UTCTime )
+
 import qualified Database.Persist.TH as PTH
 
 

@@ -5,18 +5,25 @@
 {-# LANGUAGE TypeOperators     #-}
 module Website.API.Auth where
 
-
+import Control.Monad ( void )
 import Control.Monad.IO.Class ( liftIO )
 import Control.Monad.Logger ( runStderrLoggingT )
-import Control.Monad.Reader
+import Control.Monad.Reader ( ask )
+
 import Data.Aeson ( FromJSON, ToJSON )
+
 import Data.Text ( Text )
+
 import Database.Persist.Sqlite ( createSqlitePool )
+
 import GHC.Generics ( Generic )
-import Network.Wai.Handler.Warp
+
+import Network.Wai.Handler.Warp ( run )
+
 import Servant
 import Servant.Auth
 import Servant.Auth.Server
+
 import Website.Config
 import Website.WebsiteM
 

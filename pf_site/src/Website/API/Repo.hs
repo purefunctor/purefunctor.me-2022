@@ -5,23 +5,31 @@
 {-# LANGUAGE TypeOperators     #-}
 module Website.API.Repo where
 
-import           Control.Monad ( void )
-import           Control.Monad.IO.Class ( liftIO )
-import           Control.Monad.Reader
-import           Data.Aeson ( FromJSON, ToJSON )
-import           Data.Maybe ( fromMaybe )
+import Control.Monad ( void )
+import Control.Monad.IO.Class ( liftIO )
+import Control.Monad.Reader ( asks )
+
+import Data.Aeson ( FromJSON, ToJSON )
+
+import Data.Maybe ( fromMaybe )
+
 import           Data.Text ( Text )
 import qualified Data.Text as Text
-import           Data.Time ( getCurrentTime )
-import           Database.Persist.Sqlite
-import           GHC.Generics ( Generic )
-import           Servant
-import           Servant.Auth
-import           Servant.Auth.Server
-import           Website.API.Auth
-import           Website.Config
-import           Website.Models
-import           Website.WebsiteM
+
+import Data.Time ( getCurrentTime )
+
+import Database.Persist.Sqlite
+
+import GHC.Generics ( Generic )
+
+import Servant
+import Servant.Auth
+import Servant.Auth.Server
+
+import Website.API.Auth
+import Website.Config
+import Website.Models
+import Website.WebsiteM
 
 
 type RepositoryAPI =

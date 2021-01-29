@@ -3,23 +3,29 @@
 {-# LANGUAGE TypeOperators     #-}
 module Website.App where
 
-import           Control.Monad ( void )
-import           Control.Monad.Logger ( runStderrLoggingT )
-import           Data.Proxy ( Proxy )
-import           Data.Time ( getCurrentTime )
-import           Database.Persist.Sqlite
+import Control.Monad ( void )
+import Control.Monad.Logger ( runStderrLoggingT )
+
+import Data.Proxy ( Proxy )
+
+import Data.Time ( getCurrentTime )
+
+import Database.Persist.Sqlite
+
 import           Network.Wai ( Application )
 import           Network.Wai.Handler.Warp ( Port )
 import qualified Network.Wai.Handler.Warp as Warp
-import           Servant
-import           Servant.Auth
-import           Servant.Auth.Server
-import           Website.API.Auth
-import           Website.API.Blog
-import           Website.API.Repo
-import           Website.Config
-import           Website.Models
-import           Website.WebsiteM
+
+import Servant
+import Servant.Auth
+import Servant.Auth.Server
+
+import Website.API.Auth
+import Website.API.Blog
+import Website.API.Repo
+import Website.Config
+import Website.Models
+import Website.WebsiteM
 
 
 type WebsiteAPI = BlogPostAPI :<|> RepositoryAPI

@@ -1,8 +1,11 @@
 module Website.Config where
 
 import Control.Monad.Logger ( runStderrLoggingT )
+
 import Data.Text ( Text, pack )
+
 import Database.Persist.Sqlite ( ConnectionPool, createSqlitePool )
+
 import System.Environment ( getEnv )
 
 
