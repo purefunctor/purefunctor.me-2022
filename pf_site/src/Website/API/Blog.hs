@@ -1,23 +1,31 @@
-{-# LANGUAGE DataKinds          #-}
-{-# LANGUAGE DeriveAnyClass     #-}
-{-# LANGUAGE DeriveGeneric      #-}
-{-# LANGUAGE OverloadedStrings  #-}
-{-# LANGUAGE TypeOperators      #-}
+{-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE DeriveAnyClass    #-}
+{-# LANGUAGE DeriveGeneric     #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeOperators     #-}
 module Website.API.Blog where
 
-import Control.Monad (void)
-import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Reader
-import Data.Aeson (FromJSON, ToJSON)
-import Data.Maybe (fromMaybe)
-import Data.Text (Text)
+import Control.Monad ( void )
+import Control.Monad.IO.Class ( liftIO )
+import Control.Monad.Reader ( asks )
+
+import Data.Aeson ( FromJSON, ToJSON )
+
+import Data.Maybe ( fromMaybe )
+
+import           Data.Text ( Text )
 import qualified Data.Text as Text
-import Data.Time (getCurrentTime)
+
+import Data.Time ( getCurrentTime )
+
 import Database.Persist.Sqlite
-import GHC.Generics (Generic)
+
+import GHC.Generics ( Generic )
+
 import Servant
 import Servant.Auth
 import Servant.Auth.Server
+
 import Website.API.Auth
 import Website.Config
 import Website.Models
@@ -39,11 +47,13 @@ type BlogPostAPI =
     )
 
 
-data CreateBlogPostData = CreateBlogPostData
-  { title   :: Text
-  , content :: Text
-  , short   :: Maybe Text
-  } deriving (Generic, FromJSON, ToJSON)
+data CreateBlogPostData
+  = CreateBlogPostData
+      { title   :: Text
+      , content :: Text
+      , short   :: Maybe Text
+      }
+  deriving (FromJSON, Generic, ToJSON)
 
 
 blogPostServer :: ServerT BlogPostAPI WebsiteM
@@ -67,7 +77,7 @@ blogPostServer = getPosts :<|> getPost :<|> mkPost
 
       case post of
         (Just post') -> return $ entityVal post'
-        Nothing -> throwError err404
+        Nothing      -> throwError err404
 
     mkPost ::  AuthResult LoginPayload -> CreateBlogPostData -> WebsiteM BlogPost
     mkPost (Authenticated login) (CreateBlogPostData title content short) = do

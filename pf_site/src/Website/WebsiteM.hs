@@ -1,9 +1,10 @@
 module Website.WebsiteM where
 
+import Control.Monad.Reader ( ReaderT, runReaderT )
 
-import Control.Monad.Reader (ReaderT, runReaderT)
-import Website.Config (Configuration)
-import Servant (Handler)
+import Servant ( Handler )
+
+import Website.Config ( Configuration )
 
 
 type WebsiteM = ReaderT Configuration Handler
