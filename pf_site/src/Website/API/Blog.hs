@@ -27,6 +27,7 @@ import Servant.Auth
 import Servant.Auth.Server
 
 import Website.API.Auth
+import Website.API.Common
 import Website.Config
 import Website.Models
 import Website.WebsiteM
@@ -40,7 +41,7 @@ type BlogPostAPI =
       Capture "short-title" Text :> Get '[JSON] BlogPost :<|>
 
       ( Auth '[JWT, Cookie] LoginPayload :>
-        ( ReqBody '[JSON] CreateBlogPostData :> Post '[JSON] BlogPost
+        ( ReqBody '[JSON] CreateBlogPostData :> Post '[JSON] MutableEndpointResult
         )
       )
 
@@ -79,23 +80,22 @@ blogPostServer = getPosts :<|> getPost :<|> mkPost
         (Just post') -> return $ entityVal post'
         Nothing      -> throwError err404
 
-    mkPost ::  AuthResult LoginPayload -> CreateBlogPostData -> WebsiteM BlogPost
-    mkPost (Authenticated login) (CreateBlogPostData title content short) = do
+    mkPost :: AuthResult LoginPayload -> CreateBlogPostData -> WebsiteM MutableEndpointResult
+    mkPost (Authenticated _) (CreateBlogPostData title content short) = do
       pool <- asks connPool
 
       now <- liftIO getCurrentTime
 
-      let alt = Text.intercalate "_"
-              . take 3
-              . Text.words
-              $ title
+      let autoShort = Text.intercalate "_"
+                    . take 3
+                    . Text.words
+                    $ title
 
-      let short' = fromMaybe alt short
+      let trueShort = fromMaybe autoShort short
 
-      let post = BlogPost title short' content now now
+      void $ liftIO $ flip runSqlPersistMPool pool $
+        insert $ BlogPost title trueShort content now now
 
-      void $ liftIO $ flip runSqlPersistMPool pool $ insert post
-
-      return post
+      return $ MutableEndpointResult 200 $ "Post created with short name: " <> trueShort
 
     mkPost _ _ = throwError err401

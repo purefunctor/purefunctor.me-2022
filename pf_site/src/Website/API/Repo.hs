@@ -27,6 +27,7 @@ import Servant.Auth
 import Servant.Auth.Server
 
 import Website.API.Auth
+import Website.API.Common
 import Website.Config
 import Website.Models
 import Website.WebsiteM
@@ -40,7 +41,7 @@ type RepositoryAPI =
       Capture "name" Text :> Get '[JSON] Repository :<|>
 
       ( Auth '[JWT, Cookie] LoginPayload :>
-        ( ReqBody '[JSON] CreateRepositoryData :> Post '[JSON] Repository
+        ( ReqBody '[JSON] CreateRepositoryData :> Post '[JSON] MutableEndpointResult
         )
       )
 
@@ -78,15 +79,15 @@ repositoryServer = getRepositories :<|> getRepository :<|> mkRepository
         (Just repository') -> return $ entityVal repository'
         Nothing            -> throwError err404
 
-    mkRepository :: AuthResult LoginPayload -> CreateRepositoryData -> WebsiteM Repository
+    mkRepository :: AuthResult LoginPayload -> CreateRepositoryData -> WebsiteM MutableEndpointResult
     mkRepository (Authenticated login) (CreateRepositoryData name owner) = do
       pool <- asks connPool
 
-      let url  = Text.concat [ "https://github.com/" , owner , "/" , name ]
-      let repo = Repository name owner url (-1) (-1)
+      let url = Text.concat [ "https://github.com/" , owner , "/" , name ]
 
-      void $ liftIO $ flip runSqlPersistMPool pool $ insert repo
+      void $ liftIO $ flip runSqlPersistMPool pool $
+        insert $ Repository name owner url (-1) (-1)
 
-      return repo
+      return $ MutableEndpointResult 200 $ "Repository created: " <> name
 
     mkRepository _ _ = throwError err401
