@@ -1,18 +1,18 @@
+{-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE DeriveAnyClass    #-}
 {-# LANGUAGE DeriveGeneric     #-}
-{-# LANGUAGE TypeOperators     #-}
-{-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeOperators     #-}
 module Website.API.Auth where
 
 
-import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Logger (runStderrLoggingT)
+import Control.Monad.IO.Class ( liftIO )
+import Control.Monad.Logger ( runStderrLoggingT )
 import Control.Monad.Reader
-import Data.Aeson (ToJSON, FromJSON)
-import Data.Text (Text)
-import Database.Persist.Sqlite (createSqlitePool)
-import GHC.Generics (Generic)
+import Data.Aeson ( FromJSON, ToJSON )
+import Data.Text ( Text )
+import Database.Persist.Sqlite ( createSqlitePool )
+import GHC.Generics ( Generic )
 import Network.Wai.Handler.Warp
 import Servant
 import Servant.Auth
@@ -29,10 +29,12 @@ type CookieAuthResult =
   )
 
 
-data LoginPayload = LoginPayload
-  { username :: Text
-  , password :: Text
-  } deriving (Generic, FromJSON, ToJSON, FromJWT, ToJWT)
+data LoginPayload
+  = LoginPayload
+      { username :: Text
+      , password :: Text
+      }
+  deriving (FromJSON, FromJWT, Generic, ToJSON, ToJWT)
 
 
 type LoginAPI =
@@ -53,7 +55,7 @@ login cookieSettings jwtSettings = verify
           mApplyCookies <- liftIO $ acceptLogin cookieSettings' jwtSettings payload
           case mApplyCookies of
              Just applyCookies -> return $ applyCookies NoContent
-             Nothing -> throwError err401
+             Nothing           -> throwError err401
         else
           throwError err401
 
@@ -63,7 +65,7 @@ type DebugProtectedAPI = "protected" :> Get '[JSON] Text
 
 debugProtected :: AuthResult LoginPayload -> ServerT DebugProtectedAPI WebsiteM
 debugProtected (Authenticated payload) = return "Success!"
-debugProtected _ = throwError err401
+debugProtected _                       = throwError err401
 
 
 type DebugServerAPI = (Auth '[JWT, Cookie] LoginPayload :> DebugProtectedAPI) :<|> LoginAPI

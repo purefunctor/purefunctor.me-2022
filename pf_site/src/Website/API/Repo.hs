@@ -1,27 +1,27 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE DeriveAnyClass    #-}
 {-# LANGUAGE DeriveGeneric     #-}
-{-# LANGUAGE TypeOperators     #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeOperators     #-}
 module Website.API.Repo where
 
-import Control.Monad (void)
-import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Reader
-import Data.Aeson (FromJSON, ToJSON)
-import Data.Maybe (fromMaybe)
-import Data.Text (Text)
+import           Control.Monad ( void )
+import           Control.Monad.IO.Class ( liftIO )
+import           Control.Monad.Reader
+import           Data.Aeson ( FromJSON, ToJSON )
+import           Data.Maybe ( fromMaybe )
+import           Data.Text ( Text )
 import qualified Data.Text as Text
-import Data.Time (getCurrentTime)
-import Database.Persist.Sqlite
-import GHC.Generics (Generic)
-import Servant
-import Servant.Auth
-import Servant.Auth.Server
-import Website.API.Auth
-import Website.Config
-import Website.Models
-import Website.WebsiteM
+import           Data.Time ( getCurrentTime )
+import           Database.Persist.Sqlite
+import           GHC.Generics ( Generic )
+import           Servant
+import           Servant.Auth
+import           Servant.Auth.Server
+import           Website.API.Auth
+import           Website.Config
+import           Website.Models
+import           Website.WebsiteM
 
 
 type RepositoryAPI =
@@ -39,10 +39,12 @@ type RepositoryAPI =
     )
 
 
-data CreateRepositoryData = CreateRepositoryData
-  { name  :: Text
-  , owner :: Text
-  } deriving (Generic, FromJSON, ToJSON)
+data CreateRepositoryData
+  = CreateRepositoryData
+      { name  :: Text
+      , owner :: Text
+      }
+  deriving (FromJSON, Generic, ToJSON)
 
 
 repositoryServer :: ServerT RepositoryAPI WebsiteM
@@ -66,7 +68,7 @@ repositoryServer = getRepositories :<|> getRepository :<|> mkRepository
 
       case repository of
         (Just repository') -> return $ entityVal repository'
-        Nothing -> throwError err404
+        Nothing            -> throwError err404
 
     mkRepository :: AuthResult LoginPayload -> CreateRepositoryData -> WebsiteM Repository
     mkRepository (Authenticated login) (CreateRepositoryData name owner) = do
