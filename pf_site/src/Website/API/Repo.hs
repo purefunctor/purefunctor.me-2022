@@ -64,7 +64,7 @@ makeLenses ''MutableRepositoryData
 repositoryServer :: ServerT RepositoryAPI WebsiteM
 repositoryServer =
   getRepositories :<|> getRepository :<|>
-  mkRepository :<|> updateRepository :<|> deleteRepository
+  createRepository :<|> updateRepository :<|> deleteRepository
   where
     getRepositories :: WebsiteM [Repository]
     getRepositories = do
@@ -86,8 +86,11 @@ repositoryServer =
         (Just repository') -> return $ entityVal repository'
         Nothing            -> throwError err404
 
-    mkRepository :: AuthResult LoginPayload -> MutableRepositoryData -> WebsiteM MutableEndpointResult
-    mkRepository (Authenticated _) payload = do
+    createRepository
+      :: AuthResult LoginPayload
+      -> MutableRepositoryData
+      -> WebsiteM MutableEndpointResult
+    createRepository (Authenticated _) payload = do
       pool <- asks connPool
 
       let autoUrl o n = Text.concat [ "https://github.com" , o , "/" , n ]
@@ -107,11 +110,15 @@ repositoryServer =
 
         Just repo -> do
           void $ liftIO $ flip runSqlPersistMPool pool $ insert repo
-          return $ MutableEndpointResult 200 $ "Repository created: " <> repositoryName repo
+
+          let message = "Repository created: " <> repositoryName repo
+          let result = MutableEndpointResult 200 message
+
+          return result
 
         Nothing -> throwError err400
 
-    mkRepository _ _ = throwError err401
+    createRepository _ _ = throwError err401
 
     updateRepository
       :: AuthResult LoginPayload
