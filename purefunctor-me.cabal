@@ -63,6 +63,10 @@ library
                        wai,
                        warp,
 
+  ghc-options:         -Wunused-imports
+                       -Wunused-matches
+                       -Wname-shadowing
+
   hs-source-dirs:      pf_site/src
   default-language:    Haskell2010
 
