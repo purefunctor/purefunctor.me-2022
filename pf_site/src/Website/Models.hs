@@ -20,4 +20,5 @@ PTH.share [PTH.mkPersist PTH.sqlSettings, PTH.mkMigrate "migrateAll"] [PTH.persi
     url Text
     stars Int
     commits Int
+    Primary name
 |]
