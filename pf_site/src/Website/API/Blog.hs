@@ -81,10 +81,10 @@ blogPostServer = getPosts :<|> getPost :<|> mkPost :<|> updatePost :<|> deletePo
       pool <- asks connPool
 
       post <- liftIO $ flip runSqlPersistMPool pool $
-        selectFirst [ BlogPostShortTitle ==. t ] [ ]
+        get (BlogPostKey t)
 
       case post of
-        (Just post') -> return $ entityVal post'
+        (Just post') -> return post'
         Nothing      -> throwError err404
 
     mkPost
@@ -151,7 +151,7 @@ blogPostServer = getPosts :<|> getPost :<|> mkPost :<|> updatePost :<|> deletePo
 
             Just updates -> do
               void $ liftIO $ flip runSqlPersistMPool pool $
-                updateWhere [ BlogPostShortTitle ==. sTitle ] updates
+                update (BlogPostKey sTitle) updates
               return $ MutableEndpointResult 200 "Post updated."
 
             Nothing -> throwError err400
@@ -165,13 +165,12 @@ blogPostServer = getPosts :<|> getPost :<|> mkPost :<|> updatePost :<|> deletePo
     deletePost (Authenticated _) sTitle = do
       pool <- asks connPool
 
-      let predicate = [ BlogPostShortTitle ==. sTitle ]
-
-      inDatabase <- liftIO $ flip runSqlPersistMPool pool $ exists predicate
+      inDatabase <- liftIO $ flip runSqlPersistMPool pool $
+        exists [ BlogPostShortTitle ==. sTitle ]
 
       if inDatabase
         then do
-          void $ liftIO $ flip runSqlPersistMPool pool $ deleteWhere predicate
+          liftIO $ flip runSqlPersistMPool pool $ delete $ BlogPostKey sTitle
           return $ MutableEndpointResult 200 "Post deleted."
         else
           throwError err404
