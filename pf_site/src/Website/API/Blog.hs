@@ -1,22 +1,28 @@
-{-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE DeriveAnyClass    #-}
-{-# LANGUAGE DeriveGeneric     #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeOperators     #-}
+{-# LANGUAGE DataKinds              #-}
+{-# LANGUAGE DeriveAnyClass         #-}
+{-# LANGUAGE DeriveGeneric          #-}
+{-# LANGUAGE DuplicateRecordFields  #-}
+{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE OverloadedStrings      #-}
+{-# LANGUAGE TemplateHaskell        #-}
+{-# LANGUAGE TypeOperators          #-}
 module Website.API.Blog where
+
+import Control.Lens
 
 import Control.Monad ( void )
 import Control.Monad.IO.Class ( liftIO )
 import Control.Monad.Reader ( asks )
 
 import Data.Aeson ( FromJSON, ToJSON )
+import Data.Aeson.TH ( defaultOptions, deriveJSON, fieldLabelModifier )
 
-import Data.Maybe ( fromMaybe )
+import Data.Maybe ( fromJust, fromMaybe )
 
 import           Data.Text ( Text )
 import qualified Data.Text as Text
 
-import Data.Time ( getCurrentTime )
+import Data.Time ( UTCTime, getCurrentTime )
 
 import Database.Persist.Sqlite
 
@@ -26,6 +32,7 @@ import Servant
 import Servant.Auth
 import Servant.Auth.Server
 
+import Control.Applicative
 import Website.API.Auth
 import Website.API.Common
 import Website.Config
@@ -41,20 +48,24 @@ type BlogPostAPI =
       Capture "short-title" Text :> Get '[JSON] BlogPost :<|>
 
       ( Auth '[JWT, Cookie] LoginPayload :>
-        ( ReqBody '[JSON] CreateBlogPostData :> Post '[JSON] MutableEndpointResult
+        ( ReqBody '[JSON] MutableBlogPostData :> Post '[JSON] MutableEndpointResult
         )
       )
 
     )
 
 
-data CreateBlogPostData
-  = CreateBlogPostData
-      { title   :: Text
-      , content :: Text
-      , short   :: Maybe Text
+data MutableBlogPostData
+  = MutableBlogPostData
+      { _title     :: Maybe Text
+      , _contents  :: Maybe Text
+      , _short     :: Maybe Text
+      , _published :: Maybe UTCTime
+      , _updated   :: Maybe UTCTime
       }
-  deriving (FromJSON, Generic, ToJSON)
+
+deriveJSON (defaultOptions { fieldLabelModifier = tail }) ''MutableBlogPostData
+makeLenses ''MutableBlogPostData
 
 
 blogPostServer :: ServerT BlogPostAPI WebsiteM
@@ -80,22 +91,32 @@ blogPostServer = getPosts :<|> getPost :<|> mkPost
         (Just post') -> return $ entityVal post'
         Nothing      -> throwError err404
 
-    mkPost :: AuthResult LoginPayload -> CreateBlogPostData -> WebsiteM MutableEndpointResult
-    mkPost (Authenticated _) (CreateBlogPostData title content short) = do
+    mkPost :: AuthResult LoginPayload -> MutableBlogPostData -> WebsiteM MutableEndpointResult
+    mkPost (Authenticated _) payload = do
       pool <- asks connPool
 
       now <- liftIO getCurrentTime
 
-      let autoShort = Text.intercalate "_"
-                    . take 3
-                    . Text.words
-                    $ title
+      let autoShort
+            = Text.intercalate "_"
+            . take 3
+            . Text.words
 
-      let trueShort = fromMaybe autoShort short
+      let mPost = BlogPost
+            <$> payload ^. title
+            <*> ( payload ^. short <|>
+                  payload ^. title <&> autoShort
+                )
+            <*> payload ^. contents
+            <*> ( payload ^. published <|> pure now )
+            <*> ( payload ^. updated <|> pure now )
 
-      void $ liftIO $ flip runSqlPersistMPool pool $
-        insert $ BlogPost title trueShort content now now
+      case mPost of
 
-      return $ MutableEndpointResult 200 $ "Post created with short name: " <> trueShort
+        Just post -> do
+          void $ liftIO $ flip runSqlPersistMPool pool $ insert post
+          return $ MutableEndpointResult 200 $ "Post created with short name: " <> blogPostShortTitle post
+
+        Nothing -> throwError err400
 
     mkPost _ _ = throwError err401
