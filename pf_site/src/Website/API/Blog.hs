@@ -64,7 +64,7 @@ makeLenses ''MutableBlogPostData
 
 
 blogPostServer :: ServerT BlogPostAPI WebsiteM
-blogPostServer = getPosts :<|> getPost :<|> mkPost :<|> updatePost :<|> deletePost
+blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> deletePost
   where
     getPosts :: WebsiteM [BlogPost]
     getPosts = do
@@ -86,11 +86,11 @@ blogPostServer = getPosts :<|> getPost :<|> mkPost :<|> updatePost :<|> deletePo
         (Just post') -> return post'
         Nothing      -> throwError err404
 
-    mkPost
+    createPost
       :: AuthResult LoginPayload
       -> MutableBlogPostData
       -> WebsiteM MutableEndpointResult
-    mkPost (Authenticated _) payload = do
+    createPost (Authenticated _) payload = do
       pool <- asks connPool
 
       now <- liftIO getCurrentTime
@@ -121,7 +121,7 @@ blogPostServer = getPosts :<|> getPost :<|> mkPost :<|> updatePost :<|> deletePo
 
         Nothing -> throwError err400
 
-    mkPost _ _ = throwError err401
+    createPost _ _ = throwError err401
 
     updatePost
       :: AuthResult LoginPayload
