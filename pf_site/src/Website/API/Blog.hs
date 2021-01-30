@@ -43,7 +43,11 @@ type BlogPostAPI =
       Auth '[JWT, Cookie] LoginPayload
         :> Capture "short-title" Text
           :> ReqBody '[JSON] MutableBlogPostData
-            :> Put '[JSON] MutableEndpointResult
+            :> Put '[JSON] MutableEndpointResult :<|>
+
+      Auth '[JWT, Cookie] LoginPayload
+        :> Capture "short-title" Text
+          :> Delete '[JSON] MutableEndpointResult
     )
 
 
@@ -61,7 +65,7 @@ makeLenses ''MutableBlogPostData
 
 
 blogPostServer :: ServerT BlogPostAPI WebsiteM
-blogPostServer = getPosts :<|> getPost :<|> mkPost :<|> updatePost
+blogPostServer = getPosts :<|> getPost :<|> mkPost :<|> updatePost :<|> deletePost
   where
     getPosts :: WebsiteM [BlogPost]
     getPosts = do
@@ -83,7 +87,10 @@ blogPostServer = getPosts :<|> getPost :<|> mkPost :<|> updatePost
         (Just post') -> return $ entityVal post'
         Nothing      -> throwError err404
 
-    mkPost :: AuthResult LoginPayload -> MutableBlogPostData -> WebsiteM MutableEndpointResult
+    mkPost
+      :: AuthResult LoginPayload
+      -> MutableBlogPostData
+      -> WebsiteM MutableEndpointResult
     mkPost (Authenticated _) payload = do
       pool <- asks connPool
 
@@ -107,7 +114,11 @@ blogPostServer = getPosts :<|> getPost :<|> mkPost :<|> updatePost
 
         Just post -> do
           void $ liftIO $ flip runSqlPersistMPool pool $ insert post
-          return $ MutableEndpointResult 200 $ "Post created with short name: " <> blogPostShortTitle post
+
+          let message = "Post created with short name:" <> blogPostShortTitle post
+          let result = MutableEndpointResult 200 message
+
+          return result
 
         Nothing -> throwError err400
 
@@ -146,3 +157,23 @@ blogPostServer = getPosts :<|> getPost :<|> mkPost :<|> updatePost
             Nothing -> throwError err400
 
     updatePost _ _ _ = throwError err401
+
+    deletePost
+      :: AuthResult LoginPayload
+      -> Text
+      -> WebsiteM MutableEndpointResult
+    deletePost (Authenticated _) sTitle = do
+      pool <- asks connPool
+
+      let predicate = [ BlogPostShortTitle ==. sTitle ]
+
+      inDatabase <- liftIO $ flip runSqlPersistMPool pool $ exists predicate
+
+      if inDatabase
+        then do
+          void $ liftIO $ flip runSqlPersistMPool pool $ deleteWhere predicate
+          return $ MutableEndpointResult 200 "Post deleted."
+        else
+          throwError err404
+
+    deletePost _ _ = throwError err401
