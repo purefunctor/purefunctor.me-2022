@@ -1,11 +1,3 @@
-{-# LANGUAGE DataKinds              #-}
-{-# LANGUAGE DeriveAnyClass         #-}
-{-# LANGUAGE DeriveGeneric          #-}
-{-# LANGUAGE DuplicateRecordFields  #-}
-{-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE OverloadedStrings      #-}
-{-# LANGUAGE TemplateHaskell        #-}
-{-# LANGUAGE TypeOperators          #-}
 module Website.API.Repo where
 
 import Control.Lens
