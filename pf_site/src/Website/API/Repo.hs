@@ -8,13 +8,14 @@ import Control.Monad ( void )
 import Control.Monad.IO.Class ( liftIO )
 import Control.Monad.Reader ( asks )
 
+import Data.Maybe ( isJust )
+
 import           Data.Text ( Text )
 import qualified Data.Text as Text
 
 import Database.Persist.Sqlite
 
 import Servant
-import Servant.Auth
 import Servant.Auth.Server
 
 import Website.API.Auth
@@ -32,11 +33,18 @@ type RepositoryAPI =
 
       Capture "name" Text :> Get '[JSON] Repository :<|>
 
-      ( Auth '[JWT, Cookie] LoginPayload :>
-        ( ReqBody '[JSON] MutableRepositoryData :> Post '[JSON] MutableEndpointResult
-        )
-      )
+      RequiresAuth
+        :> ReqBody '[JSON] MutableRepositoryData
+          :> Post '[JSON] MutableEndpointResult :<|>
 
+      RequiresAuth
+        :> Capture "name" Text
+          :> ReqBody '[JSON] MutableRepositoryData
+            :> Put '[JSON] MutableEndpointResult :<|>
+
+      RequiresAuth
+        :> Capture "name" Text
+          :> Put '[JSON] MutableEndpointResult
     )
 
 
@@ -54,7 +62,9 @@ makeLenses ''MutableRepositoryData
 
 
 repositoryServer :: ServerT RepositoryAPI WebsiteM
-repositoryServer = getRepositories :<|> getRepository :<|> mkRepository
+repositoryServer =
+  getRepositories :<|> getRepository :<|>
+  createRepository :<|> updateRepository :<|> deleteRepository
   where
     getRepositories :: WebsiteM [Repository]
     getRepositories = do
@@ -76,8 +86,11 @@ repositoryServer = getRepositories :<|> getRepository :<|> mkRepository
         (Just repository') -> return $ entityVal repository'
         Nothing            -> throwError err404
 
-    mkRepository :: AuthResult LoginPayload -> MutableRepositoryData -> WebsiteM MutableEndpointResult
-    mkRepository (Authenticated _) payload = do
+    createRepository
+      :: AuthResult LoginPayload
+      -> MutableRepositoryData
+      -> WebsiteM MutableEndpointResult
+    createRepository (Authenticated _) payload = do
       pool <- asks connPool
 
       let autoUrl o n = Text.concat [ "https://github.com" , o , "/" , n ]
@@ -97,8 +110,63 @@ repositoryServer = getRepositories :<|> getRepository :<|> mkRepository
 
         Just repo -> do
           void $ liftIO $ flip runSqlPersistMPool pool $ insert repo
-          return $ MutableEndpointResult 200 $ "Repository created: " <> repositoryName repo
+
+          let message = "Repository created: " <> repositoryName repo
+          let result = MutableEndpointResult 200 message
+
+          return result
 
         Nothing -> throwError err400
 
-    mkRepository _ _ = throwError err401
+    createRepository _ _ = throwError err401
+
+    updateRepository
+      :: AuthResult LoginPayload
+      -> Text
+      -> MutableRepositoryData
+      -> WebsiteM MutableEndpointResult
+    updateRepository (Authenticated _) rName payload = do
+      pool <- asks connPool
+
+      let mUpdates = filter isJust
+            [ (RepositoryName    =.) <$> payload ^. name
+            , (RepositoryOwner   =.) <$> payload ^. owner
+            , (RepositoryUrl     =.) <$> payload ^. url
+            , (RepositoryStars   =.) <$> payload ^. stars
+            , (RepositoryCommits =.) <$> payload ^. commits
+            ]
+
+      case mUpdates of
+
+        [] -> throwError err400
+
+        mUpdates' -> do
+          case sequenceA mUpdates' of
+
+            Just updates -> do
+              void $ liftIO $ flip runSqlPersistMPool pool $
+                update (RepositoryKey rName) updates
+              return $ MutableEndpointResult 200 "Repository updated."
+
+            Nothing -> throwError err400
+
+    updateRepository _ _ _ = throwError err401
+
+    deleteRepository
+      :: AuthResult LoginPayload
+      -> Text
+      -> WebsiteM MutableEndpointResult
+    deleteRepository (Authenticated _) rName = do
+      pool <- asks connPool
+
+      inDatabase <- liftIO $ flip runSqlPersistMPool pool $
+        exists [ RepositoryName ==. rName ]
+
+      if inDatabase
+        then do
+          liftIO $ flip runSqlPersistMPool pool $ delete $ RepositoryKey rName
+          return $ MutableEndpointResult 200 "Repository deleted."
+        else
+          throwError err404
+
+    deleteRepository _ _ = throwError err401

@@ -13,10 +13,12 @@ PTH.share [PTH.mkPersist PTH.sqlSettings, PTH.mkMigrate "migrateAll"] [PTH.persi
     contents Text
     published UTCTime
     updated UTCTime
+    Primary shortTitle
   Repository json sql=repo
     name Text
     owner Text
     url Text
     stars Int
     commits Int
+    Primary name
 |]

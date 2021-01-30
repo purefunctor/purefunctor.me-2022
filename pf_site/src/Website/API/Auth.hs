@@ -62,6 +62,9 @@ login cookieSettings jwtSettings = verify
           throwError err401
 
 
+type RequiresAuth = Auth '[JWT, Cookie] LoginPayload
+
+
 type DebugProtectedAPI = "protected" :> Get '[JSON] Text
 
 

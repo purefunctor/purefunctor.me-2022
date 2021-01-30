@@ -8,6 +8,8 @@ import Control.Monad ( void )
 import Control.Monad.IO.Class ( liftIO )
 import Control.Monad.Reader ( asks )
 
+import Data.Maybe ( isJust )
+
 import           Data.Text ( Text )
 import qualified Data.Text as Text
 
@@ -16,7 +18,6 @@ import Data.Time ( UTCTime, getCurrentTime )
 import Database.Persist.Sqlite
 
 import Servant
-import Servant.Auth
 import Servant.Auth.Server
 
 import Website.API.Auth
@@ -34,11 +35,18 @@ type BlogPostAPI =
 
       Capture "short-title" Text :> Get '[JSON] BlogPost :<|>
 
-      ( Auth '[JWT, Cookie] LoginPayload :>
-        ( ReqBody '[JSON] MutableBlogPostData :> Post '[JSON] MutableEndpointResult
-        )
-      )
+      RequiresAuth
+        :> ReqBody '[JSON] MutableBlogPostData
+          :> Post '[JSON] MutableEndpointResult :<|>
 
+      RequiresAuth
+        :> Capture "short-title" Text
+          :> ReqBody '[JSON] MutableBlogPostData
+            :> Put '[JSON] MutableEndpointResult :<|>
+
+      RequiresAuth
+        :> Capture "short-title" Text
+          :> Delete '[JSON] MutableEndpointResult
     )
 
 
@@ -56,7 +64,7 @@ makeLenses ''MutableBlogPostData
 
 
 blogPostServer :: ServerT BlogPostAPI WebsiteM
-blogPostServer = getPosts :<|> getPost :<|> mkPost
+blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> deletePost
   where
     getPosts :: WebsiteM [BlogPost]
     getPosts = do
@@ -72,14 +80,17 @@ blogPostServer = getPosts :<|> getPost :<|> mkPost
       pool <- asks connPool
 
       post <- liftIO $ flip runSqlPersistMPool pool $
-        selectFirst [ BlogPostShortTitle ==. t ] [ ]
+        get (BlogPostKey t)
 
       case post of
-        (Just post') -> return $ entityVal post'
+        (Just post') -> return post'
         Nothing      -> throwError err404
 
-    mkPost :: AuthResult LoginPayload -> MutableBlogPostData -> WebsiteM MutableEndpointResult
-    mkPost (Authenticated _) payload = do
+    createPost
+      :: AuthResult LoginPayload
+      -> MutableBlogPostData
+      -> WebsiteM MutableEndpointResult
+    createPost (Authenticated _) payload = do
       pool <- asks connPool
 
       now <- liftIO getCurrentTime
@@ -102,8 +113,65 @@ blogPostServer = getPosts :<|> getPost :<|> mkPost
 
         Just post -> do
           void $ liftIO $ flip runSqlPersistMPool pool $ insert post
-          return $ MutableEndpointResult 200 $ "Post created with short name: " <> blogPostShortTitle post
+
+          let message = "Post created with short name:" <> blogPostShortTitle post
+          let result = MutableEndpointResult 200 message
+
+          return result
 
         Nothing -> throwError err400
 
-    mkPost _ _ = throwError err401
+    createPost _ _ = throwError err401
+
+    updatePost
+      :: AuthResult LoginPayload
+      -> Text
+      -> MutableBlogPostData
+      -> WebsiteM MutableEndpointResult
+    updatePost (Authenticated _) sTitle payload = do
+      pool <- asks connPool
+
+      now <- liftIO getCurrentTime
+
+      let mUpdates = filter isJust
+            [ (BlogPostFullTitle  =.) <$> payload ^. title
+            , (BlogPostContents   =.) <$> payload ^. contents
+            , (BlogPostShortTitle =.) <$> payload ^. short
+            ]
+
+      case mUpdates of
+
+        [] -> throwError err400
+
+        mUpdates' -> do
+          let postUpdated = Just $ BlogPostUpdated =. payload ^. updated . non now
+
+          case sequenceA $ postUpdated : mUpdates' of
+
+            Just updates -> do
+              void $ liftIO $ flip runSqlPersistMPool pool $
+                update (BlogPostKey sTitle) updates
+              return $ MutableEndpointResult 200 "Post updated."
+
+            Nothing -> throwError err400
+
+    updatePost _ _ _ = throwError err401
+
+    deletePost
+      :: AuthResult LoginPayload
+      -> Text
+      -> WebsiteM MutableEndpointResult
+    deletePost (Authenticated _) sTitle = do
+      pool <- asks connPool
+
+      inDatabase <- liftIO $ flip runSqlPersistMPool pool $
+        exists [ BlogPostShortTitle ==. sTitle ]
+
+      if inDatabase
+        then do
+          liftIO $ flip runSqlPersistMPool pool $ delete $ BlogPostKey sTitle
+          return $ MutableEndpointResult 200 "Post deleted."
+        else
+          throwError err404
+
+    deletePost _ _ = throwError err401
