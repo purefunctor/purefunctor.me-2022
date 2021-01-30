@@ -22,6 +22,7 @@ library
                        Website.API.Repo,
                        Website.Config,
                        Website.Models,
+                       Website.Utils,
                        Website.WebsiteM
   -- other-modules:
   -- other-extensions:

@@ -37,6 +37,7 @@ import Website.API.Auth
 import Website.API.Common
 import Website.Config
 import Website.Models
+import Website.Utils
 import Website.WebsiteM
 
 
@@ -64,7 +65,7 @@ data MutableBlogPostData
       , _updated   :: Maybe UTCTime
       }
 
-deriveJSON (defaultOptions { fieldLabelModifier = tail }) ''MutableBlogPostData
+deriveJSON' ''MutableBlogPostData
 makeLenses ''MutableBlogPostData
 
 

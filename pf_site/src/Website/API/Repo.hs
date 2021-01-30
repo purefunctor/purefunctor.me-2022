@@ -15,7 +15,6 @@ import Control.Monad.IO.Class ( liftIO )
 import Control.Monad.Reader ( asks )
 
 import Data.Aeson ( FromJSON, ToJSON )
-import Data.Aeson.TH ( defaultOptions, deriveJSON, fieldLabelModifier )
 
 import Data.Maybe ( fromMaybe )
 
@@ -37,6 +36,7 @@ import Website.API.Auth
 import Website.API.Common
 import Website.Config
 import Website.Models
+import Website.Utils
 import Website.WebsiteM
 
 
@@ -64,7 +64,7 @@ data MutableRepositoryData
       , _commits :: Maybe Int
       }
 
-deriveJSON (defaultOptions { fieldLabelModifier = tail }) ''MutableRepositoryData
+deriveJSON' ''MutableRepositoryData
 makeLenses ''MutableRepositoryData
 
 
