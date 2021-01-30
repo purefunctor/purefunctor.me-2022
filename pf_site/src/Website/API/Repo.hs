@@ -1,5 +1,7 @@
 module Website.API.Repo where
 
+import Control.Applicative
+
 import Control.Lens
 
 import Control.Monad ( void )
@@ -15,7 +17,6 @@ import Servant
 import Servant.Auth
 import Servant.Auth.Server
 
-import Control.Applicative
 import Website.API.Auth
 import Website.API.Common
 import Website.Config
