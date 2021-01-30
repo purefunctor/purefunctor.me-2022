@@ -16,7 +16,6 @@ import qualified Data.Text as Text
 import Database.Persist.Sqlite
 
 import Servant
-import Servant.Auth
 import Servant.Auth.Server
 
 import Website.API.Auth
@@ -34,16 +33,16 @@ type RepositoryAPI =
 
       Capture "name" Text :> Get '[JSON] Repository :<|>
 
-      Auth '[JWT, Cookie] LoginPayload
+      RequiresAuth
         :> ReqBody '[JSON] MutableRepositoryData
           :> Post '[JSON] MutableEndpointResult :<|>
 
-      Auth '[JWT, Cookie] LoginPayload
+      RequiresAuth
         :> Capture "name" Text
           :> ReqBody '[JSON] MutableRepositoryData
             :> Put '[JSON] MutableEndpointResult :<|>
 
-      Auth '[JWT, Cookie] LoginPayload
+      RequiresAuth
         :> Capture "name" Text
           :> Put '[JSON] MutableEndpointResult
     )

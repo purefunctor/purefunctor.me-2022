@@ -18,7 +18,6 @@ import Data.Time ( UTCTime, getCurrentTime )
 import Database.Persist.Sqlite
 
 import Servant
-import Servant.Auth
 import Servant.Auth.Server
 
 import Website.API.Auth
@@ -36,16 +35,16 @@ type BlogPostAPI =
 
       Capture "short-title" Text :> Get '[JSON] BlogPost :<|>
 
-      Auth '[JWT, Cookie] LoginPayload
+      RequiresAuth
         :> ReqBody '[JSON] MutableBlogPostData
           :> Post '[JSON] MutableEndpointResult :<|>
 
-      Auth '[JWT, Cookie] LoginPayload
+      RequiresAuth
         :> Capture "short-title" Text
           :> ReqBody '[JSON] MutableBlogPostData
             :> Put '[JSON] MutableEndpointResult :<|>
 
-      Auth '[JWT, Cookie] LoginPayload
+      RequiresAuth
         :> Capture "short-title" Text
           :> Delete '[JSON] MutableEndpointResult
     )
