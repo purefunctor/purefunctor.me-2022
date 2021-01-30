@@ -8,6 +8,8 @@ import Control.Monad ( void )
 import Control.Monad.IO.Class ( liftIO )
 import Control.Monad.Reader ( asks )
 
+import Data.Maybe ( isJust )
+
 import           Data.Text ( Text )
 import qualified Data.Text as Text
 
@@ -32,11 +34,14 @@ type RepositoryAPI =
 
       Capture "name" Text :> Get '[JSON] Repository :<|>
 
-      ( Auth '[JWT, Cookie] LoginPayload :>
-        ( ReqBody '[JSON] MutableRepositoryData :> Post '[JSON] MutableEndpointResult
-        )
-      )
+      Auth '[JWT, Cookie] LoginPayload
+        :> ReqBody '[JSON] MutableRepositoryData
+          :> Post '[JSON] MutableEndpointResult :<|>
 
+      Auth '[JWT, Cookie] LoginPayload
+        :> Capture "name" Text
+          :> ReqBody '[JSON] MutableRepositoryData
+            :> Put '[JSON] MutableEndpointResult
     )
 
 
@@ -54,7 +59,8 @@ makeLenses ''MutableRepositoryData
 
 
 repositoryServer :: ServerT RepositoryAPI WebsiteM
-repositoryServer = getRepositories :<|> getRepository :<|> mkRepository
+repositoryServer =
+  getRepositories :<|> getRepository :<|> mkRepository :<|> updateRepository
   where
     getRepositories :: WebsiteM [Repository]
     getRepositories = do
@@ -102,3 +108,35 @@ repositoryServer = getRepositories :<|> getRepository :<|> mkRepository
         Nothing -> throwError err400
 
     mkRepository _ _ = throwError err401
+
+    updateRepository
+      :: AuthResult LoginPayload
+      -> Text
+      -> MutableRepositoryData
+      -> WebsiteM MutableEndpointResult
+    updateRepository (Authenticated _) rName payload = do
+      pool <- asks connPool
+
+      let mUpdates = filter isJust
+            [ (RepositoryName    =.) <$> payload ^. name
+            , (RepositoryOwner   =.) <$> payload ^. owner
+            , (RepositoryUrl     =.) <$> payload ^. url
+            , (RepositoryStars   =.) <$> payload ^. stars
+            , (RepositoryCommits =.) <$> payload ^. commits
+            ]
+
+      case mUpdates of
+
+        [] -> throwError err400
+
+        mUpdates' -> do
+          case sequenceA mUpdates' of
+
+            Just updates -> do
+              void $ liftIO $ flip runSqlPersistMPool pool $
+                update (RepositoryKey rName) updates
+              return $ MutableEndpointResult 200 "Repository updated."
+
+            Nothing -> throwError err400
+
+    updateRepository _ _ _ = throwError err401
