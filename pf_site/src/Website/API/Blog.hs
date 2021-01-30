@@ -6,19 +6,12 @@ import Control.Monad ( void )
 import Control.Monad.IO.Class ( liftIO )
 import Control.Monad.Reader ( asks )
 
-import Data.Aeson ( FromJSON, ToJSON )
-import Data.Aeson.TH ( defaultOptions, deriveJSON, fieldLabelModifier )
-
-import Data.Maybe ( fromJust, fromMaybe )
-
 import           Data.Text ( Text )
 import qualified Data.Text as Text
 
 import Data.Time ( UTCTime, getCurrentTime )
 
 import Database.Persist.Sqlite
-
-import GHC.Generics ( Generic )
 
 import Servant
 import Servant.Auth

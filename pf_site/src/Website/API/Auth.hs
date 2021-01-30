@@ -66,8 +66,8 @@ type DebugProtectedAPI = "protected" :> Get '[JSON] Text
 
 
 debugProtected :: AuthResult LoginPayload -> ServerT DebugProtectedAPI WebsiteM
-debugProtected (Authenticated payload) = return "Success!"
-debugProtected _                       = throwError err401
+debugProtected (Authenticated _) = return "Success!"
+debugProtected _                 = throwError err401
 
 
 type DebugServerAPI = (Auth '[JWT, Cookie] LoginPayload :> DebugProtectedAPI) :<|> LoginAPI

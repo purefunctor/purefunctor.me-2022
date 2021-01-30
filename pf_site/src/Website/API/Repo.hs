@@ -6,18 +6,10 @@ import Control.Monad ( void )
 import Control.Monad.IO.Class ( liftIO )
 import Control.Monad.Reader ( asks )
 
-import Data.Aeson ( FromJSON, ToJSON )
-
-import Data.Maybe ( fromMaybe )
-
 import           Data.Text ( Text )
 import qualified Data.Text as Text
 
-import Data.Time ( getCurrentTime )
-
 import Database.Persist.Sqlite
-
-import GHC.Generics ( Generic )
 
 import Servant
 import Servant.Auth
@@ -84,10 +76,10 @@ repositoryServer = getRepositories :<|> getRepository :<|> mkRepository
         Nothing            -> throwError err404
 
     mkRepository :: AuthResult LoginPayload -> MutableRepositoryData -> WebsiteM MutableEndpointResult
-    mkRepository (Authenticated login) payload = do
+    mkRepository (Authenticated _) payload = do
       pool <- asks connPool
 
-      let autoUrl owner name = Text.concat [ "https://github.com" , owner , "/" , name ]
+      let autoUrl o n = Text.concat [ "https://github.com" , o , "/" , n ]
 
       let mRepo = Repository
             <$> payload ^. name
