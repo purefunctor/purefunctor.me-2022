@@ -8,6 +8,8 @@ import Control.Monad ( void )
 import Control.Monad.IO.Class ( liftIO )
 import Control.Monad.Reader ( asks )
 
+import Data.Maybe ( isJust )
+
 import           Data.Text ( Text )
 import qualified Data.Text as Text
 
@@ -34,11 +36,14 @@ type BlogPostAPI =
 
       Capture "short-title" Text :> Get '[JSON] BlogPost :<|>
 
-      ( Auth '[JWT, Cookie] LoginPayload :>
-        ( ReqBody '[JSON] MutableBlogPostData :> Post '[JSON] MutableEndpointResult
-        )
-      )
+      Auth '[JWT, Cookie] LoginPayload
+        :> ReqBody '[JSON] MutableBlogPostData
+          :> Post '[JSON] MutableEndpointResult :<|>
 
+      Auth '[JWT, Cookie] LoginPayload
+        :> Capture "short-title" Text
+          :> ReqBody '[JSON] MutableBlogPostData
+            :> Put '[JSON] MutableEndpointResult
     )
 
 
@@ -56,7 +61,7 @@ makeLenses ''MutableBlogPostData
 
 
 blogPostServer :: ServerT BlogPostAPI WebsiteM
-blogPostServer = getPosts :<|> getPost :<|> mkPost
+blogPostServer = getPosts :<|> getPost :<|> mkPost :<|> updatePost
   where
     getPosts :: WebsiteM [BlogPost]
     getPosts = do
@@ -107,3 +112,37 @@ blogPostServer = getPosts :<|> getPost :<|> mkPost
         Nothing -> throwError err400
 
     mkPost _ _ = throwError err401
+
+    updatePost
+      :: AuthResult LoginPayload
+      -> Text
+      -> MutableBlogPostData
+      -> WebsiteM MutableEndpointResult
+    updatePost (Authenticated _) sTitle payload = do
+      pool <- asks connPool
+
+      now <- liftIO getCurrentTime
+
+      let mUpdates = filter isJust
+            [ (BlogPostFullTitle  =.) <$> payload ^. title
+            , (BlogPostContents   =.) <$> payload ^. contents
+            , (BlogPostShortTitle =.) <$> payload ^. short
+            ]
+
+      case mUpdates of
+
+        [] -> throwError err400
+
+        mUpdates' -> do
+          let postUpdated = Just $ BlogPostUpdated =. payload ^. updated . non now
+
+          case sequenceA $ postUpdated : mUpdates' of
+
+            Just updates -> do
+              void $ liftIO $ flip runSqlPersistMPool pool $
+                updateWhere [ BlogPostShortTitle ==. sTitle ] updates
+              return $ MutableEndpointResult 200 "Post updated."
+
+            Nothing -> throwError err400
+
+    updatePost _ _ _ = throwError err401
