@@ -7,6 +7,7 @@ let
   dependencies = [
     "aeson"
     "jose"
+    "lens"
     "monad-logger"
     "password"
     "persistent"
