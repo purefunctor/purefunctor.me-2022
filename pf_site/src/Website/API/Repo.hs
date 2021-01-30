@@ -41,7 +41,11 @@ type RepositoryAPI =
       Auth '[JWT, Cookie] LoginPayload
         :> Capture "name" Text
           :> ReqBody '[JSON] MutableRepositoryData
-            :> Put '[JSON] MutableEndpointResult
+            :> Put '[JSON] MutableEndpointResult :<|>
+
+      Auth '[JWT, Cookie] LoginPayload
+        :> Capture "name" Text
+          :> Put '[JSON] MutableEndpointResult
     )
 
 
@@ -60,7 +64,8 @@ makeLenses ''MutableRepositoryData
 
 repositoryServer :: ServerT RepositoryAPI WebsiteM
 repositoryServer =
-  getRepositories :<|> getRepository :<|> mkRepository :<|> updateRepository
+  getRepositories :<|> getRepository :<|>
+  mkRepository :<|> updateRepository :<|> deleteRepository
   where
     getRepositories :: WebsiteM [Repository]
     getRepositories = do
@@ -140,3 +145,22 @@ repositoryServer =
             Nothing -> throwError err400
 
     updateRepository _ _ _ = throwError err401
+
+    deleteRepository
+      :: AuthResult LoginPayload
+      -> Text
+      -> WebsiteM MutableEndpointResult
+    deleteRepository (Authenticated _) rName = do
+      pool <- asks connPool
+
+      inDatabase <- liftIO $ flip runSqlPersistMPool pool $
+        exists [ RepositoryName ==. rName ]
+
+      if inDatabase
+        then do
+          liftIO $ flip runSqlPersistMPool pool $ delete $ RepositoryKey rName
+          return $ MutableEndpointResult 200 "Repository deleted."
+        else
+          throwError err404
+
+    deleteRepository _ _ = throwError err401
