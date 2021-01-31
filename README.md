@@ -123,8 +123,6 @@ nix-shell:λ haskell-language-server-wrapper
 #### Dependency Management
 Like most `cabal` or `stack`-based Haskell packages, the application makes use of a `*.cabal` file to manage dependencies, declare modules, and overall project configuration. `stack` and `nix` on the other hand makes sure that the project uses a consistent set of packages for reproducible builds.
 
-Haskell dependencies must first be added to the [purefunctor-me.cabal](./purefunctor-me.cabal) file, after which `config.nix` has to be updated with the new dependencies.
-
 #### Nix Garbage Collection
 If Nix ever has the need to compile Haskell dependencies for the project, it's advised, especially for lower-end machines, to have this package installed in order to make sure that the built dependencies don't get garbage collected:
 ```sh
