@@ -81,4 +81,7 @@ test-suite purefunctor-me-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      pf_site/test
   main-is:             MyLibTest.hs
-  build-depends:       base ^>=4.13.0.0
+  build-depends:       base ^>=4.13.0.0,
+                       hspec,
+                       hspec-wai,
+                       purefunctor-me,
