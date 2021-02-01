@@ -50,9 +50,9 @@ run port = do
   void $ Warp.run port (websiteApp jwtSettings config)
 
 
-debug :: IO ()
-debug = do
-  pool <- runStderrLoggingT $ createSqlitePool ":memory:" 1
+debug_ :: IO (Configuration, Application)
+debug_ = do
+  pool <- runStderrLoggingT $ createSqlitePool "debug.sqlite" 1
   jwk <- generateKey
 
   let (user, pass) = ("pure", "pure")
@@ -73,4 +73,8 @@ debug = do
 
   putStrLn $ "Authorization: Bearer " <> filter (/= '"') (show jwt)
 
-  void $ Warp.run 3000 app
+  return (config, app)
+
+
+debug :: IO ()
+debug = Warp.run 3000 . snd =<< debug_
