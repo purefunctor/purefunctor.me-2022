@@ -81,6 +81,9 @@ test-suite purefunctor-me-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      pf_site/test
   main-is:             Test.hs
+  other-modules:       Test.Auth,
+                       Test.Blog,
+                       Test.Repo
   build-depends:       base ^>=4.13.0.0,
                        hspec,
                        hspec-wai,
