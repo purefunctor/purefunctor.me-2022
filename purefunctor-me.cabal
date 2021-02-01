@@ -83,8 +83,13 @@ test-suite purefunctor-me-test
   main-is:             Test.hs
   other-modules:       Test.Auth,
                        Test.Blog,
-                       Test.Repo
+                       Test.Repo,
+                       Test.Utils
   build-depends:       base ^>=4.13.0.0,
                        hspec,
                        hspec-wai,
+                       bytestring,
+                       http-types,
+                       wai,
+                       wai-extra,
                        purefunctor-me,
