@@ -90,6 +90,8 @@ test-suite purefunctor-me-test
                        hspec-wai,
                        bytestring,
                        http-types,
+                       microaeson,
+                       text,
                        wai,
                        wai-extra,
                        purefunctor-me,
