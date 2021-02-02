@@ -21,16 +21,17 @@ import Website.Models
 import Website.WebsiteM
 
 
-type WebsiteAPI = BlogPostAPI :<|> RepositoryAPI
+type WebsiteAPI = LoginAPI :<|> BlogPostAPI :<|> RepositoryAPI
 
 
-websiteServer :: ServerT WebsiteAPI WebsiteM
-websiteServer = blogPostServer :<|> repositoryServer
+websiteServer :: CookieSettings -> JWTSettings -> ServerT WebsiteAPI WebsiteM
+websiteServer cookieSettings jwtSettings =
+  loginServer cookieSettings jwtSettings :<|> blogPostServer :<|> repositoryServer
 
 
 websiteApp :: JWTSettings -> Configuration -> Application
 websiteApp jwtSettings config =
-  serveWithContext api ctx $ hoistServerWithContext api ctx' (runWebsiteM config) websiteServer
+  serveWithContext api ctx $ hoistServerWithContext api ctx' unwrap server
   where
     api :: Proxy WebsiteAPI
     api = Proxy
@@ -40,6 +41,12 @@ websiteApp jwtSettings config =
 
     ctx' :: Proxy '[CookieSettings, JWTSettings]
     ctx' = Proxy
+
+    unwrap :: WebsiteM r -> Handler r
+    unwrap = runWebsiteM config
+
+    server :: ServerT WebsiteAPI WebsiteM
+    server = websiteServer defaultCookieSettings jwtSettings
 
 
 run :: Port -> IO ()
