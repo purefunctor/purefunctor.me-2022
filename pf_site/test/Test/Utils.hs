@@ -2,7 +2,7 @@ module Test.Utils where
 
 import Test.Hspec.Wai
 
-import Data.Aeson.Micro ( Value , encode )
+import Data.Aeson.Micro ( Value, encode )
 
 import           Data.ByteString ( ByteString )
 import qualified Data.ByteString.Lazy.Char8 as LazyBS
