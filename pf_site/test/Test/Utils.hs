@@ -6,7 +6,7 @@ import Test.Hspec.Wai
 
 import Control.Monad.IO.Class ( MonadIO )
 
-import Data.Aeson.Micro ( Value, encode )
+import Data.Aeson ( Value, encode )
 
 import           Data.ByteString ( ByteString )
 import qualified Data.ByteString.Lazy.Char8 as LazyBS

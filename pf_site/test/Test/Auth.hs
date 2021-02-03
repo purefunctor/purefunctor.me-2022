@@ -5,7 +5,7 @@ import Test.Hspec
 import Test.Hspec.Wai as WaiTest
 import Test.Utils
 
-import Data.Aeson.Micro
+import Data.Aeson
 
 import qualified Data.ByteString as BS
 
