@@ -1,10 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Test.Blog where
 
-import Data.Aeson
+import Control.Monad
 
+import Data.Text.Encoding
+
+import Test.Data
 import Test.Hspec
 import Test.Hspec.Wai as WaiTest
+import Test.Utils
 
 import Network.Wai
 
@@ -16,9 +20,11 @@ testBlog :: Configuration -> Application -> Spec
 testBlog config app = with (pure app) $ do
   describe "GET /blog" $ do
     it "should return all blog posts" $ do
-      WaiTest.pendingWith "GET /blog"
+      get "/blog" `shouldRespondWith` matchCodeJSON 200 posts
     it "should return a specific post" $ do
-      WaiTest.pendingWith "GET /blog/short-title"
+      forM_ posts $ \post' -> do
+        let endpoint = "/blog/" <> encodeUtf8 (blogPostShortTitle post')
+        get endpoint `shouldRespondWith` matchCodeJSON 200 post'
 
   describe "POST /blog" $ do
     it "should require authentication " $ do
