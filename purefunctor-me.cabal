@@ -21,6 +21,7 @@ library
                        Website.API.Blog,
                        Website.API.Repo,
                        Website.Config,
+                       Website.Debug,
                        Website.Models,
                        Website.Utils,
                        Website.WebsiteM

@@ -3,7 +3,7 @@ module Main (main) where
 import Test.Auth
 import Test.Hspec
 
-import Website.App
+import Website.Debug
 import Website.Config
 
 
