@@ -84,6 +84,7 @@ test-suite purefunctor-me-test
   main-is:             Test.hs
   other-modules:       Test.Auth,
                        Test.Blog,
+                       Test.Data,
                        Test.Repo,
                        Test.Utils
   build-depends:       base ^>=4.13.0.0,
