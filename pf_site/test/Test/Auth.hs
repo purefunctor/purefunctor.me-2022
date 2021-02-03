@@ -24,13 +24,9 @@ testAuth config app = with (pure app) $ do
           [ "username" .= adminUser config
           , "password" .= adminUser config
           ]
-    let headers =
-          [ ("Content-Type", "application/json")
-          ]
-
     it "should return 204 on a successful login" $ do
-      postJSON "/login" headers value `shouldRespondWith` 204
+      postJSON "/login" [] value `shouldRespondWith` 204
 
     it "should set the appropriate cookies" $ do
-      setCookies <- parseSetCookies <$> postJSON "/login" headers value
+      setCookies <- parseSetCookies <$> postJSON "/login" [] value
       (setCookieName <$> setCookies) `shouldContain'` ["JWT-Cookie", "XSRF-TOKEN"]

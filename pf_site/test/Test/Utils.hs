@@ -20,7 +20,9 @@ import Web.Cookie ( SetCookie(setCookieName), parseSetCookie )
 
 
 postJSON :: ByteString -> [Header] -> Value -> WaiSession st SResponse
-postJSON path headers = request methodPost path headers . encode
+postJSON path headers = request methodPost path headers' . encode
+  where
+    headers' = ("Content-Type", "application/json") : headers
 
 
 shouldContain' :: (MonadIO m, Show a, Eq a) => [a] -> [a] -> m ()
