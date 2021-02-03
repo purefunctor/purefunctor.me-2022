@@ -6,7 +6,7 @@ import Test.Hspec.Wai
 
 import Control.Monad.IO.Class ( MonadIO )
 
-import Data.Aeson ( Value, encode )
+import Data.Aeson (FromJSON,  Value, decode, encode )
 
 import           Data.ByteString ( ByteString )
 import qualified Data.ByteString.Lazy.Char8 as LazyBS
@@ -32,3 +32,12 @@ parseSetCookies
   = fmap (parseSetCookie . snd)
   . filter ((== "Set-Cookie") . fst)
   . simpleHeaders
+
+
+matchCodeJSON :: (Eq value, FromJSON value) => ResponseMatcher -> value -> ResponseMatcher
+matchCodeJSON code value = code { matchBody = matchBody' }
+  where
+    matchBody' = MatchBody $ \_ body ->
+      case decode body  of
+        Just value' -> if value == value' then Nothing else Just "no match"
+        Nothing -> Just "no match"
