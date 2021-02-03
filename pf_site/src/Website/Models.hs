@@ -14,6 +14,7 @@ PTH.share [PTH.mkPersist PTH.sqlSettings, PTH.mkMigrate "migrateAll"] [PTH.persi
     published UTCTime
     updated UTCTime
     Primary shortTitle
+    deriving Eq Show
   Repository json sql=repo
     name Text
     owner Text
@@ -21,4 +22,5 @@ PTH.share [PTH.mkPersist PTH.sqlSettings, PTH.mkMigrate "migrateAll"] [PTH.persi
     stars Int
     commits Int
     Primary name
+    deriving Eq Show
 |]
