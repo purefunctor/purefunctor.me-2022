@@ -89,6 +89,7 @@ test-suite purefunctor-me-test
                        hspec,
                        hspec-wai,
                        bytestring,
+                       cookie,
                        http-types,
                        microaeson,
                        text,
