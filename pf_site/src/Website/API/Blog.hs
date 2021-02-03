@@ -53,8 +53,8 @@ type BlogPostAPI =
 data MutableBlogPostData
   = MutableBlogPostData
       { _title     :: Maybe Text
-      , _contents  :: Maybe Text
       , _short     :: Maybe Text
+      , _contents  :: Maybe Text
       , _published :: Maybe UTCTime
       , _updated   :: Maybe UTCTime
       }
