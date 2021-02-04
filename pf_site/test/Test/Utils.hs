@@ -12,7 +12,7 @@ import qualified Data.List as List
 
 import Data.ByteString ( ByteString )
 
-import Network.HTTP.Types ( Header, methodPost, methodPut )
+import Network.HTTP.Types ( Header, methodDelete, methodPost, methodPut)
 import Network.Wai.Test ( SResponse(simpleHeaders) )
 
 import Web.Cookie ( SetCookie(setCookieName, setCookieValue), parseSetCookie )
@@ -28,6 +28,10 @@ putJSON :: ByteString -> [Header] -> Value -> WaiSession st SResponse
 putJSON path headers = request methodPut path headers' . encode
   where
     headers' = ("Content-Type", "application/json") : headers
+
+
+delete' :: ByteString -> [Header] -> WaiSession st SResponse
+delete' path headers = request methodDelete path headers ""
 
 
 shouldContain' :: (MonadIO m, Show a, Eq a) => [a] -> [a] -> m ()
