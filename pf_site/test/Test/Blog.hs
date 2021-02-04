@@ -120,8 +120,23 @@ testBlog config app = with (pure app) $ do
           putJSON endpoint authHeaders (object []) `shouldRespondWith` 400
         Nothing -> fail "failed to create authentication headers"
 
-  describe "DELETE /blog" $ do
+  describe "DELETE /blog/<short-title>" $ do
+    let endpoint = "/blog/" <> encodeUtf8 sTitle
+
     it "should require authentication " $ do
-      WaiTest.pendingWith "DELETE /blog/short-title"
+      delete' endpoint [] `shouldRespondWith` 401
+
     it "should mutate the database" $ do
-      WaiTest.pendingWith "DELETE /blog/short-title"
+      mAuthHeaders <-
+        mkAuthHeaders . parseSetCookies <$> postJSON "/login" [] loginPayload
+
+      case mAuthHeaders of
+        Just authHeaders -> do
+          delete' endpoint authHeaders `shouldRespondWith` 200
+
+          inDB <- WaiTest.liftIO $ flip Sqlite.runSqlPool (connPool config) $ do
+            Sqlite.exists [ BlogPostShortTitle ==. sTitle ]
+
+          inDB `shouldBe'` False
+
+        Nothing -> fail "failed to create authentication headers"
