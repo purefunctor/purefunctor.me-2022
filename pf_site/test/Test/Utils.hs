@@ -8,15 +8,14 @@ import Control.Monad.IO.Class ( MonadIO )
 
 import Data.Aeson (FromJSON,  Value, decode, encode )
 
-import           Data.ByteString ( ByteString )
-import qualified Data.ByteString.Lazy.Char8 as LazyBS
+import qualified Data.List as List
 
-import Text.Printf
+import           Data.ByteString ( ByteString )
 
 import Network.HTTP.Types ( Header, methodPost )
 import Network.Wai.Test ( SResponse(simpleHeaders) )
 
-import Web.Cookie ( SetCookie(setCookieName), parseSetCookie )
+import Web.Cookie ( SetCookie(setCookieValue, setCookieName), parseSetCookie )
 
 
 postJSON :: ByteString -> [Header] -> Value -> WaiSession st SResponse
@@ -29,11 +28,29 @@ shouldContain' :: (MonadIO m, Show a, Eq a) => [a] -> [a] -> m ()
 shouldContain' lhs rhs = liftIO $ lhs `shouldContain` rhs
 
 
+shouldBe' :: (MonadIO m, Show a, Eq a) => a -> a -> m ()
+shouldBe' lhs rhs = liftIO $ lhs `shouldBe` rhs
+
+
 parseSetCookies :: SResponse -> [SetCookie]
 parseSetCookies
   = fmap (parseSetCookie . snd)
   . filter ((== "Set-Cookie") . fst)
   . simpleHeaders
+
+
+mkAuthHeaders :: [SetCookie] -> Maybe [Header]
+mkAuthHeaders setCookies = do
+  jwtToken <- findCookieValue "JWT-Cookie"
+  xsrfToken <- findCookieValue "XSRF-TOKEN"
+
+  let jwtToken' = "JWT-Cookie=" <> jwtToken
+  let xsrfToken' = "XSRF-TOKEN=" <> xsrfToken
+
+  return [("Cookie", jwtToken' <> "; " <> xsrfToken'), ("X-XSRF-TOKEN", xsrfToken)]
+  where
+    findCookieValue name =
+      setCookieValue <$> List.find ((== name) . setCookieName) setCookies
 
 
 matchCodeJSON :: (Eq value, FromJSON value) => ResponseMatcher -> value -> ResponseMatcher
