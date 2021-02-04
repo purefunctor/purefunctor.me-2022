@@ -12,7 +12,7 @@ import qualified Data.List as List
 
 import Data.ByteString ( ByteString )
 
-import Network.HTTP.Types ( Header, methodPost )
+import Network.HTTP.Types ( Header, methodPost, methodPut )
 import Network.Wai.Test ( SResponse(simpleHeaders) )
 
 import Web.Cookie ( SetCookie(setCookieName, setCookieValue), parseSetCookie )
@@ -20,6 +20,12 @@ import Web.Cookie ( SetCookie(setCookieName, setCookieValue), parseSetCookie )
 
 postJSON :: ByteString -> [Header] -> Value -> WaiSession st SResponse
 postJSON path headers = request methodPost path headers' . encode
+  where
+    headers' = ("Content-Type", "application/json") : headers
+
+
+putJSON :: ByteString -> [Header] -> Value -> WaiSession st SResponse
+putJSON path headers = request methodPut path headers' . encode
   where
     headers' = ("Content-Type", "application/json") : headers
 
