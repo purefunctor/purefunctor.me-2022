@@ -28,6 +28,8 @@ import Website.Models
 testBlog :: Configuration -> Application -> Spec
 testBlog config app = with (pure app) $ do
 
+  let loginPayload = mkLoginPayload config
+
   describe "GET /blog" $ do
     it "should return all blog posts" $ do
       get "/blog" `shouldRespondWith` matchCodeJSON 200 posts
@@ -37,21 +39,16 @@ testBlog config app = with (pure app) $ do
         let endpoint = "/blog/" <> encodeUtf8 (blogPostShortTitle post')
         get endpoint `shouldRespondWith` matchCodeJSON 200 post'
 
+  let lTitle  = "Testing With Hspec"
+  let sTitle  = "testing-with-hspec"
+  let pBody   = "Nothing to see yet"
+  let tNow    = UTCTime (fromJulian 2020 02 02) (secondsToDiffTime 0)
+  let tNext   = UTCTime (fromJulian 2020 02 03) (secondsToDiffTime 0)
+
+  let newPost = MutableBlogPostData
+        (Just lTitle) (Just sTitle) (Just pBody) (Just tNow) (Just tNext)
+
   describe "POST /blog" $ do
-    let lTitle  = "Testing With Hspec"
-    let sTitle  = "testing-with-hspec"
-    let pBody   = "Nothing to see yet"
-    let tNow    = UTCTime (fromJulian 2020 02 02) (secondsToDiffTime 0)
-    let tNext   = UTCTime (fromJulian 2020 02 03) (secondsToDiffTime 0)
-
-    let newPost = MutableBlogPostData
-          (Just lTitle) (Just sTitle) (Just pBody) (Just tNow) (Just tNext)
-
-    let loginPayload = object
-          [ "username" .= adminUser config
-          , "password" .= adminPass config
-          ]
-
     it "should require authentication " $ do
       postJSON "/blog" [] (toJSON newPost) `shouldRespondWith` 401
 
@@ -86,13 +83,42 @@ testBlog config app = with (pure app) $ do
 
         Nothing -> fail "failed to create authentication headers"
 
-  describe "PUT /blog" $ do
+  describe "PUT /blog/<short-title>" $ do
+    let endpoint = "/blog/" <> encodeUtf8 sTitle
+    let contents' = "BDD in Haskell with Hspec"
+    let mutation = object
+          [ "contents" .= contents'
+          ]
+
     it "should require authentication " $ do
-      WaiTest.pendingWith "PUT /blog/short-title"
+      putJSON endpoint [] mutation `shouldRespondWith` 401
+
     it "should mutate the database" $ do
-      WaiTest.pendingWith "PUT /blog/short-title"
+      mAuthHeaders <-
+        mkAuthHeaders . parseSetCookies <$> postJSON "/login" [] loginPayload
+
+      case mAuthHeaders of
+        Just authHeaders -> do
+          putJSON endpoint authHeaders mutation `shouldRespondWith` 200
+
+          mMutated <-
+            WaiTest.liftIO $ flip Sqlite.runSqlPersistMPool (connPool config) $
+              Sqlite.get (BlogPostKey sTitle)
+
+          case mMutated of
+            Just mutated -> blogPostContents mutated `shouldBe'` contents'
+            Nothing      -> fail "failed to obtain blog post"
+
+        Nothing -> fail "failed to create authentication headers"
+
     it "should require either title, contents, or short" $ do
-      WaiTest.pendingWith "PUT /blog/short-title"
+      mAuthHeaders <-
+        mkAuthHeaders . parseSetCookies <$> postJSON "/login" [] loginPayload
+
+      case mAuthHeaders of
+        Just authHeaders ->
+          putJSON endpoint authHeaders (object []) `shouldRespondWith` 400
+        Nothing -> fail "failed to create authentication headers"
 
   describe "DELETE /blog" $ do
     it "should require authentication " $ do
