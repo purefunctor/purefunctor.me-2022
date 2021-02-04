@@ -5,8 +5,8 @@ import Test.Blog
 import Test.Data
 import Test.Hspec
 
-import Website.Debug
 import Website.Config
+import Website.Debug
 
 
 main :: IO ()

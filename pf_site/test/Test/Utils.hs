@@ -6,16 +6,16 @@ import Test.Hspec.Wai
 
 import Control.Monad.IO.Class ( MonadIO )
 
-import Data.Aeson (FromJSON,  Value, decode, encode )
+import Data.Aeson ( FromJSON, Value, decode, encode )
 
 import qualified Data.List as List
 
-import           Data.ByteString ( ByteString )
+import Data.ByteString ( ByteString )
 
 import Network.HTTP.Types ( Header, methodPost )
 import Network.Wai.Test ( SResponse(simpleHeaders) )
 
-import Web.Cookie ( SetCookie(setCookieValue, setCookieName), parseSetCookie )
+import Web.Cookie ( SetCookie(setCookieName, setCookieValue), parseSetCookie )
 
 
 postJSON :: ByteString -> [Header] -> Value -> WaiSession st SResponse
@@ -59,4 +59,4 @@ matchCodeJSON code value = code { matchBody = matchBody' }
     matchBody' = MatchBody $ \_ body ->
       case decode body  of
         Just value' -> if value == value' then Nothing else Just "no match"
-        Nothing -> Just "no match"
+        Nothing     -> Just "no match"
