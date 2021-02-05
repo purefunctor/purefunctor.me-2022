@@ -1,8 +1,8 @@
-{  }:
+{ doCheck ? false }:
 
 let
 
-  config = import ./config.nix {  };
+  config = import ./config.nix { inherit doCheck; };
 
   haskellPackages = config.nixpkgs.haskell.packages.${config.compiler};
 
