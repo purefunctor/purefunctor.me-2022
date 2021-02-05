@@ -12,7 +12,7 @@ import qualified Data.List as List
 
 import Data.ByteString ( ByteString )
 
-import Network.HTTP.Types ( Header, methodDelete, methodPost, methodPut)
+import Network.HTTP.Types ( Header, methodDelete, methodPost, methodPut )
 import Network.Wai.Test ( SResponse(simpleHeaders) )
 
 import Web.Cookie ( SetCookie(setCookieName, setCookieValue), parseSetCookie )
