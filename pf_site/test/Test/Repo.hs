@@ -80,3 +80,40 @@ testRepo config app = with (pure app) $ do
             postJSON "/repo" authHeaders (toJSON payload) `shouldRespondWith` 400
 
         Nothing -> fail "failed to create authentication headers"
+
+  describe "PUT /repo/<repository-name>" $ do
+    let endpoint = "/repo/" <> encodeUtf8 rName
+    let commits' = 573 :: Int
+    let mutation = object
+          [ "commits" .= commits'
+          ]
+
+    it "should require authentication" $ do
+      putJSON endpoint [] mutation `shouldRespondWith` 401
+
+    it "should mutate the database" $ do
+      mAuthHeaders <-
+        mkAuthHeaders . parseSetCookies <$> postJSON "/login" [] loginPayload
+
+      case mAuthHeaders of
+        Just authHeaders -> do
+          putJSON endpoint authHeaders mutation `shouldRespondWith` 200
+
+          mMutated <-
+            WaiTest.liftIO $ flip Sqlite.runSqlPersistMPool (connPool config) $
+              Sqlite.get (RepositoryKey rName)
+
+          case mMutated of
+            Just mutated -> repositoryCommits mutated `shouldBe'` commits'
+            Nothing      -> fail "failed to obtain blog post"
+
+        Nothing -> fail "failed to create authentication headers"
+
+    it "should require at least one field" $ do
+      mAuthHeaders <-
+        mkAuthHeaders . parseSetCookies <$> postJSON "/login" [] loginPayload
+
+      case mAuthHeaders of
+        Just authHeaders ->
+          putJSON endpoint authHeaders (object []) `shouldRespondWith` 400
+        Nothing -> fail "failed to create authentication headers"
