@@ -4,6 +4,7 @@ import Test.Auth
 import Test.Blog
 import Test.Data
 import Test.Hspec
+import Test.Repo
 
 import Website.Config
 import Website.Debug
@@ -16,3 +17,4 @@ main = do
   hspec $ do
     testAuth config app
     testBlog config app
+    testRepo config app
