@@ -117,3 +117,24 @@ testRepo config app = with (pure app) $ do
         Just authHeaders ->
           putJSON endpoint authHeaders (object []) `shouldRespondWith` 400
         Nothing -> fail "failed to create authentication headers"
+
+  describe "DELETE /repo/<repository-name>" $ do
+    let endpoint = "/repo/" <> encodeUtf8 rName
+
+    it "should require authentication" $ do
+      delete' endpoint [] `shouldRespondWith` 401
+
+    it "should mutate the database" $ do
+      mAuthHeaders <-
+        mkAuthHeaders . parseSetCookies <$> postJSON "/login" [] loginPayload
+
+      case mAuthHeaders of
+        Just authHeaders -> do
+          delete' endpoint authHeaders `shouldRespondWith` 200
+
+          inDB <- WaiTest.liftIO $ flip Sqlite.runSqlPool (connPool config) $ do
+            Sqlite.exists [ RepositoryName ==. rName ]
+
+          inDB `shouldBe'` False
+
+        Nothing -> fail "failed to create authentication headers"
