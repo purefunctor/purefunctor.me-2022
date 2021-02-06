@@ -8,18 +8,17 @@ on:
     - stable
     - 'feature/**'
 
-    paths:
-    - '**.nix'
-    - '**.hs'
-    - '**.cabal'
+    paths-ignore:
+    - '**.md'
 
   pull_request:
     branches:
     - develop
     - stable
+    - 'feature/**'
 
-    paths:
-    - '**.nix'
+    paths-ignore:
+    - '**.md'
 
   workflow_dispatch:
 
