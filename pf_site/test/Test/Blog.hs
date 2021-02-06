@@ -53,19 +53,13 @@ testBlog config app = with (pure app) $ do
       postJSON "/blog" [] (toJSON newPost) `shouldRespondWith` 401
 
     it "should mutate the database" $ do
-      mAuthHeaders <-
-        mkAuthHeaders . parseSetCookies <$> postJSON "/login" [] loginPayload
+      withAuth config $ \authHeaders -> do
+        postJSON "/blog" authHeaders (toJSON newPost) `shouldRespondWith` 200
 
-      case mAuthHeaders of
-        Just authHeaders -> do
-          postJSON "/blog" authHeaders (toJSON newPost) `shouldRespondWith` 200
+        inDB <-  WaiTest.liftIO $ flip Sqlite.runSqlPool (connPool config) $ do
+          Sqlite.exists [ BlogPostShortTitle ==. sTitle ]
 
-          inDB <-  WaiTest.liftIO $ flip Sqlite.runSqlPool (connPool config) $ do
-            Sqlite.exists [ BlogPostShortTitle ==. sTitle ]
-
-          inDB `shouldBe'` True
-
-        Nothing -> fail "failed to create authentication headers"
+        inDB `shouldBe'` True
 
     it "should require title and contents" $ do
       let invalid =
@@ -73,15 +67,9 @@ testBlog config app = with (pure app) $ do
             , newPost { _contents = Nothing }
             ]
 
-      mAuthHeaders <-
-        mkAuthHeaders . parseSetCookies <$> postJSON "/login" [] loginPayload
-
-      case mAuthHeaders of
-        Just authHeaders ->
-          forM_ invalid $ \payload -> do
-            postJSON "/blog" authHeaders (toJSON payload) `shouldRespondWith` 400
-
-        Nothing -> fail "failed to create authentication headers"
+      withAuth config $ \authHeaders ->
+        forM_ invalid $ \payload ->
+          postJSON "/blog" authHeaders (toJSON payload) `shouldRespondWith` 400
 
   describe "PUT /blog/<short-title>" $ do
     let endpoint = "/blog/" <> encodeUtf8 sTitle
@@ -94,31 +82,20 @@ testBlog config app = with (pure app) $ do
       putJSON endpoint [] mutation `shouldRespondWith` 401
 
     it "should mutate the database" $ do
-      mAuthHeaders <-
-        mkAuthHeaders . parseSetCookies <$> postJSON "/login" [] loginPayload
+      withAuth config $ \authHeaders -> do
+        putJSON endpoint authHeaders mutation `shouldRespondWith` 200
 
-      case mAuthHeaders of
-        Just authHeaders -> do
-          putJSON endpoint authHeaders mutation `shouldRespondWith` 200
+        mMutated <-
+          WaiTest.liftIO $ flip Sqlite.runSqlPersistMPool (connPool config) $
+            Sqlite.get (BlogPostKey sTitle)
 
-          mMutated <-
-            WaiTest.liftIO $ flip Sqlite.runSqlPersistMPool (connPool config) $
-              Sqlite.get (BlogPostKey sTitle)
-
-          case mMutated of
-            Just mutated -> blogPostContents mutated `shouldBe'` contents'
-            Nothing      -> fail "failed to obtain blog post"
-
-        Nothing -> fail "failed to create authentication headers"
+        case mMutated of
+          Just mutated -> blogPostContents mutated `shouldBe'` contents'
+          Nothing      -> fail "failed to obtain blog post"
 
     it "should require either title, contents, or short" $ do
-      mAuthHeaders <-
-        mkAuthHeaders . parseSetCookies <$> postJSON "/login" [] loginPayload
-
-      case mAuthHeaders of
-        Just authHeaders ->
-          putJSON endpoint authHeaders (object []) `shouldRespondWith` 400
-        Nothing -> fail "failed to create authentication headers"
+      withAuth config $ \authHeaders ->
+        putJSON endpoint authHeaders (object []) `shouldRespondWith` 400
 
   describe "DELETE /blog/<short-title>" $ do
     let endpoint = "/blog/" <> encodeUtf8 sTitle
@@ -127,16 +104,10 @@ testBlog config app = with (pure app) $ do
       delete' endpoint [] `shouldRespondWith` 401
 
     it "should mutate the database" $ do
-      mAuthHeaders <-
-        mkAuthHeaders . parseSetCookies <$> postJSON "/login" [] loginPayload
+      withAuth config $ \authHeaders -> do
+        delete' endpoint authHeaders `shouldRespondWith` 200
 
-      case mAuthHeaders of
-        Just authHeaders -> do
-          delete' endpoint authHeaders `shouldRespondWith` 200
+        inDB <- WaiTest.liftIO $ flip Sqlite.runSqlPool (connPool config) $ do
+          Sqlite.exists [ BlogPostShortTitle ==. sTitle ]
 
-          inDB <- WaiTest.liftIO $ flip Sqlite.runSqlPool (connPool config) $ do
-            Sqlite.exists [ BlogPostShortTitle ==. sTitle ]
-
-          inDB `shouldBe'` False
-
-        Nothing -> fail "failed to create authentication headers"
+        inDB `shouldBe'` False
