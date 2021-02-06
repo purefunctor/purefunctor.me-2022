@@ -6,7 +6,7 @@ import Test.Hspec.Wai
 
 import Control.Monad.IO.Class ( MonadIO )
 
-import Data.Aeson ( FromJSON, Value, decode, encode )
+import Data.Aeson ( FromJSON, Value, decode, encode, object, (.=) )
 
 import qualified Data.List as List
 
@@ -16,6 +16,8 @@ import Network.HTTP.Types ( Header, methodDelete, methodPost, methodPut )
 import Network.Wai.Test ( SResponse(simpleHeaders) )
 
 import Web.Cookie ( SetCookie(setCookieName, setCookieValue), parseSetCookie )
+
+import Website.Config
 
 
 postJSON :: ByteString -> [Header] -> Value -> WaiSession st SResponse
@@ -28,6 +30,23 @@ putJSON :: ByteString -> [Header] -> Value -> WaiSession st SResponse
 putJSON path headers = request methodPut path headers' . encode
   where
     headers' = ("Content-Type", "application/json") : headers
+
+
+withAuth :: Configuration -> ([Header] -> WaiSession st a) -> WaiSession st a
+withAuth config operations = do
+  let loginPayload = object
+        [ "username" .= adminUser config
+        , "password" .= adminUser config
+        ]
+
+  mAuthHeaders <-
+    mkAuthHeaders . parseSetCookies <$> postJSON "/login" [] loginPayload
+
+  case mAuthHeaders of
+    Just authHeaders -> operations authHeaders
+    Nothing          -> fail "failed to create authentication headers"
+
+  return undefined
 
 
 delete' :: ByteString -> [Header] -> WaiSession st SResponse
