@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Test.Blog where
 
+import Control.Lens ( (^.) )
+
 import Control.Monad
 
 import Data.Aeson
@@ -25,10 +27,10 @@ import Website.Config
 import Website.Models
 
 
-testBlog :: Configuration -> Application -> Spec
-testBlog config app = with (pure app) $ do
+testBlog :: Environment -> Application -> Spec
+testBlog env app = with (pure app) $ do
 
-  let loginPayload = mkLoginPayload config
+  let loginPayload = mkLoginPayload env
 
   describe "GET /blog" $ do
     it "should return all blog posts" $ do
@@ -53,10 +55,10 @@ testBlog config app = with (pure app) $ do
       postJSON "/blog" [] (toJSON newPost) `shouldRespondWith` 401
 
     it "should mutate the database" $ do
-      withAuth config $ \authHeaders -> do
+      withAuth env $ \authHeaders -> do
         postJSON "/blog" authHeaders (toJSON newPost) `shouldRespondWith` 200
 
-        inDB <-  WaiTest.liftIO $ flip Sqlite.runSqlPool (connPool config) $ do
+        inDB <-  WaiTest.liftIO $ flip Sqlite.runSqlPool (env^.pool) $ do
           Sqlite.exists [ BlogPostShortTitle ==. sTitle ]
 
         inDB `shouldBe'` True
@@ -67,7 +69,7 @@ testBlog config app = with (pure app) $ do
             , newPost { _contents = Nothing }
             ]
 
-      withAuth config $ \authHeaders ->
+      withAuth env $ \authHeaders ->
         forM_ invalid $ \payload ->
           postJSON "/blog" authHeaders (toJSON payload) `shouldRespondWith` 400
 
@@ -82,11 +84,11 @@ testBlog config app = with (pure app) $ do
       putJSON endpoint [] mutation `shouldRespondWith` 401
 
     it "should mutate the database" $ do
-      withAuth config $ \authHeaders -> do
+      withAuth env $ \authHeaders -> do
         putJSON endpoint authHeaders mutation `shouldRespondWith` 200
 
         mMutated <-
-          WaiTest.liftIO $ flip Sqlite.runSqlPersistMPool (connPool config) $
+          WaiTest.liftIO $ flip Sqlite.runSqlPersistMPool (env^.pool) $
             Sqlite.get (BlogPostKey sTitle)
 
         case mMutated of
@@ -94,7 +96,7 @@ testBlog config app = with (pure app) $ do
           Nothing      -> fail "failed to obtain blog post"
 
     it "should require either title, contents, or short" $ do
-      withAuth config $ \authHeaders ->
+      withAuth env $ \authHeaders ->
         putJSON endpoint authHeaders (object []) `shouldRespondWith` 400
 
   describe "DELETE /blog/<short-title>" $ do
@@ -104,10 +106,10 @@ testBlog config app = with (pure app) $ do
       delete' endpoint [] `shouldRespondWith` 401
 
     it "should mutate the database" $ do
-      withAuth config $ \authHeaders -> do
+      withAuth env $ \authHeaders -> do
         delete' endpoint authHeaders `shouldRespondWith` 200
 
-        inDB <- WaiTest.liftIO $ flip Sqlite.runSqlPool (connPool config) $ do
+        inDB <- WaiTest.liftIO $ flip Sqlite.runSqlPool (env^.pool) $ do
           Sqlite.exists [ BlogPostShortTitle ==. sTitle ]
 
         inDB `shouldBe'` False

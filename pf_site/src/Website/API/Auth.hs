@@ -1,19 +1,15 @@
 module Website.API.Auth where
 
-import Control.Monad ( void )
+import Control.Lens
+
 import Control.Monad.IO.Class ( liftIO )
-import Control.Monad.Logger ( runStderrLoggingT )
-import Control.Monad.Reader ( ask )
+import Control.Monad.Reader ( asks )
 
 import Data.Aeson ( FromJSON, ToJSON )
 
 import Data.Text ( Text )
 
-import Database.Persist.Sqlite ( createSqlitePool )
-
 import GHC.Generics ( Generic )
-
-import Network.Wai.Handler.Warp ( run )
 
 import Servant
 import Servant.Auth
@@ -43,61 +39,28 @@ type LoginAPI =
   "login" :> ReqBody '[JSON] LoginPayload :> Verb 'POST 204 '[JSON] CookieAuthResult
 
 
+type RequiresAuth = Auth '[JWT, Cookie] LoginPayload
+
+
 loginServer :: CookieSettings -> JWTSettings -> ServerT LoginAPI WebsiteM
 loginServer cookieSettings jwtSettings = verify
   where
     verify :: LoginPayload -> WebsiteM CookieAuthResult
-    verify payload@(LoginPayload username password) = do
-      config <- ask
+    verify login = do
+      creds <- asks $ view (config . admin)
 
-      let cookieSettings' = cookieSettings { cookieSameSite = SameSiteStrict }
+      let cookieSettings' =
+            cookieSettings { cookieSameSite = SameSiteStrict }
 
-      if adminUser config == username && adminPass config == password
+      if isAdmin creds login
         then do
-          mApplyCookies <- liftIO $ acceptLogin cookieSettings' jwtSettings payload
+          mApplyCookies <- liftIO $ acceptLogin cookieSettings' jwtSettings login
           case mApplyCookies of
              Just applyCookies -> return $ applyCookies NoContent
              Nothing           -> throwError err401
         else
           throwError err401
 
-
-type RequiresAuth = Auth '[JWT, Cookie] LoginPayload
-
-
-type DebugProtectedAPI = "protected" :> Get '[JSON] Text
-
-
-debugProtected :: AuthResult LoginPayload -> ServerT DebugProtectedAPI WebsiteM
-debugProtected (Authenticated _) = return "Success!"
-debugProtected _                 = throwError err401
-
-
-type DebugServerAPI = (Auth '[JWT, Cookie] LoginPayload :> DebugProtectedAPI) :<|> LoginAPI
-
-
-debugServer :: CookieSettings -> JWTSettings -> ServerT DebugServerAPI WebsiteM
-debugServer cookieSettings jwtSettings = debugProtected :<|> loginServer cookieSettings jwtSettings
-
-
-debugAuth :: IO ()
-debugAuth = do
-  pool <- runStderrLoggingT $ createSqlitePool "database.sqlite" 1
-
-  jwtSettings <- defaultJWTSettings <$> generateKey
-
-  (Right token) <- makeJWT (LoginPayload "pure" "pure") jwtSettings Nothing
-
-  print token
-
-  let api    = Proxy :: Proxy DebugServerAPI
-
-  let ctx    = defaultCookieSettings :. jwtSettings :. EmptyContext
-  let ctx'   = Proxy :: Proxy '[CookieSettings, JWTSettings]
-
-  let config = Configuration "pure" "pure" pool
-  let server = debugServer defaultCookieSettings jwtSettings
-
-  let app    = serveWithContext api ctx $ hoistServerWithContext api ctx' (runWebsiteM config) server
-
-  void $ run 3000 app
+    isAdmin :: AdminCreds -> LoginPayload -> Bool
+    isAdmin (AdminCreds aUser aPass) (LoginPayload cUser cPass) =
+      (aUser, aPass) == (cUser, cPass)

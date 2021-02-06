@@ -1,5 +1,7 @@
 module Website.App where
 
+import Control.Lens hiding ( Context )
+
 import Control.Monad ( void )
 
 import Database.Persist.Sqlite
@@ -26,8 +28,8 @@ websiteServer cookieSettings jwtSettings =
   loginServer cookieSettings jwtSettings :<|> blogPostServer :<|> repositoryServer
 
 
-websiteApp :: JWTSettings -> Configuration -> Application
-websiteApp jwtSettings config =
+websiteApp :: JWTSettings -> Environment -> Application
+websiteApp jwtSettings env =
   serveWithContext api ctx $ hoistServerWithContext api ctx' unwrap server
   where
     api :: Proxy WebsiteAPI
@@ -40,7 +42,7 @@ websiteApp jwtSettings config =
     ctx' = Proxy
 
     unwrap :: WebsiteM r -> Handler r
-    unwrap = runWebsiteM config
+    unwrap = runWebsiteM env
 
     server :: ServerT WebsiteAPI WebsiteM
     server = websiteServer defaultCookieSettings jwtSettings
@@ -48,7 +50,7 @@ websiteApp jwtSettings config =
 
 run :: Port -> IO ()
 run port = do
-  config <- mkConfiguration
+  env <- mkEnvironment
   jwtSettings <- defaultJWTSettings <$> generateKey
-  runSqlPool (runMigration migrateAll) (connPool config)
-  void $ Warp.run port (websiteApp jwtSettings config)
+  runSqlPool (runMigration migrateAll) (env^.pool)
+  void $ Warp.run port (websiteApp jwtSettings env)

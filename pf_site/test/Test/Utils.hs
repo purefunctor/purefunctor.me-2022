@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Test.Utils where
 
+import Control.Lens ( (^.) )
+
 import Control.Monad.IO.Class ( MonadIO )
 
 import Data.Aeson ( FromJSON, Value, decode, encode, object, (.=) )
@@ -32,11 +34,11 @@ putJSON path headers = request methodPut path headers' . encode
     headers' = ("Content-Type", "application/json") : headers
 
 
-withAuth :: Configuration -> ([Header] -> WaiSession st a) -> WaiSession st a
-withAuth config operations = do
+withAuth :: Environment -> ([Header] -> WaiSession st a) -> WaiSession st a
+withAuth env operations = do
   let loginPayload = object
-        [ "username" .= adminUser config
-        , "password" .= adminUser config
+        [ "username" .= (env^.config.admin.username)
+        , "password" .= (env^.config.admin.password)
         ]
 
   mAuthHeaders <-
