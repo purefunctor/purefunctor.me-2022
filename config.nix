@@ -1,4 +1,4 @@
-{  }:
+{ doCheck ? false }:
 
 let
   compiler = "ghc884";
@@ -15,7 +15,11 @@ let
 
                 manualOverrides = self: super: {
                   # Make sure that our project has its own derivation.
-                  purefunctor-me = super.callCabal2nix "purefunctor-me" ./. { };
+                  purefunctor-me = 
+                  let
+                    func = if doCheck then haskell.lib.doCheck else pkgs.lib.id;
+                  in
+                    func (super.callCabal2nix "purefunctor-me" ./. { });
 
                   # Disable tests and benchmarks for all packages.
                   mkDerivation = args: super.mkDerivation ({

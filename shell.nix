@@ -1,13 +1,18 @@
-{  }:
+{ doCheck ? false }:
 
 let
 
-  config = import ./config.nix {  };
+  config = import ./config.nix { inherit doCheck; };
 
   haskellPackages = config.nixpkgs.haskell.packages.${config.compiler};
 
-  project = haskellPackages.purefunctor-me;
-
 in
-
-  if config.nixpkgs.lib.inNixShell then project.env else project
+  haskellPackages.shellFor {
+    name = "development-shell";
+    packages = _: [
+      haskellPackages.purefunctor-me
+    ];
+    buildInputs = [
+      config.nixpkgs.cabal-install
+    ];
+  }

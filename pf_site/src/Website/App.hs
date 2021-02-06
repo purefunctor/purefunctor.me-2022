@@ -1,9 +1,6 @@
 module Website.App where
 
 import Control.Monad ( void )
-import Control.Monad.Logger ( runStderrLoggingT )
-
-import Data.Time ( getCurrentTime )
 
 import Database.Persist.Sqlite
 
@@ -21,16 +18,17 @@ import Website.Models
 import Website.WebsiteM
 
 
-type WebsiteAPI = BlogPostAPI :<|> RepositoryAPI
+type WebsiteAPI = LoginAPI :<|> BlogPostAPI :<|> RepositoryAPI
 
 
-websiteServer :: ServerT WebsiteAPI WebsiteM
-websiteServer = blogPostServer :<|> repositoryServer
+websiteServer :: CookieSettings -> JWTSettings -> ServerT WebsiteAPI WebsiteM
+websiteServer cookieSettings jwtSettings =
+  loginServer cookieSettings jwtSettings :<|> blogPostServer :<|> repositoryServer
 
 
 websiteApp :: JWTSettings -> Configuration -> Application
 websiteApp jwtSettings config =
-  serveWithContext api ctx $ hoistServerWithContext api ctx' (runWebsiteM config) websiteServer
+  serveWithContext api ctx $ hoistServerWithContext api ctx' unwrap server
   where
     api :: Proxy WebsiteAPI
     api = Proxy
@@ -41,6 +39,12 @@ websiteApp jwtSettings config =
     ctx' :: Proxy '[CookieSettings, JWTSettings]
     ctx' = Proxy
 
+    unwrap :: WebsiteM r -> Handler r
+    unwrap = runWebsiteM config
+
+    server :: ServerT WebsiteAPI WebsiteM
+    server = websiteServer defaultCookieSettings jwtSettings
+
 
 run :: Port -> IO ()
 run port = do
@@ -48,29 +52,3 @@ run port = do
   jwtSettings <- defaultJWTSettings <$> generateKey
   runSqlPool (runMigration migrateAll) (connPool config)
   void $ Warp.run port (websiteApp jwtSettings config)
-
-
-debug :: IO ()
-debug = do
-  pool <- runStderrLoggingT $ createSqlitePool ":memory:" 1
-  jwk <- generateKey
-
-  let (user, pass) = ("pure", "pure")
-  let jwtSettings = defaultJWTSettings jwk
-  let config = Configuration user pass pool
-  let app = websiteApp jwtSettings config
-
-  now <- getCurrentTime
-
-  flip runSqlPool pool $ do
-    runMigration migrateAll
-    insert $ BlogPost "Haskell Is Simple" "haskell-is-simple" "SOON™" now now
-    insert $ BlogPost "Python Is Awesome" "python-is-awesome" "SOON™" now now
-    insert $ Repository "amalgam-lisp" "PureFunctor" "https://github.com/PureFunctor/amalgam-lisp" 0 0
-    insert $ Repository "purefunctor.me" "PureFunctor" "https://github.com/PureFunctor/purefunctor.me" 0 0
-
-  (Right jwt) <- makeJWT (LoginPayload user pass) jwtSettings Nothing
-
-  putStrLn $ "Authorization: Bearer " <> filter (/= '"') (show jwt)
-
-  void $ Warp.run 3000 app

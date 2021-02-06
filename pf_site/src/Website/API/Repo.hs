@@ -44,7 +44,7 @@ type RepositoryAPI =
 
       RequiresAuth
         :> Capture "name" Text
-          :> Put '[JSON] MutableEndpointResult
+          :> Delete '[JSON] MutableEndpointResult
     )
 
 

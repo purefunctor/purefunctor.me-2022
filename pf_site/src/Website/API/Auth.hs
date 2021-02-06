@@ -43,8 +43,8 @@ type LoginAPI =
   "login" :> ReqBody '[JSON] LoginPayload :> Verb 'POST 204 '[JSON] CookieAuthResult
 
 
-login :: CookieSettings -> JWTSettings -> ServerT LoginAPI WebsiteM
-login cookieSettings jwtSettings = verify
+loginServer :: CookieSettings -> JWTSettings -> ServerT LoginAPI WebsiteM
+loginServer cookieSettings jwtSettings = verify
   where
     verify :: LoginPayload -> WebsiteM CookieAuthResult
     verify payload@(LoginPayload username password) = do
@@ -77,7 +77,7 @@ type DebugServerAPI = (Auth '[JWT, Cookie] LoginPayload :> DebugProtectedAPI) :<
 
 
 debugServer :: CookieSettings -> JWTSettings -> ServerT DebugServerAPI WebsiteM
-debugServer cookieSettings jwtSettings = debugProtected :<|> login cookieSettings jwtSettings
+debugServer cookieSettings jwtSettings = debugProtected :<|> loginServer cookieSettings jwtSettings
 
 
 debugAuth :: IO ()
