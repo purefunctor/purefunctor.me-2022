@@ -68,18 +68,18 @@ repositoryServer =
   where
     getRepositories :: WebsiteM [Repository]
     getRepositories = do
-      pool <- asks connPool
+      pool' <- asks $ view pool
 
-      repositories <- liftIO $ flip runSqlPersistMPool pool $
+      repositories <- liftIO $ flip runSqlPersistMPool pool' $
         selectList [ ] [ ]
 
       return $ entityVal <$> repositories
 
     getRepository :: Text -> WebsiteM Repository
     getRepository n = do
-      pool <- asks connPool
+      pool' <- asks $ view pool
 
-      repository <- liftIO $ flip runSqlPersistMPool pool $
+      repository <- liftIO $ flip runSqlPersistMPool pool' $
         selectFirst [ RepositoryName ==. n ] [ ]
 
       case repository of
@@ -91,7 +91,7 @@ repositoryServer =
       -> MutableRepositoryData
       -> WebsiteM MutableEndpointResult
     createRepository (Authenticated _) payload = do
-      pool <- asks connPool
+      pool' <- asks $ view pool
 
       let autoUrl o n = Text.concat [ "https://github.com" , o , "/" , n ]
 
@@ -109,7 +109,7 @@ repositoryServer =
       case mRepo of
 
         Just repo -> do
-          void $ liftIO $ flip runSqlPersistMPool pool $ insert repo
+          void $ liftIO $ flip runSqlPersistMPool pool' $ insert repo
 
           let message = "Repository created: " <> repositoryName repo
           let result = MutableEndpointResult 200 message
@@ -126,7 +126,7 @@ repositoryServer =
       -> MutableRepositoryData
       -> WebsiteM MutableEndpointResult
     updateRepository (Authenticated _) rName payload = do
-      pool <- asks connPool
+      pool' <- asks $ view pool
 
       let mUpdates = filter isJust
             [ (RepositoryName    =.) <$> payload ^. name
@@ -144,7 +144,7 @@ repositoryServer =
           case sequenceA mUpdates' of
 
             Just updates -> do
-              void $ liftIO $ flip runSqlPersistMPool pool $
+              void $ liftIO $ flip runSqlPersistMPool pool' $
                 update (RepositoryKey rName) updates
               return $ MutableEndpointResult 200 "Repository updated."
 
@@ -157,14 +157,14 @@ repositoryServer =
       -> Text
       -> WebsiteM MutableEndpointResult
     deleteRepository (Authenticated _) rName = do
-      pool <- asks connPool
+      pool' <- asks $ view pool
 
-      inDatabase <- liftIO $ flip runSqlPersistMPool pool $
+      inDatabase <- liftIO $ flip runSqlPersistMPool pool' $
         exists [ RepositoryName ==. rName ]
 
       if inDatabase
         then do
-          liftIO $ flip runSqlPersistMPool pool $ delete $ RepositoryKey rName
+          liftIO $ flip runSqlPersistMPool pool' $ delete $ RepositoryKey rName
           return $ MutableEndpointResult 200 "Repository deleted."
         else
           throwError err404
