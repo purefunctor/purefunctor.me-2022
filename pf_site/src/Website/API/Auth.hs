@@ -1,7 +1,9 @@
 module Website.API.Auth where
 
+import Control.Lens
+
 import Control.Monad.IO.Class ( liftIO )
-import Control.Monad.Reader ( ask )
+import Control.Monad.Reader ( asks )
 
 import Data.Aeson ( FromJSON, ToJSON )
 
@@ -37,23 +39,28 @@ type LoginAPI =
   "login" :> ReqBody '[JSON] LoginPayload :> Verb 'POST 204 '[JSON] CookieAuthResult
 
 
+type RequiresAuth = Auth '[JWT, Cookie] LoginPayload
+
+
 loginServer :: CookieSettings -> JWTSettings -> ServerT LoginAPI WebsiteM
 loginServer cookieSettings jwtSettings = verify
   where
     verify :: LoginPayload -> WebsiteM CookieAuthResult
-    verify payload@(LoginPayload username password) = do
-      config <- ask
+    verify login = do
+      creds <- asks $ view (config . admin)
 
-      let cookieSettings' = cookieSettings { cookieSameSite = SameSiteStrict }
+      let cookieSettings' =
+            cookieSettings { cookieSameSite = SameSiteStrict }
 
-      if adminUser config == username && adminPass config == password
+      if isAdmin creds login
         then do
-          mApplyCookies <- liftIO $ acceptLogin cookieSettings' jwtSettings payload
+          mApplyCookies <- liftIO $ acceptLogin cookieSettings' jwtSettings login
           case mApplyCookies of
              Just applyCookies -> return $ applyCookies NoContent
              Nothing           -> throwError err401
         else
           throwError err401
 
-
-type RequiresAuth = Auth '[JWT, Cookie] LoginPayload
+    isAdmin :: AdminCreds -> LoginPayload -> Bool
+    isAdmin (AdminCreds aUser aPass) (LoginPayload cUser cPass) =
+      (aUser, aPass) == (cUser, cPass)
