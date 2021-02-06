@@ -1,0 +1,11 @@
+[admin]
+username = "pure"
+password = "pure"
+
+[database]
+filename = "database.sqlite3"
+connections = 2
+
+[github]
+username = "PureFunctor"
+token = ""
