@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Test.Repo where
 
+import Control.Lens ( (^.) )
+
 import Control.Monad
 
 import Data.Aeson
@@ -22,10 +24,10 @@ import Website.Config
 import Website.Models
 
 
-testRepo :: Configuration -> Application -> Spec
-testRepo config app = with (pure app) $ do
+testRepo :: Environment -> Application -> Spec
+testRepo env app = with (pure app) $ do
 
-  let loginPayload = mkLoginPayload config
+  let loginPayload = mkLoginPayload env
 
   describe "GET /repo" $ do
     it "should return all repositories" $ do
@@ -50,10 +52,10 @@ testRepo config app = with (pure app) $ do
       postJSON "/repo" [] (toJSON newRepo) `shouldRespondWith` 401
 
     it "should mutate the datababse" $ do
-      withAuth config $ \authHeaders -> do
+      withAuth env $ \authHeaders -> do
         postJSON "/repo" authHeaders (toJSON newRepo) `shouldRespondWith` 200
 
-        inDB <- WaiTest.liftIO $ flip Sqlite.runSqlPool (connPool config) $ do
+        inDB <- WaiTest.liftIO $ flip Sqlite.runSqlPool (env^.pool) $ do
           Sqlite.exists [ RepositoryName ==. rName ]
 
         inDB `shouldBe'` True
@@ -65,7 +67,7 @@ testRepo config app = with (pure app) $ do
             , newRepo { _owner = Nothing }
             ]
 
-      withAuth config $ \authHeaders ->
+      withAuth env $ \authHeaders ->
         forM_ invalid $ \payload ->
           postJSON "/repo" authHeaders (toJSON payload) `shouldRespondWith` 400
 
@@ -80,11 +82,11 @@ testRepo config app = with (pure app) $ do
       putJSON endpoint [] mutation `shouldRespondWith` 401
 
     it "should mutate the database" $ do
-      withAuth config $ \authHeaders -> do
+      withAuth env $ \authHeaders -> do
         putJSON endpoint authHeaders mutation `shouldRespondWith` 200
 
         mMutated <-
-          WaiTest.liftIO $ flip Sqlite.runSqlPersistMPool (connPool config) $
+          WaiTest.liftIO $ flip Sqlite.runSqlPersistMPool (env^.pool) $
             Sqlite.get (RepositoryKey rName)
 
         case mMutated of
@@ -92,7 +94,7 @@ testRepo config app = with (pure app) $ do
           Nothing      -> fail "failed to obtain blog post"
 
     it "should require at least one field" $ do
-      withAuth config $ \authHeaders ->
+      withAuth env $ \authHeaders ->
         putJSON endpoint authHeaders (object []) `shouldRespondWith` 400
 
   describe "DELETE /repo/<repository-name>" $ do
@@ -102,10 +104,10 @@ testRepo config app = with (pure app) $ do
       delete' endpoint [] `shouldRespondWith` 401
 
     it "should mutate the database" $ do
-      withAuth config $ \authHeaders -> do
+      withAuth env $ \authHeaders -> do
         delete' endpoint authHeaders `shouldRespondWith` 200
 
-        inDB <- WaiTest.liftIO $ flip Sqlite.runSqlPool (connPool config) $ do
+        inDB <- WaiTest.liftIO $ flip Sqlite.runSqlPool (env^.pool) $ do
           Sqlite.exists [ RepositoryName ==. rName ]
 
         inDB `shouldBe'` False

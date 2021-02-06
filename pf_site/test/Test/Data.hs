@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Test.Data where
 
+import Control.Lens ( (^.) )
+
 import Data.Aeson
 
 import Data.Time
@@ -27,8 +29,8 @@ posts =
     next = UTCTime (fromJulian 2020 02 03) (secondsToDiffTime 0)
 
 
-mkLoginPayload :: Configuration -> Value
-mkLoginPayload config = object
-    [ "username" .= adminUser config
-    , "password" .= adminPass config
+mkLoginPayload :: Environment -> Value
+mkLoginPayload env = object
+    [ "username" .= (env^.config.admin.username)
+    , "password" .= (env^.config.admin.password)
     ]

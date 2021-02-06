@@ -95,6 +95,7 @@ test-suite purefunctor-me-test
                        bytestring,
                        cookie,
                        http-types,
+                       lens,
                        persistent,
                        persistent-sqlite,
                        text,

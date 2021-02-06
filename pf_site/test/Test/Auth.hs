@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Test.Auth where
 
+import Control.Lens ( (^.) )
+
 import Data.Aeson
 
 import Network.Wai
@@ -14,12 +16,12 @@ import Web.Cookie
 import Website.Config
 
 
-testAuth :: Configuration -> Application -> Spec
-testAuth config app = with (pure app) $ do
+testAuth :: Environment -> Application -> Spec
+testAuth env app = with (pure app) $ do
   describe "POST /login" $ do
     let value = object
-          [ "username" .= adminUser config
-          , "password" .= adminUser config
+          [ "username" .= (env^.config.admin.username)
+          , "password" .= (env^.config.admin.password)
           ]
     it "should return 204 on a successful login" $ do
       postJSON "/login" [] value `shouldRespondWith` 204
