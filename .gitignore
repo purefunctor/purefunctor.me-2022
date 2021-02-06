@@ -38,3 +38,7 @@ static
 .cache
 .envrc
 result
+
+# Runtime
+database.sqlite3*
+config.toml
