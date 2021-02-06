@@ -1,16 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Test.Auth where
 
+import Data.Aeson
+
+import Network.Wai
+
 import Test.Hspec
 import Test.Hspec.Wai as WaiTest
 import Test.Utils
-
-import Data.Aeson
-
-import qualified Data.ByteString as BS
-
-import Network.Wai
-import Network.Wai.Test as WaiTest
 
 import Web.Cookie
 

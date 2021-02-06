@@ -10,12 +10,12 @@ import qualified Database.Persist.Sqlite as Sqlite
 
 import Data.Text.Encoding
 
+import Network.Wai
+
 import Test.Data
 import Test.Hspec
 import Test.Hspec.Wai as WaiTest
 import Test.Utils
-
-import Network.Wai
 
 import Website.API.Repo
 import Website.Config

@@ -6,7 +6,6 @@ import Test.Data
 import Test.Hspec
 import Test.Repo
 
-import Website.Config
 import Website.Debug
 
 

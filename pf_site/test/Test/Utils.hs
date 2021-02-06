@@ -1,9 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Test.Utils where
 
-import Test.Hspec
-import Test.Hspec.Wai
-
 import Control.Monad.IO.Class ( MonadIO )
 
 import Data.Aeson ( FromJSON, Value, decode, encode, object, (.=) )
@@ -14,6 +11,9 @@ import Data.ByteString ( ByteString )
 
 import Network.HTTP.Types ( Header, methodDelete, methodPost, methodPut )
 import Network.Wai.Test ( SResponse(simpleHeaders) )
+
+import Test.Hspec
+import Test.Hspec.Wai
 
 import Web.Cookie ( SetCookie(setCookieName, setCookieValue), parseSetCookie )
 

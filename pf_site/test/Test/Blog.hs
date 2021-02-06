@@ -13,12 +13,12 @@ import Data.Time.Calendar.Julian
 import           Database.Persist.Sqlite ( (==.) )
 import qualified Database.Persist.Sqlite as Sqlite
 
+import Network.Wai
+
 import Test.Data
 import Test.Hspec
 import Test.Hspec.Wai as WaiTest
 import Test.Utils
-
-import Network.Wai
 
 import Website.API.Blog
 import Website.Config
@@ -49,7 +49,7 @@ testBlog config app = with (pure app) $ do
         (Just lTitle) (Just sTitle) (Just pBody) (Just tNow) (Just tNext)
 
   describe "POST /blog" $ do
-    it "should require authentication " $ do
+    it "should require authentication" $ do
       postJSON "/blog" [] (toJSON newPost) `shouldRespondWith` 401
 
     it "should mutate the database" $ do
@@ -78,7 +78,7 @@ testBlog config app = with (pure app) $ do
           [ "contents" .= contents'
           ]
 
-    it "should require authentication " $ do
+    it "should require authentication" $ do
       putJSON endpoint [] mutation `shouldRespondWith` 401
 
     it "should mutate the database" $ do
@@ -100,7 +100,7 @@ testBlog config app = with (pure app) $ do
   describe "DELETE /blog/<short-title>" $ do
     let endpoint = "/blog/" <> encodeUtf8 sTitle
 
-    it "should require authentication " $ do
+    it "should require authentication" $ do
       delete' endpoint [] `shouldRespondWith` 401
 
     it "should mutate the database" $ do
