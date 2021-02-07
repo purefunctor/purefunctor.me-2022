@@ -47,6 +47,7 @@ library
 
   build-depends:       base ^>=4.13.0.0,
                        aeson,
+                       cron,
                        jose,
                        lens,
                        monad-logger,
@@ -55,6 +56,7 @@ library
                        persistent,
                        persistent-sqlite,
                        persistent-template,
+                       req,
                        servant,
                        servant-server,
                        servant-auth,
