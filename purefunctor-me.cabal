@@ -23,6 +23,7 @@ library
                        Website.Config,
                        Website.Debug,
                        Website.Models,
+                       Website.Tasks,
                        Website.Utils,
                        Website.WebsiteM
 
