@@ -6,11 +6,12 @@ import Control.Concurrent.Async
 import Control.Lens
 
 import Control.Monad
-import Control.Monad.IO.Class ( MonadIO(liftIO) )
+import Control.Monad.Except
 
 import Data.Aeson
 import Data.Aeson.Types
 
+import Data.Text
 import Data.Text.Encoding
 
 import Database.Persist.Sqlite
@@ -21,6 +22,17 @@ import System.Cron
 
 import Website.Config
 import Website.Models
+
+
+type RequestM = ExceptT Text Req
+
+
+instance MonadHttp RequestM where
+  handleHttpException _ = throwError "an http exception was encountered"
+
+
+runRequestM :: RequestM r -> IO (Either Text r)
+runRequestM = runReq defaultHttpConfig . runExceptT
 
 
 getRepositoryStats :: Environment -> Repository -> IO (Maybe (Int, Int))
@@ -36,24 +48,33 @@ getRepositoryStats env repository =
       /: repositoryOwner repository
       /: repositoryName repository
 
-    getResource :: Url 'Https -> IO Value
-    getResource url = fmap responseBody . runReq defaultHttpConfig $
-      req GET url NoReqBody jsonResponse
-        ( header "User-Agent" "purefunctor.me" <>
-          basicAuth (encodeUtf8 $ env^.config.github.username)
-                    (encodeUtf8 $ env^.config.github.token)
-        )
+    getResource :: Url 'Https -> IO (Either Text Value)
+    getResource url = do
+      response <- runRequestM $
+        req GET url NoReqBody jsonResponse
+            ( header "User-Agent" "purefunctor.me" <>
+              basicAuth (encodeUtf8 $ env^.config.github.username)
+                        (encodeUtf8 $ env^.config.github.token)
+            )
+
+      return $ responseBody <$> response
 
     getStars :: IO (Maybe Int)
     getStars = do
       value <- getResource repoUrl
-      return $ parseMaybe (withObject "stargazers" (.: "stargazers_count")) value
+      case value of
+        Left _ -> return Nothing
+        Right val ->
+          return $ parseMaybe (withObject "stargazers" (.: "stargazers_count")) val
 
     getCommits :: IO (Maybe Int)
     getCommits = do
       value <- getResource $ repoUrl /: "stats" /: "participation"
-      return $ sum <$>
-        (parseMaybe (withObject "participation" (.: "all")) value :: Maybe [Int])
+      case value of
+        Left _ -> return Nothing
+        Right val ->
+          return $ sum <$>
+            (parseMaybe (withObject "participation" (.: "all")) val :: Maybe [Int])
 
 
 updateRepositoryStats :: Environment -> IO ()
