@@ -1,5 +1,6 @@
 module Website.Tasks where
 
+import Control.Concurrent ( ThreadId )
 import Control.Concurrent.Async
 
 import Control.Lens
@@ -15,6 +16,8 @@ import Data.Text.Encoding
 import Database.Persist.Sqlite
 
 import Network.HTTP.Req as Req
+
+import System.Cron
 
 import Website.Config
 import Website.Models
@@ -73,3 +76,7 @@ updateRepositoryStats env = do
             , RepositoryCommits =. commits
             ]
       Nothing -> print "not updating repository"
+
+
+runTasks :: Environment -> IO [ThreadId]
+runTasks env = execSchedule $ addJob (updateRepositoryStats env) "0 */3 * * *"
