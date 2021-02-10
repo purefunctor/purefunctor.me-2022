@@ -48,8 +48,6 @@ withAuth env operations = do
     Just authHeaders -> operations authHeaders
     Nothing          -> fail "failed to create authentication headers"
 
-  return undefined
-
 
 delete' :: ByteString -> [Header] -> WaiSession st SResponse
 delete' path headers = request methodDelete path headers ""
