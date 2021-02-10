@@ -7,6 +7,7 @@ import Control.Lens
 
 import Control.Monad
 import Control.Monad.Except
+import Control.Monad.Logger
 
 import Data.Aeson
 import Data.Aeson.Types
@@ -63,7 +64,8 @@ getRepositoryStats env repository =
     getStars = do
       value <- getResource repoUrl
       case value of
-        Left _ -> return Nothing
+        Left err ->
+          runStderrLoggingT $ logErrorN err >> return Nothing
         Right val ->
           return $ parseMaybe (withObject "stargazers" (.: "stargazers_count")) val
 
@@ -71,7 +73,8 @@ getRepositoryStats env repository =
     getCommits = do
       value <- getResource $ repoUrl /: "stats" /: "participation"
       case value of
-        Left _ -> return Nothing
+        Left err ->
+          runStderrLoggingT $ logErrorN err >> return Nothing
         Right val ->
           return $ sum <$>
             (parseMaybe (withObject "participation" (.: "all")) val :: Maybe [Int])
@@ -96,7 +99,7 @@ updateRepositoryStats env = do
             [ RepositoryStars   =. stars
             , RepositoryCommits =. commits
             ]
-      Nothing -> print "not updating repository"
+      Nothing -> runStderrLoggingT $ logErrorN "not updating repository"
 
 
 runTasks :: Environment -> IO [ThreadId]
