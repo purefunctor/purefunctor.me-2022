@@ -38,9 +38,9 @@ testRepo env app = with (pure app) $ do
         let endpoint = "/repo/" <> encodeUtf8 (repositoryName repo')
         get endpoint `shouldRespondWith` matchCodeJSON 200 repo'
 
-  let rName    = "example-boilerplate"
+  let rName    = "purefunctor.me-legacy"
   let rOwner   = "PureFunctor"
-  let rUrl     = "https://github.com/PureFunctor/example-boilerplate"
+  let rUrl     = "https://github.com/PureFunctor/purefunctor.me-legacy"
   let rStars   = 0
   let rCommits = 0
 

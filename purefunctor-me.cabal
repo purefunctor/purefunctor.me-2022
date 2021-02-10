@@ -23,6 +23,7 @@ library
                        Website.Config,
                        Website.Debug,
                        Website.Models,
+                       Website.Tasks,
                        Website.Utils,
                        Website.WebsiteM
 
@@ -47,6 +48,8 @@ library
 
   build-depends:       base ^>=4.13.0.0,
                        aeson,
+                       async,
+                       cron,
                        jose,
                        lens,
                        monad-logger,
@@ -55,6 +58,7 @@ library
                        persistent,
                        persistent-sqlite,
                        persistent-template,
+                       req,
                        servant,
                        servant-server,
                        servant-auth,
@@ -62,6 +66,7 @@ library
                        text,
                        time,
                        tomland,
+                       transformers,
                        wai,
                        warp,
 
