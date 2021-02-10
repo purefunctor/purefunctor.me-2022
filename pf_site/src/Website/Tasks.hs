@@ -1,7 +1,10 @@
 module Website.Tasks where
 
+import Control.Concurrent.Async
+
 import Control.Lens
 
+import Control.Monad
 import Control.Monad.IO.Class ( MonadIO(liftIO) )
 
 import Data.Aeson
@@ -50,12 +53,23 @@ getRepositoryStats env repository =
         (parseMaybe (withObject "participation" (.: "all")) value :: Maybe [Int])
 
 
-updateRepositoryStats :: Environment -> Repository -> IO ()
-updateRepositoryStats env repository = do
-  mStats <- getRepositoryStats env repository
-  case mStats of
-    Just (stars, commits) -> do
-      liftIO $ flip runSqlPersistMPool (env^.pool) $
-        update (RepositoryKey $ repositoryName repository)
-          [ RepositoryStars =. stars, RepositoryCommits =. commits ]
-    Nothing -> putStrLn "did not update repository stats"
+updateRepositoryStats :: Environment -> IO ()
+updateRepositoryStats env = do
+  repositories <-
+    liftIO $ flip runSqlPersistMPool (env^.pool) $ selectList [ ] [ ]
+
+  -- Pure operations are guaranteed to be safe
+  repoStats <-
+    forConcurrently (entityVal <$> repositories) $ \repository ->
+      (,) <$> pure repository <*> getRepositoryStats env repository
+
+  -- Mindfulness of impure operations is a must
+  forM_ repoStats $ \(repository, mStats) ->
+    case mStats of
+      Just (stars, commits) ->
+        liftIO $ flip runSqlPersistMPool (env^.pool) $
+          update (RepositoryKey $ repositoryName repository)
+            [ RepositoryStars   =. stars
+            , RepositoryCommits =. commits
+            ]
+      Nothing -> print "not updating repository"
