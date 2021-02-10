@@ -6,7 +6,7 @@ import Control.Lens
 
 import Control.Monad ( void )
 import Control.Monad.IO.Class ( liftIO )
-import Control.Monad.Reader ( asks )
+import Control.Monad.Reader ( ask, asks )
 
 import Data.Maybe ( isJust )
 
@@ -23,6 +23,7 @@ import Website.API.Common
 import Website.Config
 import Website.Models
 import Website.Utils
+import Website.Tasks
 import Website.WebsiteM
 
 
@@ -109,9 +110,21 @@ repositoryServer =
       case mRepo of
 
         Just repo -> do
-          void $ liftIO $ flip runSqlPersistMPool pool' $ insert repo
+          env <- ask
 
-          let message = "Repository created: " <> repositoryName repo
+          mStats <- liftIO $ getRepositoryStats env repo
+
+          let repo' =
+                case mStats of
+                  Just (stars', commits') ->
+                    repo { repositoryStars = stars'
+                         , repositoryCommits = commits'
+                         }
+                  Nothing -> repo
+
+          liftIO $ flip runSqlPersistMPool pool' $ insert repo'
+
+          let message = "Repository created: " <> repositoryName repo'
           let result = MutableEndpointResult 200 message
 
           return result
