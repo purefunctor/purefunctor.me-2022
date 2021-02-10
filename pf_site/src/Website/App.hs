@@ -2,8 +2,6 @@ module Website.App where
 
 import Control.Lens hiding ( Context )
 
-import Control.Monad ( void )
-
 import Database.Persist.Sqlite
 
 import           Network.Wai.Handler.Warp ( Port )
@@ -17,6 +15,7 @@ import Website.API.Blog
 import Website.API.Repo
 import Website.Config
 import Website.Models
+import Website.Tasks
 import Website.WebsiteM
 
 
@@ -52,5 +51,8 @@ run :: Port -> IO ()
 run port = do
   env <- mkEnvironment
   jwtSettings <- defaultJWTSettings <$> generateKey
+
   runSqlPool (runMigration migrateAll) (env^.pool)
-  void $ Warp.run port (websiteApp jwtSettings env)
+
+  _ <- runTasks env
+  Warp.run port (websiteApp jwtSettings env)
