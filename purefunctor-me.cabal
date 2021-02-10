@@ -48,6 +48,7 @@ library
 
   build-depends:       base ^>=4.13.0.0,
                        aeson,
+                       async,
                        cron,
                        jose,
                        lens,
