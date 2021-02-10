@@ -66,6 +66,7 @@ library
                        text,
                        time,
                        tomland,
+                       transformers,
                        wai,
                        warp,
 
