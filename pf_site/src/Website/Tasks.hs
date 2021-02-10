@@ -61,7 +61,7 @@ updateRepositoryStats env = do
   -- Pure operations are guaranteed to be safe
   repoStats <-
     forConcurrently (entityVal <$> repositories) $ \repository ->
-      (,) <$> pure repository <*> getRepositoryStats env repository
+      (,) repository <$> getRepositoryStats env repository
 
   -- Mindfulness of impure operations is a must
   forM_ repoStats $ \(repository, mStats) ->
