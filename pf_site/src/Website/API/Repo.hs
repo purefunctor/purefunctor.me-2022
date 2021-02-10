@@ -8,7 +8,7 @@ import Control.Monad ( void )
 import Control.Monad.IO.Class ( liftIO )
 import Control.Monad.Reader ( ask, asks )
 
-import Data.Maybe ( isJust )
+import Data.Maybe ( fromMaybe, isJust )
 
 import           Data.Text ( Text )
 import qualified Data.Text as Text
@@ -92,42 +92,36 @@ repositoryServer =
       -> MutableRepositoryData
       -> WebsiteM MutableEndpointResult
     createRepository (Authenticated _) payload = do
-      pool' <- asks $ view pool
+      env <- ask
 
       let autoUrl o n = Text.concat [ "https://github.com" , o , "/" , n ]
 
       let mRepo = Repository
-            <$> payload ^. name
-            <*> payload ^. owner
-            <*> ( payload ^. url <|>
+            <$> payload^.name
+            <*> payload^.owner
+            <*> ( payload^.url <|>
                   autoUrl
-                    <$> payload ^. owner
-                    <*> payload ^. name
+                    <$> payload^.owner
+                    <*> payload^.name
                 )
-            <*> payload ^. stars
-            <*> payload ^. commits
+            <*> Just 0
+            <*> Just 0
 
       case mRepo of
-
         Just repo -> do
-          env <- ask
-
           mStats <- liftIO $ getRepositoryStats env repo
 
-          let repo' =
-                case mStats of
-                  Just (stars', commits') ->
-                    repo { repositoryStars = stars'
-                         , repositoryCommits = commits'
-                         }
-                  Nothing -> repo
+          repoKey <- liftIO $ flip runSqlPersistMPool (env^.pool) $
+            insert $ case mStats of
+              Just (ghStars, ghCommits) ->
+                repo { repositoryStars = fromMaybe ghStars $ payload^.stars
+                     , repositoryCommits = fromMaybe ghCommits $ payload^.commits
+                     }
+              Nothing -> repo
 
-          liftIO $ flip runSqlPersistMPool pool' $ insert repo'
-
-          let message = "Repository created: " <> repositoryName repo'
-          let result = MutableEndpointResult 200 message
-
-          return result
+          return $
+            MutableEndpointResult 200 $
+              "Repository created: " <> unRepositoryKey repoKey
 
         Nothing -> throwError err400
 
