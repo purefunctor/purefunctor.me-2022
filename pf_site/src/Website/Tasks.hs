@@ -13,7 +13,7 @@ import Website.Config
 import Website.Models
 
 
-getRepositoryStats :: Environment -> Repository -> IO (Maybe (Int, Double))
+getRepositoryStats :: Environment -> Repository -> IO (Maybe (Int, Int))
 getRepositoryStats env repository =
   do stars <- getStars
      commits <- getCommits
@@ -39,10 +39,8 @@ getRepositoryStats env repository =
       value <- getResource repoUrl
       return $ parseMaybe (withObject "stargazers" (.: "stargazers_count")) value
 
-    getCommits :: IO (Maybe Double)
+    getCommits :: IO (Maybe Int)
     getCommits = do
       value <- getResource $ repoUrl /: "stats" /: "participation"
-      return $ mean <$> parseMaybe (withObject "participation" (.: "all")) value
-
-    mean :: [Int] -> Double
-    mean xs = fromIntegral (sum xs) / fromIntegral (length xs)
+      return $ sum <$>
+        (parseMaybe (withObject "participation" (.: "all")) value :: Maybe [Int])
