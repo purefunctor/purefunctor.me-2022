@@ -79,10 +79,10 @@ repositoryServer =
       env <- ask
 
       repository <- runDb env $
-        selectFirst [ RepositoryName ==. n ] [ ]
+        get $ RepositoryKey n
 
       case repository of
-        (Just repository') -> return $ entityVal repository'
+        (Just repository') -> return repository'
         Nothing            -> throwError err404
 
     createRepository
