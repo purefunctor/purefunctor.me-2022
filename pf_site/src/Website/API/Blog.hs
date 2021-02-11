@@ -138,9 +138,9 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
       now <- liftIO getCurrentTime
 
       let mUpdates = filter isJust
-            [ (BlogPostFullTitle  =.) <$> payload ^. title
-            , (BlogPostContents   =.) <$> payload ^. contents
-            , (BlogPostShortTitle =.) <$> payload ^. short
+            [ (BlogPostFullTitle  =.) <$> payload^.title
+            , (BlogPostContents   =.) <$> payload^.contents
+            , (BlogPostShortTitle =.) <$> payload^.short
             ]
 
       case mUpdates of
@@ -148,7 +148,7 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
         [] -> throwError err400
 
         mUpdates' -> do
-          let postUpdated = Just $ BlogPostUpdated =. payload ^. updated . non now
+          let postUpdated = Just $ BlogPostUpdated =. payload^.updated.non now
 
           case sequenceA $ postUpdated : mUpdates' of
 

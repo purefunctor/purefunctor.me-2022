@@ -142,11 +142,11 @@ repositoryServer =
       env <- ask
 
       let mUpdates = filter isJust
-            [ (RepositoryName    =.) <$> payload ^. name
-            , (RepositoryOwner   =.) <$> payload ^. owner
-            , (RepositoryUrl     =.) <$> payload ^. url
-            , (RepositoryStars   =.) <$> payload ^. stars
-            , (RepositoryCommits =.) <$> payload ^. commits
+            [ (RepositoryName    =.) <$> payload^.name
+            , (RepositoryOwner   =.) <$> payload^.owner
+            , (RepositoryUrl     =.) <$> payload^.url
+            , (RepositoryStars   =.) <$> payload^.stars
+            , (RepositoryCommits =.) <$> payload^.commits
             ]
 
       case mUpdates of
