@@ -4,9 +4,8 @@ import Control.Applicative
 
 import Control.Lens
 
-import Control.Monad ( void )
 import Control.Monad.IO.Class ( liftIO )
-import Control.Monad.Reader ( asks )
+import Control.Monad.Reader ( ask )
 
 import Data.Maybe ( isJust )
 
@@ -22,7 +21,6 @@ import Servant.Auth.Server
 
 import Website.API.Auth
 import Website.API.Common
-import Website.Config
 import Website.Models
 import Website.Utils
 import Website.WebsiteM
@@ -68,18 +66,18 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
   where
     getPosts :: WebsiteM [BlogPost]
     getPosts = do
-      pool' <- asks $ view pool
+      env <- ask
 
-      posts <- liftIO $ flip runSqlPersistMPool pool' $
+      posts <- runDb env $
         selectList [ ] [ ]
 
       return $ entityVal <$> posts
 
     getPost :: Text -> WebsiteM BlogPost
     getPost t = do
-      pool' <- asks $ view pool
+      env <- ask
 
-      post <- liftIO $ flip runSqlPersistMPool pool' $
+      post <- runDb env $
         get (BlogPostKey t)
 
       case post of
@@ -91,7 +89,7 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
       -> MutableBlogPostData
       -> WebsiteM MutableEndpointResult
     createPost (Authenticated _) payload = do
-      pool' <- asks $ view pool
+      env <- ask
 
       now <- liftIO getCurrentTime
 
@@ -112,7 +110,7 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
       case mPost of
 
         Just post -> do
-          void $ liftIO $ flip runSqlPersistMPool pool' $ insert post
+          runDb env $ insert post
 
           let message = "Post created with short name:" <> blogPostShortTitle post
           let result = MutableEndpointResult 200 message
@@ -129,7 +127,7 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
       -> MutableBlogPostData
       -> WebsiteM MutableEndpointResult
     updatePost (Authenticated _) sTitle payload = do
-      pool' <- asks $ view pool
+      env <- ask
 
       now <- liftIO getCurrentTime
 
@@ -149,7 +147,7 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
           case sequenceA $ postUpdated : mUpdates' of
 
             Just updates -> do
-              void $ liftIO $ flip runSqlPersistMPool pool' $
+              runDb env $
                 update (BlogPostKey sTitle) updates
               return $ MutableEndpointResult 200 "Post updated."
 
@@ -162,14 +160,14 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
       -> Text
       -> WebsiteM MutableEndpointResult
     deletePost (Authenticated _) sTitle = do
-      pool' <- asks $ view pool
+      env <- ask
 
-      inDatabase <- liftIO $ flip runSqlPersistMPool pool' $
+      inDatabase <- runDb env $
         exists [ BlogPostShortTitle ==. sTitle ]
 
       if inDatabase
         then do
-          liftIO $ flip runSqlPersistMPool pool' $ delete $ BlogPostKey sTitle
+          runDb env $ delete $ BlogPostKey sTitle
           return $ MutableEndpointResult 200 "Post deleted."
         else
           throwError err404

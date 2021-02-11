@@ -4,9 +4,8 @@ import Control.Applicative
 
 import Control.Lens
 
-import Control.Monad ( void )
 import Control.Monad.IO.Class ( liftIO )
-import Control.Monad.Reader ( ask, asks )
+import Control.Monad.Reader ( ask )
 
 import Data.Maybe ( fromMaybe, isJust )
 
@@ -20,10 +19,9 @@ import Servant.Auth.Server
 
 import Website.API.Auth
 import Website.API.Common
-import Website.Config
 import Website.Models
-import Website.Utils
 import Website.Tasks
+import Website.Utils
 import Website.WebsiteM
 
 
@@ -69,18 +67,18 @@ repositoryServer =
   where
     getRepositories :: WebsiteM [Repository]
     getRepositories = do
-      pool' <- asks $ view pool
+      env <- ask
 
-      repositories <- liftIO $ flip runSqlPersistMPool pool' $
+      repositories <- runDb env $
         selectList [ ] [ ]
 
       return $ entityVal <$> repositories
 
     getRepository :: Text -> WebsiteM Repository
     getRepository n = do
-      pool' <- asks $ view pool
+      env <- ask
 
-      repository <- liftIO $ flip runSqlPersistMPool pool' $
+      repository <- runDb env $
         selectFirst [ RepositoryName ==. n ] [ ]
 
       case repository of
@@ -111,7 +109,7 @@ repositoryServer =
         Just repo -> do
           mStats <- liftIO $ getRepositoryStats env repo
 
-          repoKey <- liftIO $ flip runSqlPersistMPool (env^.pool) $
+          repoKey <- runDb env $
             insert $ case mStats of
               Just (ghStars, ghCommits) ->
                 repo { repositoryStars = fromMaybe ghStars $ payload^.stars
@@ -133,7 +131,7 @@ repositoryServer =
       -> MutableRepositoryData
       -> WebsiteM MutableEndpointResult
     updateRepository (Authenticated _) rName payload = do
-      pool' <- asks $ view pool
+      env <- ask
 
       let mUpdates = filter isJust
             [ (RepositoryName    =.) <$> payload ^. name
@@ -151,7 +149,7 @@ repositoryServer =
           case sequenceA mUpdates' of
 
             Just updates -> do
-              void $ liftIO $ flip runSqlPersistMPool pool' $
+              runDb env $
                 update (RepositoryKey rName) updates
               return $ MutableEndpointResult 200 "Repository updated."
 
@@ -164,14 +162,14 @@ repositoryServer =
       -> Text
       -> WebsiteM MutableEndpointResult
     deleteRepository (Authenticated _) rName = do
-      pool' <- asks $ view pool
+      env <- ask
 
-      inDatabase <- liftIO $ flip runSqlPersistMPool pool' $
+      inDatabase <- runDb env $
         exists [ RepositoryName ==. rName ]
 
       if inDatabase
         then do
-          liftIO $ flip runSqlPersistMPool pool' $ delete $ RepositoryKey rName
+          runDb env $ delete $ RepositoryKey rName
           return $ MutableEndpointResult 200 "Repository deleted."
         else
           throwError err404
