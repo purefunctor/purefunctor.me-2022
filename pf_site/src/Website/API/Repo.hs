@@ -107,19 +107,27 @@ repositoryServer =
 
       case mRepo of
         Just repo -> do
-          mStats <- liftIO $ getRepositoryStats env repo
 
-          repoKey <- runDb env $
-            insert $ case mStats of
-              Just (ghStars, ghCommits) ->
-                repo { repositoryStars = fromMaybe ghStars $ payload^.stars
-                     , repositoryCommits = fromMaybe ghCommits $ payload^.commits
-                     }
-              Nothing -> repo
+          inDb <- runDb env $
+            exists [ RepositoryName ==. repositoryName repo ]
 
-          return $
-            MutableEndpointResult 200 $
-              "Repository created: " <> unRepositoryKey repoKey
+          if not inDb
+            then do
+              mStats <- liftIO $ getRepositoryStats env repo
+
+              repoKey <- runDb env $
+                insert $ case mStats of
+                  Just (ghStars, ghCommits) ->
+                    repo { repositoryStars = fromMaybe ghStars $ payload^.stars
+                         , repositoryCommits = fromMaybe ghCommits $ payload^.commits
+                         }
+                  Nothing -> repo
+
+              return $
+                MutableEndpointResult 200 $
+                  "Repository created: " <> unRepositoryKey repoKey
+            else
+              throwError err400
 
         Nothing -> throwError err400
 
