@@ -94,28 +94,34 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
       now <- liftIO getCurrentTime
 
       let autoShort
-            = Text.intercalate "_"
+            = Text.intercalate "-"
             . take 3
             . Text.words
 
       let mPost = BlogPost
-            <$> payload ^. title
-            <*> ( payload ^. short <|>
-                  payload ^. title <&> autoShort
+            <$> payload^.title
+            <*> ( payload^.short <|>
+                  payload^.title <&> autoShort
                 )
-            <*> payload ^. contents
-            <*> ( payload ^. published <|> pure now )
-            <*> ( payload ^. updated <|> pure now )
+            <*> payload^.contents
+            <*> ( payload^.published <|> pure now )
+            <*> ( payload^.updated <|> pure now )
 
       case mPost of
 
         Just post -> do
-          runDb env $ insert post
 
-          let message = "Post created with short name:" <> blogPostShortTitle post
-          let result = MutableEndpointResult 200 message
+          inDb <- runDb env $
+            exists [ BlogPostShortTitle ==. blogPostShortTitle post ]
 
-          return result
+          if not inDb
+            then do
+              runDb env $ insert post
+              return $
+                MutableEndpointResult 200 $
+                  "Post created with short name: " <> blogPostShortTitle post
+            else
+              throwError err400
 
         Nothing -> throwError err400
 
