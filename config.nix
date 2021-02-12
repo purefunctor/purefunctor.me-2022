@@ -1,4 +1,4 @@
-{  }:
+{ doCheck ? false }:
 
 let
   compiler = "ghc884";
@@ -13,25 +13,26 @@ let
                 collapseOverrides = 
                   pkgs.lib.fold pkgs.lib.composeExtensions (_: _: {});
 
-                autoOverrides = self: super:
-                  let
-                    toPackage = file: _: {
-                      name = builtins.replaceStrings [ ".nix" ] [ "" ] file;
-                      value = haskell.lib.dontCheck (self.callPackage (./. + "/nix/${file}") {  });
-                    };
-                  in
-                    pkgs.lib.mapAttrs' toPackage (builtins.readDir ./nix);
-
                 manualOverrides = self: super: {
-                  # Does not compile properly with tests enabled.
-                  base64 = pkgs.haskell.lib.dontCheck pkgs.haskell.packages."${compiler}".base64;
+                  # Make sure that our project has its own derivation.
+                  purefunctor-me = 
+                  let
+                    func = if doCheck then haskell.lib.doCheck else pkgs.lib.id;
+                  in
+                    func (super.callCabal2nix "purefunctor-me" ./. { });
 
-                  # Don't forget that persistent-sqlite uses a system dependency.
-                  persistent-sqlite = pkgs.haskell.lib.dontCheck
-                    (self.callPackage (./. + "/nix/persistent-sqlite.nix") { sqlite = pkgs.sqlite; });
+                  # Disable tests and benchmarks for all packages.
+                  mkDerivation = args: super.mkDerivation ({
+                    doCheck = false;
+                    doBenchmark = false;
+                    doHoogle = true;
+                    doHaddock = true;
+                    enableLibraryProfiling = false;
+                    enableExecutableProfiling = false;
+                  } // args);
                 };
               in
-                collapseOverrides [ autoOverrides manualOverrides ];
+                collapseOverrides [ manualOverrides ];
           };
         };
       };
@@ -39,5 +40,5 @@ let
   };
 in
   { compiler = compiler;
-    nixpkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/a1bb960c13a05c95821a5f44a09881f21325a475.tar.gz") { inherit config; };
+  nixpkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/987b80a824261d7bdbb14a46dc8b3814689da56e.tar.gz") { inherit config; };
   }

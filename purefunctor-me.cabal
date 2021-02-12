@@ -15,27 +15,70 @@ category:            Web
 extra-source-files:  CHANGELOG.md, README.md
 
 library
-  exposed-modules:     Website.Models
-  -- other-modules:
-  -- other-extensions:
+  exposed-modules:     Website.App,
+                       Website.API.Auth,
+                       Website.API.Common,
+                       Website.API.Blog,
+                       Website.API.Repo,
+                       Website.Config,
+                       Website.Debug,
+                       Website.Models,
+                       Website.Tasks,
+                       Website.Utils,
+                       Website.WebsiteM
+
+  default-extensions:  DataKinds,
+                       DeriveAnyClass,
+                       DeriveGeneric,
+                       DerivingStrategies,
+                       DuplicateRecordFields,
+                       FlexibleInstances,
+                       FunctionalDependencies,
+                       GADTs,
+                       GeneralizedNewtypeDeriving,
+                       MultiParamTypeClasses,
+                       OverloadedStrings,
+                       QuasiQuotes,
+                       RecordWildCards
+                       StandaloneDeriving,
+                       TemplateHaskell,
+                       TypeFamilies,
+                       TypeOperators,
+                       UndecidableInstances
+
   build-depends:       base ^>=4.13.0.0,
                        aeson,
+                       async,
+                       cron,
+                       jose,
+                       lens,
+                       monad-logger,
+                       mtl,
                        password,
                        persistent,
                        persistent-sqlite,
                        persistent-template,
+                       req,
                        servant,
                        servant-server,
+                       servant-auth,
+                       servant-auth-server,
                        text,
                        time,
+                       tomland,
+                       transformers,
+                       wai,
                        warp,
+
+  ghc-options:         -Wunused-imports
+                       -Wunused-matches
+                       -Wname-shadowing
+
   hs-source-dirs:      pf_site/src
   default-language:    Haskell2010
 
 executable purefunctor-me
   main-is:             Main.hs
-  -- other-modules:
-  -- other-extensions:
   build-depends:       base ^>=4.13.0.0, purefunctor-me
   hs-source-dirs:      pf_site/app
   default-language:    Haskell2010
@@ -44,5 +87,28 @@ test-suite purefunctor-me-test
   default-language:    Haskell2010
   type:                exitcode-stdio-1.0
   hs-source-dirs:      pf_site/test
-  main-is:             MyLibTest.hs
-  build-depends:       base ^>=4.13.0.0
+  main-is:             Test.hs
+  other-modules:       Test.Auth,
+                       Test.Blog,
+                       Test.Data,
+                       Test.Repo,
+                       Test.Utils
+  build-depends:       base ^>=4.13.0.0,
+                       hspec,
+                       hspec-wai,
+                       aeson,
+                       bytestring,
+                       cookie,
+                       http-types,
+                       lens,
+                       persistent,
+                       persistent-sqlite,
+                       text,
+                       time,
+                       wai,
+                       wai-extra,
+                       purefunctor-me,
+
+  ghc-options:         -Wunused-imports
+                       -Wunused-matches
+                       -Wname-shadowing
