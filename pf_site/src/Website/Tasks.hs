@@ -29,7 +29,7 @@ type RequestM = ExceptT Text Req
 
 
 instance MonadHttp RequestM where
-  handleHttpException _ = throwError "an http exception was encountered"
+  handleHttpException e = throwError (pack $ show e)
 
 
 runRequestM :: RequestM r -> IO (Either Text r)
