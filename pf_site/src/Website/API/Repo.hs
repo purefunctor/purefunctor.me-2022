@@ -92,7 +92,8 @@ repositoryServer =
     createRepository (Authenticated _) payload = do
       env <- ask
 
-      let autoUrl o n = Text.concat [ "https://github.com" , o , "/" , n ]
+      let autoUrl o n = 
+            Text.concat [ "https://github.com/" , o , "/" , n ]
 
       let mRepo = Repository
             <$> payload^.name
