@@ -1,9 +1,12 @@
-{ doCheck ? false }:
+{ doCheck ? false 
+}:
 
 let
   compiler = "ghc884";
 
-  nixpkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/987b80a824261d7bdbb14a46dc8b3814689da56e.tar.gz") { inherit config; };
+  sources = import ./nix/sources.nix { };
+
+  nixpkgs = import (fetchTarball sources.nixpkgs.url) { inherit config; };
 
   config = {
     packageOverrides = pkgs: rec {
