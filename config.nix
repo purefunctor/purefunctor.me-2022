@@ -3,6 +3,8 @@
 let
   compiler = "ghc884";
 
+  nixpkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/987b80a824261d7bdbb14a46dc8b3814689da56e.tar.gz") { inherit config; };
+
   config = {
     packageOverrides = pkgs: rec {
       haskell = pkgs.haskell // {
@@ -16,10 +18,11 @@ let
                 manualOverrides = self: super: {
                   # Make sure that our project has its own derivation.
                   purefunctor-me = 
-                  let
-                    func = if doCheck then haskell.lib.doCheck else pkgs.lib.id;
-                  in
-                    func (super.callCabal2nix "purefunctor-me" ./. { });
+                    let
+                      check = if doCheck then haskell.lib.doCheck else pkgs.lib.id;
+                      src = nixpkgs.nix-gitignore.gitignoreSourcePure [./.gitignore] ./.;
+                    in
+                      check (super.callCabal2nix "purefunctor-me" src { });
 
                   # Disable tests and benchmarks for all packages.
                   mkDerivation = args: super.mkDerivation ({
@@ -40,5 +43,5 @@ let
   };
 in
   { compiler = compiler;
-  nixpkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/987b80a824261d7bdbb14a46dc8b3814689da56e.tar.gz") { inherit config; };
+    nixpkgs = nixpkgs;
   }
