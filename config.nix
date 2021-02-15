@@ -6,7 +6,8 @@ let
 
   sources = import ./nix/sources.nix { };
 
-  nixpkgs = import (fetchTarball sources.nixpkgs.url) { inherit config; };
+  gitignore = import sources."gitignore.nix" { };
+  inherit (gitignore) gitignoreFilter;
 
   config = {
     packageOverrides = pkgs: rec {
@@ -23,9 +24,26 @@ let
                   purefunctor-me = 
                     let
                       check = if doCheck then haskell.lib.doCheck else pkgs.lib.id;
-                      src = nixpkgs.nix-gitignore.gitignoreSourcePure [./.gitignore] ./.;
+  
+                      srcFilter = src:
+                        let
+                          srcIgnored = gitignoreFilter src;
+
+                          dontIgnore = [
+                            "config.toml"
+                          ];
+                        in
+                          path: type:
+                            srcIgnored path type
+                              || builtins.elem (builtins.baseNameOf path) dontIgnore;
+
+                      purefunctor-me-src = pkgs.lib.cleanSourceWith {
+                        filter = srcFilter ./.;
+                        src = ./.;
+                        name = "purefunctor-me-src";
+                      };
                     in
-                      check (super.callCabal2nix "purefunctor-me" src { });
+                      check (super.callCabal2nix "purefunctor-me" purefunctor-me-src { });
 
                   # Disable tests and benchmarks for all packages.
                   mkDerivation = args: super.mkDerivation ({
@@ -46,5 +64,5 @@ let
   };
 in
   { compiler = compiler;
-    nixpkgs = nixpkgs;
+    nixpkgs = import (fetchTarball sources.nixpkgs.url) { inherit config; };
   }
