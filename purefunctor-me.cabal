@@ -68,6 +68,7 @@ library
                        tomland,
                        transformers,
                        wai,
+                       wai-middleware-static,
                        warp,
 
   ghc-options:         -Wunused-imports
