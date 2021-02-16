@@ -2,10 +2,14 @@ module Website.App where
 
 import Control.Lens hiding ( Context )
 
+import Data.List ( foldl' )
+
 import Database.Persist.Sqlite
 
+import           Network.Wai ( Middleware )
 import           Network.Wai.Handler.Warp ( Port )
 import qualified Network.Wai.Handler.Warp as Warp
+import           Network.Wai.Middleware.Static ((<|>), addBase,  Policy, policy, staticPolicy)
 
 import Servant
 import Servant.Auth.Server
@@ -54,5 +58,36 @@ run port = do
 
   runSqlPool (runMigration migrateAll) (env^.pool)
 
+  let vanillaApp = websiteApp jwtSettings env
+
   _ <- runTasks env
-  Warp.run port (websiteApp jwtSettings env)
+
+  Warp.run port $ applyMiddleware env vanillaApp
+
+
+applyMiddleware :: Environment -> Middleware
+applyMiddleware env = middleware
+  where
+    composeMiddleware ::  [Middleware] -> Middleware
+    composeMiddleware = foldl' (.) id
+
+    filterEnabled :: [(Bool, Middleware)] -> [Middleware]
+    filterEnabled = fmap snd . filter fst
+
+    middleware :: Middleware
+    middleware = composeMiddleware . filterEnabled $
+      [ (env^.config.debug.static, staticPolicy serveStaticPolicy)
+      ]
+
+
+serveStaticPolicy :: Policy
+serveStaticPolicy = root <|> misc
+  where
+    root :: Policy
+    root = policy $ \uri ->
+      if uri == ""
+      then Just "dist/index.html"
+      else Nothing
+
+    misc :: Policy
+    misc = addBase "dist"
