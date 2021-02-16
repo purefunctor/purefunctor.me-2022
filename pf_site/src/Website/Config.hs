@@ -29,7 +29,7 @@ data DatabaseConfig
       }
   deriving (Eq, Show)
 
-makeFieldsNoPrefix ''DatabaseConfig
+makeLenses ''DatabaseConfig
 
 
 data GitHubCreds
@@ -60,7 +60,7 @@ data ConfigFile
       }
   deriving (Eq, Show)
 
-makeFieldsNoPrefix ''ConfigFile
+makeLenses ''ConfigFile
 
 
 adminCredsCodec :: TomlCodec AdminCreds
