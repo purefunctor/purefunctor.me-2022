@@ -4,11 +4,9 @@ import Control.Lens ( makeFieldsNoPrefix, (^.) )
 
 import Control.Monad.Logger ( runStderrLoggingT )
 
-import Data.Text ( Text, pack )
+import Data.Text ( Text )
 
 import Database.Persist.Sqlite ( ConnectionPool, createSqlitePool )
-
-import System.Environment ( getEnv )
 
 import           Toml ( TomlCodec, (.=) )
 import qualified Toml
@@ -98,25 +96,3 @@ mkEnvironment = do
     createSqlitePool (conf^.database.filename) (conf^.database.connections)
 
   return $ Environment conf pool'
-
-
-data Configuration
-  = Configuration
-      { adminUser :: Text
-      , adminPass :: Text
-      , connPool  :: ConnectionPool
-      }
-  deriving (Show)
-
-
-mkConfiguration :: IO Configuration
-mkConfiguration = do
-  adu <- pack <$> getEnv "ADMIN_USER"
-  adp <- pack <$> getEnv "ADMIN_PASS"
-
-  dbn <- pack <$> getEnv "DB_FILE"
-  dbc <- read <$> getEnv "DB_CONN"
-
-  con <- runStderrLoggingT $ createSqlitePool dbn dbc
-
-  return $ Configuration adu adp con
