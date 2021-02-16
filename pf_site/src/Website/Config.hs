@@ -1,6 +1,6 @@
 module Website.Config where
 
-import Control.Lens ( makeFieldsNoPrefix, (^.) )
+import Control.Lens ( makeFieldsNoPrefix, makeLenses, (^.) )
 
 import Control.Monad.Logger ( runStderrLoggingT )
 
@@ -42,11 +42,21 @@ data GitHubCreds
 makeFieldsNoPrefix ''GitHubCreds
 
 
+newtype DebugConfig
+  = DebugConfig
+      { _static :: Bool
+      }
+  deriving (Eq, Show)
+
+makeLenses ''DebugConfig
+
+
 data ConfigFile
   = ConfigFile
       { _admin    :: AdminCreds
       , _database :: DatabaseConfig
       , _github   :: GitHubCreds
+      , _debug    :: DebugConfig
       }
   deriving (Eq, Show)
 
@@ -71,11 +81,17 @@ githubCredsCodec = GitHubCreds
   <*> Toml.text "token"    .= _token
 
 
+debugConfigCodec :: TomlCodec DebugConfig
+debugConfigCodec = DebugConfig
+  <$> Toml.bool "static" .= _static
+
+
 configFileCodec :: TomlCodec ConfigFile
 configFileCodec = ConfigFile
   <$> Toml.table adminCredsCodec     "admin"    .= _admin
   <*> Toml.table databaseConfigCodec "database" .= _database
   <*> Toml.table githubCredsCodec    "github"   .= _github
+  <*> Toml.table debugConfigCodec    "debug"    .= _debug
 
 
 data Environment
