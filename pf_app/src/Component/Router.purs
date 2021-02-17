@@ -9,6 +9,7 @@ import Effect.Aff.Class (class MonadAff)
 import Effect.Class (liftEffect)
 import Halogen as H
 import Halogen.HTML as HH
+import PF.Capability.Resources (class ManageBlogPost, class ManageRepository)
 import PF.Data.Routes (Routes(..), routeCodec)
 import PF.Pages.About as About
 import PF.Pages.Home as Home
@@ -25,7 +26,12 @@ type ChildSlots =
   )
 
 
-component :: forall input output m. MonadAff m => H.Component HH.HTML Query input output m
+component
+  :: forall input output m.
+     MonadAff m
+  => ManageBlogPost m
+  => ManageRepository m
+  => H.Component HH.HTML Query input output m
 component =
   H.mkComponent
   { initialState
@@ -42,21 +48,39 @@ initialState :: forall input. input -> State
 initialState _ = { currentRoute: HomeR }
 
 
-render :: forall m. State -> H.ComponentHTML Action ChildSlots m
+render
+  :: forall m.
+     MonadAff m
+  => ManageBlogPost m
+  => ManageRepository m
+  => State
+  -> H.ComponentHTML Action ChildSlots m
 render { currentRoute } =
   case currentRoute of
     AboutR -> HH.slot (SProxy :: _ "about") unit About.component unit absurd
     HomeR -> HH.slot (SProxy :: _ "home") unit Home.component unit absurd
 
 
-handleAction :: forall output m. MonadAff m => Action -> H.HalogenM State Action ChildSlots output m Unit
+handleAction
+  :: forall output m.
+     MonadAff m
+  => ManageBlogPost m
+  => ManageRepository m
+  => Action
+  -> H.HalogenM State Action ChildSlots output m Unit
 handleAction = case _ of
   Initialize -> do
     initialRoute <- hush <<< (RD.parse routeCodec) <$> liftEffect RH.getHash
     liftEffect <<< RH.setHash <<< RD.print routeCodec <<< fromMaybe HomeR $ initialRoute
 
 
-handleQuery :: forall output m a. Query a -> H.HalogenM State Action ChildSlots output m (Maybe a)
+handleQuery
+  :: forall output m a.
+     MonadAff m
+  => ManageBlogPost m
+  => ManageRepository m
+  => Query a
+  -> H.HalogenM State Action ChildSlots output m (Maybe a)
 handleQuery = case _ of
   Navigate route a -> do
     { currentRoute } <- H.get

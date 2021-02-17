@@ -2,20 +2,32 @@ module PF.Pages.Home where
 
 import Prelude
 
+import Data.Maybe (Maybe(..))
+import Effect.Class.Console (log)
+import Effect.Aff.Class (class MonadAff)
 import Halogen as H
 import Halogen.HTML as HH
+import PF.Capability.Resources (class ManageRepository, getRepositories)
 import PF.Component.Utils (css)
 
 
 type State = Unit
+data Action = Initialize
 
 
-component :: forall query input output m. H.Component HH.HTML query input output m
+component
+  :: forall query input output m.
+     MonadAff m
+  => ManageRepository m
+  => H.Component HH.HTML query input output m
 component =
   H.mkComponent
   { initialState
   , render
   , eval: H.mkEval $ H.defaultEval
+    { handleAction = handleAction
+    , initialize = Just Initialize
+    }
   }
 
 
@@ -23,7 +35,12 @@ initialState :: forall input. input -> Unit
 initialState _ = unit
 
 
-render :: forall action m. State -> H.ComponentHTML action () m
+render
+  :: forall m.
+     MonadAff m
+  => ManageRepository m
+  => State
+  -> H.ComponentHTML Action () m
 render _ =
   HH.div [ css "bg-gray-100 h-screen overflow-auto scroll-snap-y-mandatory"  ]
   [ HH.div [ css "h-auto w-full lg:w-11/12 mx-auto" ]
@@ -57,3 +74,17 @@ render _ =
         ]
       , HH.div props content
       ]
+
+
+handleAction
+  :: forall output m.
+     MonadAff m
+  => ManageRepository m
+  => Action
+  -> H.HalogenM State Action () output m Unit
+handleAction = case _ of
+  Initialize -> do
+    mRepositories <- getRepositories
+    case mRepositories of
+      Just repositories -> log $ show repositories
+      Nothing -> log "parsing exception"
