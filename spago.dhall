@@ -4,7 +4,10 @@ You can edit this file as you like.
 -}
 { name = "purefunctor-me"
 , dependencies =
-  [ "console"
+  [ "affjax"
+  , "argonaut-codecs"
+  , "biscotti-cookie"
+  , "console"
   , "effect"
   , "halogen"
   , "psci-support"
