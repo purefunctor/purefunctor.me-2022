@@ -15,6 +15,7 @@ You can edit this file as you like.
   , "psci-support"
   , "routing"
   , "routing-duplex"
+  , "slug"
   ]
 , packages = ./packages.dhall
 , sources = [ "pf_app/src/**/*.purs", "pf_app/test/**/*.purs" ]
