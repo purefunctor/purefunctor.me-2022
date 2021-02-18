@@ -2,16 +2,18 @@ module PF.Capability.Resources where
 
 import Prelude
 
-import Affjax as AX
-import Affjax.ResponseFormat as ResponseFormat
-import Data.Argonaut.Decode (decodeJson)
+import Data.Argonaut.Core (Json)
+import Data.Codec.Argonaut (JsonCodec, printJsonDecodeError)
+import Data.Codec.Argonaut as CA
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
 import Effect.Aff (Aff)
 import Effect.Aff.Class (class MonadAff)
 import Effect.Class.Console (log)
 import Halogen (HalogenM, lift)
-import PF.Data.Resources (BlogPost, Repository)
+import PF.API.Endpoint (Endpoint(..))
+import PF.API.Request (RequestMethod(..), mkRequest)
+import PF.Data.Resources (BlogPost, Repository, blogPostCodec, repositoryCodec)
 
 
 class MonadAff m <= ManageBlogPost m where
@@ -19,18 +21,9 @@ class MonadAff m <= ManageBlogPost m where
 
 
 instance affManageBlogPost :: ManageBlogPost Aff where
-  getBlogPosts = do
-    response <- AX.get ResponseFormat.json "/blog"
-    case response of
-      Left err -> do
-        log $ AX.printError err
-        pure Nothing
-      Right res -> do
-        case decodeJson res.body of
-          Left err -> do
-            log $ show err
-            pure Nothing
-          Right pst -> pure pst
+  getBlogPosts =
+    mkRequest { endpoint: BlogPosts, method: Get } >>=
+      decode (CA.array blogPostCodec)
 
 
 instance manageBlogPostHalogenM
@@ -46,18 +39,9 @@ class MonadAff m <= ManageRepository m where
 
 
 instance affManageRepository :: ManageRepository Aff where
-  getRepositories = do
-    response <- AX.get ResponseFormat.json "/repo"
-    case response of
-      Left err -> do
-        log $ AX.printError err
-        pure Nothing
-      Right res -> do
-        case decodeJson res.body of
-          Left err -> do
-            log $ show err
-            pure Nothing
-          Right pst -> pure pst
+  getRepositories =
+    mkRequest { endpoint: Repositories, method: Get } >>=
+      decode (CA.array repositoryCodec)
 
 
 instance manageRepositoryHalogenM
@@ -70,3 +54,11 @@ instance manageRepositoryHalogenM
 
 class ManageLogin m where
   login :: forall r. m { | r }
+
+
+decode :: forall m r. MonadAff m => JsonCodec r -> Maybe Json -> m (Maybe r)
+decode _ Nothing = log "Error in obtaining response" *> pure Nothing
+decode codec (Just json) =
+  case CA.decode codec json of
+    Left err -> log (printJsonDecodeError err) *> pure Nothing
+    Right result -> pure (Just result)
