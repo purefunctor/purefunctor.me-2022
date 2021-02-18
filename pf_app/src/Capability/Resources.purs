@@ -3,6 +3,7 @@ module Website.Capability.Resources where
 import Prelude
 
 import Data.Argonaut.Core (Json)
+import Data.Argonaut.Encode (encodeJson)
 import Data.Codec.Argonaut (JsonCodec, printJsonDecodeError)
 import Data.Codec.Argonaut as CA
 import Data.Either (Either(..))
@@ -13,7 +14,13 @@ import Effect.Class.Console (log)
 import Halogen (HalogenM, lift)
 import Website.API.Endpoint (Endpoint(..))
 import Website.API.Request (RequestMethod(..), mkRequest)
-import Website.Data.Resources (BlogPost, Repository, blogPostCodec, repositoryCodec)
+import Website.Data.Resources
+  ( BlogPost
+  , Repository
+  , LoginCreds
+  , blogPostCodec
+  , repositoryCodec
+  )
 
 
 class MonadAff m <= ManageBlogPost m where
@@ -53,7 +60,24 @@ instance manageRepositoryHalogenM
 
 
 class ManageLogin m where
-  login :: forall r. m { | r }
+  login :: LoginCreds -> m Unit
+
+
+instance affManageLogin :: ManageLogin Aff where
+  login creds =
+    void $ mkRequest
+      { endpoint: Login
+      , method: Post $ Just $ encodeJson creds
+      }
+
+
+instance manageLoginHalogenM
+  :: ( MonadAff m
+     , ManageLogin m
+     )
+  => ManageLogin (HalogenM state action slots output m) where
+  login = lift <<< login
+
 
 
 decode :: forall m r. MonadAff m => JsonCodec r -> Maybe Json -> m (Maybe r)

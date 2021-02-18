@@ -9,7 +9,11 @@ import Effect.Aff.Class (class MonadAff)
 import Effect.Class (liftEffect)
 import Halogen as H
 import Halogen.HTML as HH
-import Website.Capability.Resources (class ManageBlogPost, class ManageRepository)
+import Website.Capability.Resources
+  ( class ManageBlogPost
+  , class ManageRepository
+  , class ManageLogin
+  )
 import Website.Data.Routes (Routes(..), routeCodec)
 import Website.Pages.About as About
 import Website.Pages.Home as Home
@@ -31,6 +35,7 @@ component
      MonadAff m
   => ManageBlogPost m
   => ManageRepository m
+  => ManageLogin m
   => H.Component HH.HTML Query input output m
 component =
   H.mkComponent
@@ -53,6 +58,7 @@ render
      MonadAff m
   => ManageBlogPost m
   => ManageRepository m
+  => ManageLogin m
   => State
   -> H.ComponentHTML Action ChildSlots m
 render { currentRoute } =
@@ -66,6 +72,7 @@ handleAction
      MonadAff m
   => ManageBlogPost m
   => ManageRepository m
+  => ManageLogin m
   => Action
   -> H.HalogenM State Action ChildSlots output m Unit
 handleAction = case _ of
@@ -79,6 +86,7 @@ handleQuery
      MonadAff m
   => ManageBlogPost m
   => ManageRepository m
+  => ManageLogin m
   => Query a
   -> H.HalogenM State Action ChildSlots output m (Maybe a)
 handleQuery = case _ of
