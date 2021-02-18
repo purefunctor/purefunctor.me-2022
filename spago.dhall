@@ -7,6 +7,7 @@ You can edit this file as you like.
   [ "affjax"
   , "argonaut-codecs"
   , "biscotti-cookie"
+  , "codec-argonaut"
   , "console"
   , "effect"
   , "halogen"
