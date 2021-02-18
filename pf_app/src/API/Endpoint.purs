@@ -13,6 +13,7 @@ data Endpoint
   | Repositories
   | BlogPost String
   | Repository String
+  | Login
 
 
 derive instance genericEndpoint :: Generic Endpoint _
@@ -24,4 +25,5 @@ endpointCodec = root $ sum
   , "Repositories": "repo" / noArgs
   , "BlogPost": "blog" / string segment
   , "Repository": "repo" / string segment
+  , "Login": "login" / noArgs
   }
