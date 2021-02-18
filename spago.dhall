@@ -11,6 +11,7 @@ You can edit this file as you like.
   , "console"
   , "effect"
   , "halogen"
+  , "precise-datetime"
   , "psci-support"
   , "routing"
   , "routing-duplex"
