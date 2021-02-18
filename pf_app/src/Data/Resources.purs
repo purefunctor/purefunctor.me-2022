@@ -2,16 +2,19 @@ module Website.Data.Resources where
 
 import Prelude
 
+import Data.Codec.Argonaut (JsonCodec)
 import Data.Codec.Argonaut as CA
 import Data.Codec.Argonaut.Record as CAR
+import Data.PreciseDateTime (PreciseDateTime)
+import Website.Data.PreciseDateTime as PDT
 
 
 type BlogPost =
   { fullTitle :: String
   , shortTitle :: String
   , contents :: String
-  , published :: String
-  , updated :: String
+  , published :: PreciseDateTime
+  , updated :: PreciseDateTime
   }
 
 
@@ -24,18 +27,18 @@ type Repository =
   }
 
 
-blogPostCodec :: CA.JsonCodec BlogPost
+blogPostCodec :: JsonCodec BlogPost
 blogPostCodec =
   CA.object "BlogPost" $ CAR.record
     { fullTitle:  CA.string
     , shortTitle: CA.string
     , contents: CA.string
-    , published: CA.string
-    , updated: CA.string
+    , published: PDT.codec
+    , updated: PDT.codec
     }
 
 
-repositoryCodec :: CA.JsonCodec Repository
+repositoryCodec :: JsonCodec Repository
 repositoryCodec =
   CA.object "Repository" $ CAR.record
     { name: CA.string
