@@ -6,12 +6,14 @@ import Data.Codec.Argonaut (JsonCodec)
 import Data.Codec.Argonaut as CA
 import Data.Codec.Argonaut.Record as CAR
 import Data.PreciseDateTime (PreciseDateTime)
+import Slug (Slug)
+import Slug as Slug
 import Website.Data.PreciseDateTime as PDT
 
 
 type BlogPost =
   { fullTitle :: String
-  , shortTitle :: String
+  , shortTitle :: Slug
   , contents :: String
   , published :: PreciseDateTime
   , updated :: PreciseDateTime
@@ -31,7 +33,7 @@ blogPostCodec :: JsonCodec BlogPost
 blogPostCodec =
   CA.object "BlogPost" $ CAR.record
     { fullTitle:  CA.string
-    , shortTitle: CA.string
+    , shortTitle: CA.prismaticCodec Slug.parse Slug.toString CA.string
     , contents: CA.string
     , published: PDT.codec
     , updated: PDT.codec
