@@ -29,6 +29,12 @@ type Repository =
   }
 
 
+type LoginCreds =
+  { username :: String
+  , password :: String
+  }
+
+
 blogPostCodec :: JsonCodec BlogPost
 blogPostCodec =
   CA.object "BlogPost" $ CAR.record
@@ -48,4 +54,12 @@ repositoryCodec =
     , url: CA.string
     , stars: CA.int
     , commits: CA.int
+    }
+
+
+loginCredsCodec :: JsonCodec LoginCreds
+loginCredsCodec =
+  CA.object "Login" $ CAR.record
+    { username: CA.string
+    , password: CA.string
     }
