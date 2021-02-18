@@ -12,6 +12,7 @@ import Data.HTTP.Method (Method(..))
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
 import Effect.Aff.Class (class MonadAff, liftAff)
+import Effect.Class.Console (log)
 import PF.API.Endpoint (Endpoint, endpointCodec)
 import PF.Utils.Cookies (XsrfToken(..), getXsrfToken)
 import Routing.Duplex (print)
@@ -67,7 +68,6 @@ mkRequest_ mXsrfToken options = do
     Right res -> Just res.body
 
 
-
 mkRequest :: forall m. MonadAff m => RequestOptions -> m (Maybe Json)
 mkRequest options = mkRequest_ Nothing options
 
@@ -75,5 +75,5 @@ mkRequest options = mkRequest_ Nothing options
 mkAuthRequest :: forall m. MonadAff m => RequestOptions -> m (Maybe Json)
 mkAuthRequest options = do
   case getXsrfToken of
-    Left _ -> pure Nothing
+    Left err -> log (show err) *> pure Nothing
     Right xsrf -> mkRequest_ (Just xsrf) options
