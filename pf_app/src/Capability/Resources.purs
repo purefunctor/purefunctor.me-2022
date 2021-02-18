@@ -1,4 +1,4 @@
-module PF.Capability.Resources where
+module Website.Capability.Resources where
 
 import Prelude
 
@@ -11,9 +11,9 @@ import Effect.Aff (Aff)
 import Effect.Aff.Class (class MonadAff)
 import Effect.Class.Console (log)
 import Halogen (HalogenM, lift)
-import PF.API.Endpoint (Endpoint(..))
-import PF.API.Request (RequestMethod(..), mkRequest)
-import PF.Data.Resources (BlogPost, Repository, blogPostCodec, repositoryCodec)
+import Website.API.Endpoint (Endpoint(..))
+import Website.API.Request (RequestMethod(..), mkRequest)
+import Website.Data.Resources (BlogPost, Repository, blogPostCodec, repositoryCodec)
 
 
 class MonadAff m <= ManageBlogPost m where

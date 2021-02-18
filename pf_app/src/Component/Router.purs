@@ -1,4 +1,4 @@
-module PF.Component.Router where
+module Website.Component.Router where
 
 import Prelude
 
@@ -9,10 +9,10 @@ import Effect.Aff.Class (class MonadAff)
 import Effect.Class (liftEffect)
 import Halogen as H
 import Halogen.HTML as HH
-import PF.Capability.Resources (class ManageBlogPost, class ManageRepository)
-import PF.Data.Routes (Routes(..), routeCodec)
-import PF.Pages.About as About
-import PF.Pages.Home as Home
+import Website.Capability.Resources (class ManageBlogPost, class ManageRepository)
+import Website.Data.Routes (Routes(..), routeCodec)
+import Website.Pages.About as About
+import Website.Pages.Home as Home
 import Routing.Duplex as RD
 import Routing.Hash as RH
 

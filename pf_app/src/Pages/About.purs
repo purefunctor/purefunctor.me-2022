@@ -1,4 +1,4 @@
-module PF.Pages.About where
+module Website.Pages.About where
 
 import Prelude
 

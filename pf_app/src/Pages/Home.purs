@@ -1,4 +1,4 @@
-module PF.Pages.Home where
+module Website.Pages.Home where
 
 import Prelude
 
@@ -7,8 +7,8 @@ import Effect.Class.Console (log)
 import Effect.Aff.Class (class MonadAff)
 import Halogen as H
 import Halogen.HTML as HH
-import PF.Capability.Resources (class ManageRepository, getRepositories)
-import PF.Component.Utils (css)
+import Website.Capability.Resources (class ManageRepository, getRepositories)
+import Website.Component.Utils (css)
 
 
 type State = Unit

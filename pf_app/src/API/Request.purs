@@ -1,4 +1,4 @@
-module PF.API.Request where
+module Website.API.Request where
 
 import Prelude
 
@@ -13,8 +13,8 @@ import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
 import Effect.Aff.Class (class MonadAff, liftAff)
 import Effect.Class.Console (log)
-import PF.API.Endpoint (Endpoint, endpointCodec)
-import PF.Utils.Cookies (XsrfToken(..), getXsrfToken)
+import Website.API.Endpoint (Endpoint, endpointCodec)
+import Website.Utils.Cookies (XsrfToken(..), getXsrfToken)
 import Routing.Duplex (print)
 
 

@@ -1,4 +1,4 @@
-module PF.Data.Resources where
+module Website.Data.Resources where
 
 import Prelude
 

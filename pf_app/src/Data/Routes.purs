@@ -1,4 +1,4 @@
-module PF.Data.Routes where
+module Website.Data.Routes where
 
 import Data.Eq (class Eq)
 import Data.Function (($))

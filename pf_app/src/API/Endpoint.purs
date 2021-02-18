@@ -1,4 +1,4 @@
-module PF.API.Endpoint where
+module Website.API.Endpoint where
 
 import Prelude hiding ((/))
 

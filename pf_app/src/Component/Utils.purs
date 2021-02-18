@@ -1,4 +1,4 @@
-module PF.Component.Utils where
+module Website.Component.Utils where
 
 import Prelude
 

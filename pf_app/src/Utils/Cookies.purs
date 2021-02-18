@@ -1,4 +1,4 @@
-module PF.Utils.Cookies where
+module Website.Utils.Cookies where
 
 import Prelude
 
