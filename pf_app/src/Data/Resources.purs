@@ -23,6 +23,7 @@ type BlogPost =
 type Repository =
   { name :: String
   , owner :: String
+  , description :: String
   , url :: String
   , stars :: Int
   , commits :: Int
@@ -51,6 +52,7 @@ repositoryCodec =
   CA.object "Repository" $ CAR.record
     { name: CA.string
     , owner: CA.string
+    , description: CA.string
     , url: CA.string
     , stars: CA.int
     , commits: CA.int
