@@ -33,6 +33,7 @@ node_modules
 .purs-repl
 output
 static
+.psc-ide-port
 
 # Misc
 .cache

@@ -9,8 +9,8 @@ import Effect.Class (liftEffect)
 import Halogen as H
 import Halogen.Aff as HA
 import Halogen.VDom.Driver (runUI)
-import PF.Component.Router as Router
-import PF.Data.Routes as Routes
+import Website.Component.Router as Router
+import Website.Data.Routes as Routes
 import Routing.Duplex (parse)
 import Routing.Hash (matchesWith)
 

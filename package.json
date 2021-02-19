@@ -4,12 +4,16 @@
   "description": "My personal portfolio website written in PureScript and Haskell.",
   "main": "index.js",
   "scripts": {
-    "buildpurs": "spago build",
-    "buildcss": "tailwindcss build pf_app/css/tailwind.css -o pf_app/css/style.css",
+    "css": "tailwindcss build pf_app/css/tailwind.css -o pf_app/css/style.css",
+
     "parceldev": "parcel dev ./pf_app/dev/index.html",
-    "parcelprod": "parcel build ./pf_app/dev/index.html --out-dir ./static --public-url ./static --no-source-maps",
-    "dev": "npm run buildpurs && npm run buildcss && npm run parceldev",
-    "prod": "npm run buildpurs && NODE_ENV=production npm run buildcss && npm run parcelprod",
+    "parcelprod": "parcel build ./pf_app/dev/index.html --out-dir ./dist --no-source-maps",
+
+    "dev": "spago build && npm run css && npm run parceldev",
+    "prod": "spago build && NODE_ENV=production npm run css && npm run parcelprod",
+
+    "dev:api": "spago build && npm run css && npm run parcelprod && cabal run purefunctor-me",
+
     "purge": "git clean -fdx && rm -rf .spago",
     "test": "spago test"
   },
@@ -35,6 +39,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.1",
     "autoprefixer": "^10.1.0",
+    "decimal.js": "^10.2.1",
     "postcss": "^8.2.1",
     "tailwindcss": "^2.0.2"
   }

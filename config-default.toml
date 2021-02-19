@@ -9,3 +9,6 @@ connections = 2
 [github]
 username = "PureFunctor"
 token = ""
+
+[debug]
+static = true

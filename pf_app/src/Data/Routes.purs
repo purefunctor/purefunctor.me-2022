@@ -1,4 +1,4 @@
-module PF.Data.Routes where
+module Website.Data.Routes where
 
 import Data.Eq (class Eq)
 import Data.Function (($))
@@ -8,15 +8,15 @@ import Routing.Duplex.Generic (noArgs, sum)
 import Routing.Duplex.Generic.Syntax ((/))
 
 
-data Routes = HomeR | AboutR
+data Route = HomeR | AdminR
 
 
-derive instance genericRoutes :: Generic Routes _
-derive instance eqRoutes :: Eq Routes
+derive instance genericRoutes :: Generic Route _
+derive instance eqRoutes :: Eq Route
 
 
-routeCodec :: RouteDuplex' Routes
+routeCodec :: RouteDuplex' Route
 routeCodec = root $ sum
   { "HomeR": noArgs
-  , "AboutR": "about" / noArgs
+  , "AdminR": "admin" / noArgs
   }
