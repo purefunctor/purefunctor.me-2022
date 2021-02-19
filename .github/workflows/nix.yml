@@ -72,7 +72,7 @@ jobs:
           ~/.cabal/packages
           ~/.cabal/store
           dist-newstyle
-        key: ${{ hashFiles('purefunctor-me.cabal') }}
+        key: ${{ hashFiles('purefunctor-me.cabal') }}-${{ hashFiles('cabal.project.freeze') }}
 
     - name: Link Config File
       run: ln -s config-default.toml config.toml
