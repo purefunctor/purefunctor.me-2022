@@ -15,7 +15,7 @@ import Website.Capability.Resources
   , class ManageLogin
   )
 import Website.Data.Routes (Routes(..), routeCodec)
-import Website.Pages.About as About
+import Website.Pages.Admin as Admin
 import Website.Pages.Home as Home
 import Routing.Duplex as RD
 import Routing.Hash as RH
@@ -26,7 +26,7 @@ data Action = Initialize
 data Query a = Navigate Routes a
 type ChildSlots =
   ( home :: H.Slot Query Void Unit
-  , about :: H.Slot Query Void Unit
+  , admin :: H.Slot Query Void Unit
   )
 
 
@@ -63,7 +63,7 @@ render
   -> H.ComponentHTML Action ChildSlots m
 render { currentRoute } =
   case currentRoute of
-    AboutR -> HH.slot (SProxy :: _ "about") unit About.component unit absurd
+    AdminR -> HH.slot (SProxy :: _ "admin") unit Admin.component unit absurd
     HomeR -> HH.slot (SProxy :: _ "home") unit Home.component unit absurd
 
 
