@@ -12,8 +12,8 @@ import Website.Data.PreciseDateTime as PDT
 
 
 type BlogPost =
-  { fullTitle :: String
-  , shortTitle :: Slug
+  { title :: String
+  , short :: Slug
   , contents :: String
   , published :: PreciseDateTime
   , updated :: PreciseDateTime
@@ -39,8 +39,8 @@ type LoginCreds =
 blogPostCodec :: JsonCodec BlogPost
 blogPostCodec =
   CA.object "BlogPost" $ CAR.record
-    { fullTitle:  CA.string
-    , shortTitle: CA.prismaticCodec Slug.parse Slug.toString CA.string
+    { title:  CA.string
+    , short: CA.prismaticCodec Slug.parse Slug.toString CA.string
     , contents: CA.string
     , published: PDT.codec
     , updated: PDT.codec
