@@ -3,6 +3,7 @@ module Website.Pages.Admin where
 import Prelude
 
 import Data.Const (Const)
+import Data.Either (hush)
 import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype)
 import Data.Symbol (SProxy(..))
@@ -15,6 +16,7 @@ import Halogen.HTML.Properties as HP
 import Web.Event.Event as Event
 import Website.Capability.Resources (class ManageLogin, login)
 import Website.Data.Resources (LoginCreds)
+import Website.Utils.Cookies (getXsrfToken)
 
 
 newtype LoginForm r f = LoginForm (r
@@ -86,7 +88,9 @@ formComponent = F.component formInput $ F.defaultSpec
 
 type State = { isLoggedIn :: Boolean }
 
-data Action = HandleLoginForm LoginCreds
+data Action
+  = Initialize
+  | HandleLoginForm LoginCreds
 
 type ChildSlots =
   ( formless :: F.Slot LoginForm FormQuery () LoginCreds Unit )
@@ -103,6 +107,7 @@ component =
   , render
   , eval: H.mkEval $ H.defaultEval
     { handleAction = handleAction
+    , initialize = Just Initialize
     }
   }
 
@@ -131,6 +136,10 @@ handleAction
   => ManageLogin m
   => Action
   -> H.HalogenM State Action ChildSlots output m Unit
-handleAction (HandleLoginForm creds) = do
-  login creds
-  H.put $ { isLoggedIn: true }
+handleAction = case _ of
+  Initialize -> do
+    case hush getXsrfToken of
+      Just _ -> H.put { isLoggedIn: true }
+      Nothing -> pure unit
+  HandleLoginForm creds ->
+    login creds *> H.put { isLoggedIn: true }
