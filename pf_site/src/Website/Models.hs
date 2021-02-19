@@ -27,6 +27,7 @@ PTH.share [PTH.mkPersist PTH.sqlSettings, PTH.mkMigrate "migrateAll"] [PTH.persi
   Repository json sql=repo
     name Text
     owner Text
+    description Text
     url Text
     stars Int
     commits Int

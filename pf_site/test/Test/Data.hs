@@ -14,8 +14,8 @@ import Website.Models
 
 repos :: [Repository]
 repos =
-  [ Repository "amalgam-lisp" "PureFunctor" "https://github.com/PureFunctor/amalgam-lisp" 0 0
-  , Repository "purefunctor.me" "PureFunctor" "https://github.com/PureFunctor/purefunctor.me" 0 0
+  [ Repository "amalgam-lisp" "PureFunctor" "https://github.com/PureFunctor/amalgam-lisp" "LISP Implementation" 0 0
+  , Repository "purefunctor.me" "PureFunctor" "https://github.com/PureFunctor/purefunctor.me" "Personal Website" 0 0
   ]
 
 

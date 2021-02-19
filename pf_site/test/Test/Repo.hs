@@ -38,14 +38,20 @@ testRepo env app = with (pure app) $ do
         let endpoint = "/repo/" <> encodeUtf8 (repositoryName repo')
         get endpoint `shouldRespondWith` matchCodeJSON 200 repo'
 
-  let rName    = "purefunctor.me-legacy"
-  let rOwner   = "PureFunctor"
-  let rUrl     = "https://github.com/PureFunctor/purefunctor.me-legacy"
-  let rStars   = 0
-  let rCommits = 0
+  let rName        = "purefunctor.me-legacy"
+  let rOwner       = "PureFunctor"
+  let rUrl         = "https://github.com/PureFunctor/purefunctor.me-legacy"
+  let rDescription = "Old website"
+  let rStars       = 0
+  let rCommits     = 0
 
   let newRepo  = MutableRepositoryData
-        (Just rName) (Just rOwner) (Just rUrl) (Just rStars) (Just rCommits)
+        (Just rName)
+        (Just rOwner)
+        (Just rUrl)
+        (Just rDescription)
+        (Just rStars)
+        (Just rCommits)
 
   describe "POST /repo" $ do
     it "should require authentication" $ do

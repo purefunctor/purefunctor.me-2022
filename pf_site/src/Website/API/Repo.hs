@@ -49,11 +49,12 @@ type RepositoryAPI =
 
 data MutableRepositoryData
   = MutableRepositoryData
-      { _name    :: Maybe Text
-      , _owner   :: Maybe Text
-      , _url     :: Maybe Text
-      , _stars   :: Maybe Int
-      , _commits :: Maybe Int
+      { _name        :: Maybe Text
+      , _owner       :: Maybe Text
+      , _description :: Maybe Text
+      , _url         :: Maybe Text
+      , _stars       :: Maybe Int
+      , _commits     :: Maybe Int
       }
 
 deriveJSON' ''MutableRepositoryData
@@ -103,6 +104,9 @@ repositoryServer =
                     <$> payload^.owner
                     <*> payload^.name
                 )
+            <*> ( payload^.description <|>
+                  pure "No description provided."
+                )
             <*> Just 0
             <*> Just 0
 
@@ -143,11 +147,12 @@ repositoryServer =
       env <- ask
 
       let mUpdates = filter isJust
-            [ (RepositoryName    =.) <$> payload^.name
-            , (RepositoryOwner   =.) <$> payload^.owner
-            , (RepositoryUrl     =.) <$> payload^.url
-            , (RepositoryStars   =.) <$> payload^.stars
-            , (RepositoryCommits =.) <$> payload^.commits
+            [ (RepositoryName        =.) <$> payload^.name
+            , (RepositoryOwner       =.) <$> payload^.owner
+            , (RepositoryUrl         =.) <$> payload^.url
+            , (RepositoryDescription =.) <$> payload^.description
+            , (RepositoryStars       =.) <$> payload^.stars
+            , (RepositoryCommits     =.) <$> payload^.commits
             ]
 
       case mUpdates of
