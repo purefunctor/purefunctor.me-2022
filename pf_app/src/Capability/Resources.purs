@@ -2,6 +2,7 @@ module Website.Capability.Resources where
 
 import Prelude
 
+import Affjax.StatusCode (StatusCode(..))
 import Data.Argonaut.Core (Json)
 import Data.Argonaut.Encode (encodeJson)
 import Data.Codec.Argonaut (JsonCodec, printJsonDecodeError)
@@ -13,14 +14,8 @@ import Effect.Aff.Class (class MonadAff)
 import Effect.Class.Console (log)
 import Halogen (HalogenM, lift)
 import Website.API.Endpoint (Endpoint(..))
-import Website.API.Request (RequestMethod(..), mkRequest)
-import Website.Data.Resources
-  ( BlogPost
-  , Repository
-  , LoginCreds
-  , blogPostCodec
-  , repositoryCodec
-  )
+import Website.API.Request (RequestMethod(..), mkRequest, mkRequest_)
+import Website.Data.Resources (BlogPost, Repository, LoginCreds, blogPostCodec, repositoryCodec)
 
 
 class MonadAff m <= ManageBlogPost m where
@@ -60,15 +55,18 @@ instance manageRepositoryHalogenM
 
 
 class ManageLogin m where
-  login :: LoginCreds -> m Unit
+  login :: LoginCreds -> m Boolean
 
 
 instance affManageLogin :: ManageLogin Aff where
-  login creds =
-    void $ mkRequest
+  login creds = do
+    mResponse <- mkRequest_ Nothing
       { endpoint: Login
       , method: Post $ Just $ encodeJson creds
       }
+    pure $ case mResponse of
+      Just { status } -> status == StatusCode 204
+      Nothing -> false
 
 
 instance manageLoginHalogenM
