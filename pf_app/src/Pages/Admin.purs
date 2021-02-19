@@ -141,5 +141,6 @@ handleAction = case _ of
     case hush getXsrfToken of
       Just _ -> H.put { isLoggedIn: true }
       Nothing -> pure unit
-  HandleLoginForm creds ->
-    login creds *> H.put { isLoggedIn: true }
+  HandleLoginForm creds -> do
+    success <- login creds
+    H.put { isLoggedIn: success }
