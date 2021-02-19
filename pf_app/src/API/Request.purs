@@ -2,20 +2,20 @@ module Website.API.Request where
 
 import Prelude
 
-import Affjax (Request, request)
+import Affjax (Request, Response, request)
 import Affjax.RequestBody as RB
 import Affjax.RequestHeader (RequestHeader(..))
 import Affjax.ResponseFormat as RF
 import Data.Argonaut.Core (Json)
-import Data.Either (Either(..))
+import Data.Either (Either(..), hush)
 import Data.HTTP.Method (Method(..))
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
 import Effect.Aff.Class (class MonadAff, liftAff)
 import Effect.Class.Console (log)
+import Routing.Duplex (print)
 import Website.API.Endpoint (Endpoint, endpointCodec)
 import Website.Utils.Cookies (XsrfToken(..), getXsrfToken)
-import Routing.Duplex (print)
 
 
 data RequestMethod
@@ -60,20 +60,21 @@ mkRequest_
      MonadAff m
   => Maybe XsrfToken
   -> RequestOptions
-  -> m (Maybe Json)
+  -> m (Maybe (Response Json))
 mkRequest_ mXsrfToken options = do
-  response <- liftAff $ request (defaultRequest mXsrfToken options)
-  pure $ case response of
-    Left err -> Nothing
-    Right res -> Just res.body
+  liftAff $ request (defaultRequest mXsrfToken options) >>= (pure <<< hush)
 
 
 mkRequest :: forall m. MonadAff m => RequestOptions -> m (Maybe Json)
-mkRequest options = mkRequest_ Nothing options
+mkRequest options = do
+  response <- mkRequest_ Nothing options
+  pure $ _.body <$> response
 
 
 mkAuthRequest :: forall m. MonadAff m => RequestOptions -> m (Maybe Json)
 mkAuthRequest options = do
   case getXsrfToken of
     Left err -> log (show err) *> pure Nothing
-    Right xsrf -> mkRequest_ (Just xsrf) options
+    Right xsrf -> do
+      response <- mkRequest_ (Just xsrf) options
+      pure $ _.body <$> response
