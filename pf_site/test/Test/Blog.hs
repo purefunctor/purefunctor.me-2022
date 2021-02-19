@@ -38,7 +38,7 @@ testBlog env app = with (pure app) $ do
 
     it "should return a specific post" $ do
       forM_ posts $ \post' -> do
-        let endpoint = "/blog/" <> encodeUtf8 (blogPostShortTitle post')
+        let endpoint = "/blog/" <> encodeUtf8 (blogPostShort post')
         get endpoint `shouldRespondWith` matchCodeJSON 200 post'
 
   let lTitle  = "Testing With Hspec"
@@ -59,7 +59,7 @@ testBlog env app = with (pure app) $ do
         postJSON "/blog" authHeaders (toJSON newPost) `shouldRespondWith` 200
 
         inDB <-  WaiTest.liftIO $ flip Sqlite.runSqlPool (env^.pool) $ do
-          Sqlite.exists [ BlogPostShortTitle ==. sTitle ]
+          Sqlite.exists [ BlogPostShort ==. sTitle ]
 
         inDB `shouldBe'` True
 
@@ -110,6 +110,6 @@ testBlog env app = with (pure app) $ do
         delete' endpoint authHeaders `shouldRespondWith` 200
 
         inDB <- WaiTest.liftIO $ flip Sqlite.runSqlPool (env^.pool) $ do
-          Sqlite.exists [ BlogPostShortTitle ==. sTitle ]
+          Sqlite.exists [ BlogPostShort ==. sTitle ]
 
         inDB `shouldBe'` False

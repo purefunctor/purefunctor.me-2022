@@ -28,7 +28,7 @@ mkDebug posts repos = do
     runMigration migrateAll
 
     forM_ posts $ \post -> do
-      inDB <- exists [ BlogPostShortTitle ==. blogPostShortTitle post ]
+      inDB <- exists [ BlogPostShort ==. blogPostShort post ]
       unless inDB $ void $ insert post
 
     forM_ repos $ \repo -> do

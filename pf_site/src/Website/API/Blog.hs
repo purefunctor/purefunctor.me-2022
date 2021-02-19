@@ -112,14 +112,14 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
         Just post -> do
 
           inDb <- runDb env $
-            exists [ BlogPostShortTitle ==. blogPostShortTitle post ]
+            exists [ BlogPostShort ==. blogPostShort post ]
 
           if not inDb
             then do
               runDb env $ insert post
               return $
                 MutableEndpointResult 200 $
-                  "Post created with short name: " <> blogPostShortTitle post
+                  "Post created with short name: " <> blogPostShort post
             else
               throwError err400
 
@@ -138,9 +138,9 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
       now <- liftIO getCurrentTime
 
       let mUpdates = filter isJust
-            [ (BlogPostFullTitle  =.) <$> payload^.title
+            [ (BlogPostTitle  =.) <$> payload^.title
             , (BlogPostContents   =.) <$> payload^.contents
-            , (BlogPostShortTitle =.) <$> payload^.short
+            , (BlogPostShort =.) <$> payload^.short
             ]
 
       case mUpdates of
@@ -169,7 +169,7 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
       env <- ask
 
       inDatabase <- runDb env $
-        exists [ BlogPostShortTitle ==. sTitle ]
+        exists [ BlogPostShort ==. sTitle ]
 
       if inDatabase
         then do
