@@ -93,7 +93,7 @@ repositoryServer =
     createRepository (Authenticated _) payload = do
       env <- ask
 
-      let autoUrl o n = 
+      let autoUrl o n =
             Text.concat [ "https://github.com/" , o , "/" , n ]
 
       let mRepo = Repository
@@ -104,9 +104,7 @@ repositoryServer =
                     <$> payload^.owner
                     <*> payload^.name
                 )
-            <*> ( payload^.description <|>
-                  pure "No description provided."
-                )
+            <*> Just "No description provided."
             <*> Just 0
             <*> Just 0
 
@@ -118,14 +116,18 @@ repositoryServer =
 
           if not inDb
             then do
-              mStats <- liftIO $ getRepositoryStats env repo
+              mStats <- liftIO $ getRepositoryData env repo
 
               repoKey <- runDb env $
                 insert $ case mStats of
-                  Just (ghStars, ghCommits) ->
-                    repo { repositoryStars = fromMaybe ghStars $ payload^.stars
-                         , repositoryCommits = fromMaybe ghCommits $ payload^.commits
-                         }
+                  Just (ghDescr, ghStars, ghCommits) ->
+                    let stars' = fromMaybe ghStars $ payload^.stars
+                        commits' = fromMaybe ghCommits $ payload^.commits
+                        descr' = fromMaybe ghDescr $ payload^.description
+                    in  repo { repositoryStars = stars'
+                             , repositoryCommits = commits'
+                             , repositoryDescription = descr'
+                             }
                   Nothing -> repo
 
               return $

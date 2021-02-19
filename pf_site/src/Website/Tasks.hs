@@ -8,6 +8,7 @@ import Control.Lens
 import Control.Monad
 import Control.Monad.Except
 import Control.Monad.Logger
+import Control.Monad.Trans.Maybe ( MaybeT(MaybeT, runMaybeT) )
 
 import Data.Aeson
 import Data.Aeson.Types
@@ -36,11 +37,11 @@ runRequestM :: RequestM r -> IO (Either Text r)
 runRequestM = runReq defaultHttpConfig . runExceptT
 
 
-getRepositoryStats :: Environment -> Repository -> IO (Maybe (Int, Int))
-getRepositoryStats env repository =
-  do stars <- getStars
+getRepositoryData :: Environment -> Repository -> IO (Maybe (Text, Int, Int))
+getRepositoryData env repository = runMaybeT $
+  do (stars, descr) <- getGeneralData
      commits <- getCommits
-     return $ (,) <$> stars <*> commits
+     return (descr, stars, commits)
   where
     repoUrl :: Url 'Https
     repoUrl =
@@ -60,47 +61,49 @@ getRepositoryStats env repository =
 
       return $ responseBody <$> response
 
-    getStars :: IO (Maybe Int)
-    getStars = do
-      value <- getResource repoUrl
+    getGeneralData :: MaybeT IO (Int, Text)
+    getGeneralData = do
+      value <- liftIO $ getResource repoUrl
       case value of
         Left err ->
-          runStderrLoggingT $ logErrorN err >> return Nothing
-        Right val ->
-          return $ parseMaybe (withObject "stargazers" (.: "stargazers_count")) val
+          liftIO (runStderrLoggingT $ logErrorN err) >> mzero
+        Right val -> MaybeT . return $
+          (,) <$> parseMaybe (withObject "stargazers" (.: "stargazers_count")) val
+              <*> parseMaybe (withObject "description" (.: "description")) val
 
-    getCommits :: IO (Maybe Int)
+    getCommits :: MaybeT IO Int
     getCommits = do
-      value <- getResource $ repoUrl /: "stats" /: "participation"
+      value <- liftIO $ getResource $ repoUrl /: "stats" /: "participation"
       case value of
         Left err ->
-          runStderrLoggingT $ logErrorN err >> return Nothing
-        Right val ->
-          return $ sum <$>
+          liftIO (runStderrLoggingT $ logErrorN err) >> mzero
+        Right val -> MaybeT . return $
+          sum <$>
             (parseMaybe (withObject "participation" (.: "all")) val :: Maybe [Int])
 
 
-updateRepositoryStats :: Environment -> IO ()
-updateRepositoryStats env = do
+updateRepositoryData :: Environment -> IO ()
+updateRepositoryData env = do
   repositories <-
     liftIO $ flip runSqlPersistMPool (env^.pool) $ selectList [ ] [ ]
 
   -- Pure operations are guaranteed to be safe
   repoStats <-
     forConcurrently (entityVal <$> repositories) $ \repository ->
-      (,) repository <$> getRepositoryStats env repository
+      (,) repository <$> getRepositoryData env repository
 
   -- Mindfulness of impure operations is a must
   forM_ repoStats $ \(repository, mStats) ->
     case mStats of
-      Just (stars, commits) ->
+      Just (descr, stars, commits) ->
         liftIO $ flip runSqlPersistMPool (env^.pool) $
           update (RepositoryKey $ repositoryName repository)
-            [ RepositoryStars   =. stars
-            , RepositoryCommits =. commits
+            [ RepositoryStars       =. stars
+            , RepositoryCommits     =. commits
+            , RepositoryDescription =. descr
             ]
       Nothing -> runStderrLoggingT $ logErrorN "not updating repository"
 
 
 runTasks :: Environment -> IO [ThreadId]
-runTasks env = execSchedule $ addJob (updateRepositoryStats env) "0 */3 * * *"
+runTasks env = execSchedule $ addJob (updateRepositoryData env) "0 */3 * * *"
