@@ -8,11 +8,11 @@ import Effect.Class (liftEffect)
 import Halogen (HalogenM, lift)
 import Routing.Duplex as RD
 import Routing.Hash as RH
-import Website.Data.Routes (Routes, routeCodec)
+import Website.Data.Routes (Route, routeCodec)
 
 
 class MonadAff m <= Navigate m where
-  navigate :: Routes -> m Unit
+  navigate :: Route -> m Unit
 
 
 instance navigateAff :: Navigate Aff where

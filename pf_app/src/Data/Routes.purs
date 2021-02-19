@@ -8,14 +8,14 @@ import Routing.Duplex.Generic (noArgs, sum)
 import Routing.Duplex.Generic.Syntax ((/))
 
 
-data Routes = HomeR | AdminR
+data Route = HomeR | AdminR
 
 
-derive instance genericRoutes :: Generic Routes _
-derive instance eqRoutes :: Eq Routes
+derive instance genericRoutes :: Generic Route _
+derive instance eqRoutes :: Eq Route
 
 
-routeCodec :: RouteDuplex' Routes
+routeCodec :: RouteDuplex' Route
 routeCodec = root $ sum
   { "HomeR": noArgs
   , "AdminR": "admin" / noArgs
