@@ -9,21 +9,22 @@ import Effect.Aff.Class (class MonadAff)
 import Effect.Class (liftEffect)
 import Halogen as H
 import Halogen.HTML as HH
+import Routing.Duplex as RD
+import Routing.Hash as RH
+import Website.Capability.Navigation (class Navigate, navigate)
 import Website.Capability.Resources
   ( class ManageBlogPost
   , class ManageRepository
   , class ManageLogin
   )
-import Website.Data.Routes (Routes(..), routeCodec)
+import Website.Data.Routes (Route(..), routeCodec)
 import Website.Pages.Admin as Admin
 import Website.Pages.Home as Home
-import Routing.Duplex as RD
-import Routing.Hash as RH
 
 
-type State = { currentRoute :: Routes }
+type State = { currentRoute :: Route }
 data Action = Initialize
-data Query a = Navigate Routes a
+data Query a = Navigate Route a
 type ChildSlots =
   ( home :: H.Slot Query Void Unit
   , admin :: H.Slot Query Void Unit
@@ -36,6 +37,7 @@ component
   => ManageBlogPost m
   => ManageRepository m
   => ManageLogin m
+  => Navigate m
   => H.Component HH.HTML Query input output m
 component =
   H.mkComponent
@@ -59,6 +61,7 @@ render
   => ManageBlogPost m
   => ManageRepository m
   => ManageLogin m
+  => Navigate m
   => State
   -> H.ComponentHTML Action ChildSlots m
 render { currentRoute } =
@@ -73,12 +76,13 @@ handleAction
   => ManageBlogPost m
   => ManageRepository m
   => ManageLogin m
+  => Navigate m
   => Action
   -> H.HalogenM State Action ChildSlots output m Unit
 handleAction = case _ of
-  Initialize -> do
-    initialRoute <- hush <<< (RD.parse routeCodec) <$> liftEffect RH.getHash
-    liftEffect <<< RH.setHash <<< RD.print routeCodec <<< fromMaybe HomeR $ initialRoute
+  Initialize ->
+    hush <<< (RD.parse routeCodec) <$> liftEffect RH.getHash >>=
+      navigate <<< fromMaybe HomeR
 
 
 handleQuery
@@ -87,6 +91,7 @@ handleQuery
   => ManageBlogPost m
   => ManageRepository m
   => ManageLogin m
+  => Navigate m
   => Query a
   -> H.HalogenM State Action ChildSlots output m (Maybe a)
 handleQuery = case _ of
