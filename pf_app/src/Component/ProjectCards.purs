@@ -2,23 +2,30 @@ module Website.Component.ProjectCards where
 
 import Prelude
 
+import Data.Maybe (Maybe(..))
 import Data.Symbol (class IsSymbol, SProxy)
+import Effect.Aff.Class (class MonadAff)
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
 import Prim.Row (class Cons)
+import Website.Capability.Resources (class ManageRepository, getRepositories)
 import Website.Component.Utils (css, css')
 import Website.Data.Resources (Repository)
 
 
 type Input = Array Repository
 type State = Array Repository
+data Action = Initialize
 type Slot = forall query. H.Slot query Void Unit
+
 
 
 make
   :: forall l query _1 slots action m.
-     Cons l (H.Slot query Void Unit) _1 slots
+     MonadAff m
+  => ManageRepository m
+  => Cons l (H.Slot query Void Unit) _1 slots
   => IsSymbol l
   => SProxy l
   -> Array Repository
@@ -26,12 +33,19 @@ make
 make label repositories = HH.slot label unit component repositories absurd
 
 
-component :: forall query output m. H.Component HH.HTML query Input output m
+component
+  :: forall query output m.
+     MonadAff m
+  => ManageRepository m
+  => H.Component HH.HTML query Input output m
 component =
   H.mkComponent
   { initialState
   , render
   , eval: H.mkEval $ H.defaultEval
+    { handleAction = handleAction
+    , initialize = Just Initialize
+    }
   }
 
 
@@ -87,3 +101,17 @@ render repositories =
 
     cards :: forall w i. Array (HH.HTML w i)
     cards = makeCard <$> repositories
+
+
+handleAction
+  :: forall slots output m.
+     MonadAff m
+  => ManageRepository m
+  => Action
+  -> H.HalogenM State Action slots output m Unit
+handleAction = case _ of
+  Initialize ->
+    getRepositories >>=
+      case _ of
+        Just repositories -> H.put repositories
+        Nothing -> pure unit
