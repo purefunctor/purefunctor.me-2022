@@ -1,4 +1,4 @@
-module Website.Component.ProjectCards where
+module Website.Pages.Home.ProjectCards where
 
 import Prelude
 

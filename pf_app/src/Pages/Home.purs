@@ -7,10 +7,10 @@ import Effect.Aff.Class (class MonadAff)
 import Halogen as H
 import Halogen.HTML as HH
 import Website.Capability.Resources (class ManageRepository)
-import Website.Component.AboutCard as AboutCard
-import Website.Component.ContactCards as ContactCards
-import Website.Component.ProjectCards as ProjectCards
 import Website.Component.Utils (css, css')
+import Website.Pages.Home.AboutCard as AboutCard
+import Website.Pages.Home.ContactCards as ContactCards
+import Website.Pages.Home.ProjectCards as ProjectCards
 
 
 type State = Unit

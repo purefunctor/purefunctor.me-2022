@@ -1,4 +1,4 @@
-module Website.Component.ContactCards where
+module Website.Pages.Home.ContactCards where
 
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
