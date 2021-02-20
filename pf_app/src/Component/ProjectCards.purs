@@ -1,4 +1,4 @@
-module Website.Component.RepoCard where
+module Website.Component.ProjectCards where
 
 import Prelude
 

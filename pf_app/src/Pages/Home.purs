@@ -9,14 +9,14 @@ import Effect.Class.Console (log)
 import Halogen as H
 import Halogen.HTML as HH
 import Website.Capability.Resources (class ManageRepository, getRepositories)
-import Website.Component.RepoCard as RepoCard
+import Website.Component.ProjectCards as ProjectCards
 import Website.Component.Utils (css, css')
 
 
 type State = Unit
 data Action = Initialize
 type ChildSlots =
-  ( projects :: RepoCard.Slot )
+  ( projects :: ProjectCards.Slot )
 
 
 component
@@ -65,7 +65,7 @@ render _ =
         ]
       ]
     , subsection "min-h-screen" "Projects"
-      [ RepoCard.make ( SProxy :: SProxy "projects" ) exampleRepositories
+      [ ProjectCards.make ( SProxy :: SProxy "projects" ) exampleRepositories
       ]
     , subsection "h-screen" "Contact"
       [ HH.div [ css "text-lg p-5" ]
