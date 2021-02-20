@@ -101,6 +101,13 @@ render _ =
         , description: "Personal dotfiles."
         , url: "https://github.com/PureFunctor/dotfiles"
         }
+      , { name: "purefunctor.me"
+        , owner: "PureFunctor"
+        , commits: 333
+        , stars: 1
+        , description: "My personal portfolio website written in PureScript and Haskell"
+        , url: "https://github.com/PureFunctor/purefunctor.me"
+        }
       ]
 
 
