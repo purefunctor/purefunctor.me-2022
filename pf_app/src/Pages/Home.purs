@@ -2,6 +2,7 @@ module Website.Pages.Home where
 
 import Prelude
 
+import Data.Array (concat, replicate)
 import Data.Maybe (Maybe(..))
 import Data.Symbol (SProxy(..))
 import Effect.Aff.Class (class MonadAff)
@@ -82,7 +83,7 @@ render _ =
         ]
       ] <> child
 
-    exampleRepositories =
+    exampleRepositories = concat <<< replicate 2 $
       [ { name: "amalgam-lisp"
         , owner: "PureFunctor"
         , commits: 453
@@ -103,13 +104,6 @@ render _ =
         , stars: 0
         , description: "Personal dotfiles."
         , url: "https://github.com/PureFunctor/dotfiles"
-        }
-      , { name: "purefunctor.me"
-        , owner: "PureFunctor"
-        , commits: 333
-        , stars: 1
-        , description: "My personal portfolio website written in PureScript and Haskell"
-        , url: "https://github.com/PureFunctor/purefunctor.me"
         }
       ]
 
