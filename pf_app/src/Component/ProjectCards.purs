@@ -15,9 +15,8 @@ import Website.Component.Utils (css, css')
 import Website.Data.Resources (Repository)
 
 
-type Input = Array Repository
 type State =
-  { fromAPI :: Boolean
+  { shown :: Boolean
   , repositories :: Array Repository
   }
 data Action = Initialize
@@ -31,16 +30,15 @@ make
   => Cons l (H.Slot query Void Unit) _1 slots
   => IsSymbol l
   => SProxy l
-  -> Array Repository
   -> HH.HTML (H.ComponentSlot HH.HTML slots m action) action
-make label repositories = HH.slot label unit component repositories absurd
+make label = HH.slot label unit component unit absurd
 
 
 component
-  :: forall query output m.
+  :: forall query input output m.
      MonadAff m
   => ManageRepository m
-  => H.Component HH.HTML query Input output m
+  => H.Component HH.HTML query input output m
 component =
   H.mkComponent
   { initialState
@@ -52,14 +50,14 @@ component =
   }
 
 
-initialState :: Input -> State
-initialState repositories = { fromAPI: false, repositories }
+initialState :: forall input. input -> State
+initialState _ = { shown: false, repositories: [ ] }
 
 
 render :: forall action slots m. State -> H.ComponentHTML action slots m
-render { fromAPI, repositories } =
+render { shown, repositories } =
   HH.div [ css "p-5 flex-grow flex flex-wrap place-content-center" ]
-  if fromAPI && length repositories /= 0
+  if shown && length repositories /= 0
      then
        makeCard <$> repositories
      else
@@ -117,5 +115,5 @@ handleAction = case _ of
   Initialize ->
     getRepositories >>=
       case _ of
-        Just repositories -> H.put { fromAPI: true, repositories }
+        Just repositories -> H.put { shown: true, repositories }
         Nothing -> pure unit

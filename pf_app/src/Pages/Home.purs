@@ -2,7 +2,6 @@ module Website.Pages.Home where
 
 import Prelude
 
-import Data.Array (concat, replicate)
 import Data.Symbol (SProxy(..))
 import Effect.Aff.Class (class MonadAff)
 import Halogen as H
@@ -60,7 +59,7 @@ render _ =
         ]
       ]
     , subsection "min-h-screen" "Projects"
-      [ ProjectCards.make ( SProxy :: SProxy "projects" ) exampleRepositories
+      [ ProjectCards.make ( SProxy :: SProxy "projects" )
       ]
     , subsection "h-screen" "Contact"
       [ HH.div [ css "text-lg p-5" ]
@@ -76,30 +75,6 @@ render _ =
         [ HH.text title
         ]
       ] <> child
-
-    exampleRepositories = concat <<< replicate 2 $
-      [ { name: "amalgam-lisp"
-        , owner: "PureFunctor"
-        , commits: 453
-        , stars: 3
-        , description: "LISP-like interpreted language implemented in Python."
-        , url: "https://github.com/PureFunctor/amalgam-lisp"
-        }
-      , { name: "purefunctor.me"
-        , owner: "PureFunctor"
-        , commits: 333
-        , stars: 1
-        , description: "My personal portfolio website written in PureScript and Haskell"
-        , url: "https://github.com/PureFunctor/purefunctor.me"
-        }
-      , { name: "dotfiles"
-        , owner: "PureFunctor"
-        , commits: 28
-        , stars: 0
-        , description: "Personal dotfiles."
-        , url: "https://github.com/PureFunctor/dotfiles"
-        }
-      ]
 
 
 handleAction
