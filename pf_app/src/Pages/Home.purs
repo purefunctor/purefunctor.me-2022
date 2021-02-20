@@ -62,7 +62,7 @@ render _ =
     , subsection "About" [ css "text-lg p-5" ]
       [ HH.text "Text"
       ]
-    , subsection "Projects" [ css "p-5" ]
+    , subsection "Projects" [ css "flex-grow p-5" ]
       [ HH.slot ( SProxy :: SProxy "projects" ) unit RepoCard.component exampleRepositories absurd
       ]
     , subsection "Contact" [ css "text-lg p-5" ]
@@ -72,7 +72,7 @@ render _ =
   ]
   where
     subsection title props content =
-      HH.div [ css "h-screen p-5 scroll-snap-align-start divide-y-2" ]
+      HH.div [ css "h-screen flex flex-col scroll-snap-align-start divide-y-2" ]
       [ HH.div [ css "text-4xl p-5" ]
         [ HH.text title
         ]
