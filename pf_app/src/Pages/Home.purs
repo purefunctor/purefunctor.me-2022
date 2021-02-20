@@ -3,19 +3,16 @@ module Website.Pages.Home where
 import Prelude
 
 import Data.Array (concat, replicate)
-import Data.Maybe (Maybe(..))
 import Data.Symbol (SProxy(..))
 import Effect.Aff.Class (class MonadAff)
-import Effect.Class.Console (log)
 import Halogen as H
 import Halogen.HTML as HH
-import Website.Capability.Resources (class ManageRepository, getRepositories)
+import Website.Capability.Resources (class ManageRepository)
 import Website.Component.ProjectCards as ProjectCards
 import Website.Component.Utils (css, css')
 
 
 type State = Unit
-data Action = Initialize
 type ChildSlots =
   ( projects :: ProjectCards.Slot )
 
@@ -30,22 +27,19 @@ component =
   { initialState
   , render
   , eval: H.mkEval $ H.defaultEval
-    { handleAction = handleAction
-    , initialize = Just Initialize
-    }
   }
 
 
-initialState :: forall input. input -> Unit
+initialState :: forall input. input -> State
 initialState _ = unit
 
 
 render
-  :: forall m.
+  :: forall action m.
      MonadAff m
   => ManageRepository m
   => State
-  -> H.ComponentHTML Action ChildSlots m
+  -> H.ComponentHTML action ChildSlots m
 render _ =
   HH.div [ css "bg-gray-100 h-screen overflow-auto scroll-snap-y-proximity"  ]
   [ HH.div [ css "h-auto w-full lg:w-11/12 mx-auto" ]
@@ -109,14 +103,9 @@ render _ =
 
 
 handleAction
-  :: forall output m.
+  :: forall action output m.
      MonadAff m
   => ManageRepository m
-  => Action
-  -> H.HalogenM State Action ChildSlots output m Unit
-handleAction = case _ of
-  Initialize -> do
-    mRepositories <- getRepositories
-    case mRepositories of
-      Just repositories -> log $ show repositories
-      Nothing -> log "parsing exception"
+  => action
+  -> H.HalogenM State action ChildSlots output m Unit
+handleAction _ = pure unit
