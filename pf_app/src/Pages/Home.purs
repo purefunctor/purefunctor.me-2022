@@ -61,7 +61,7 @@ render _ =
     , subsection "min-h-screen" "Projects"
       [ ProjectCards.make ( SProxy :: SProxy "projects" )
       ]
-    , subsection "h-screen" "Contact"
+    , subsection "min-h-screen" "Contact"
       [ ContactCards.element
       ]
     ]

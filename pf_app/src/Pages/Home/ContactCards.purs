@@ -7,7 +7,12 @@ import Website.Component.Utils (css, css')
 
 element :: forall w i. HH.HTML w i
 element =
-  HH.div [ css "flex flex-1 md:flex-row flex-col" ]
+  HH.div
+  [ css'
+    [ "flex flex-1 md:flex-row flex-col"
+    , "md:space-x-5 md:space-y-0 space-y-5 p-5 justify-evenly"
+    ]
+  ]
   [ makeCard "bg-pink-100 text-pink-500" "mailto:justin@purefunctor.me"
     [ HH.i [ css "fas fa-envelope fa-4x" ] [ ]
     ]
@@ -25,7 +30,7 @@ element =
       [ css'
         [ extra
         , "flex-grow flex"
-        , "p-5 m-5 rounded-lg shadow-md"
+        , "h-64 rounded-lg shadow-md"
         , "items-center justify-center"
         ]
       , HP.href link
