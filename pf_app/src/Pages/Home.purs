@@ -7,6 +7,7 @@ import Effect.Aff.Class (class MonadAff)
 import Halogen as H
 import Halogen.HTML as HH
 import Website.Capability.Resources (class ManageRepository)
+import Website.Component.ContactCards as ContactCards
 import Website.Component.ProjectCards as ProjectCards
 import Website.Component.Utils (css, css')
 
@@ -62,9 +63,7 @@ render _ =
       [ ProjectCards.make ( SProxy :: SProxy "projects" )
       ]
     , subsection "h-screen" "Contact"
-      [ HH.div [ css "text-lg p-5" ]
-        [ HH.text "Text"
-        ]
+      [ ContactCards.element
       ]
     ]
   ]
