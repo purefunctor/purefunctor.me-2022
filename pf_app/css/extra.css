@@ -1,5 +1,5 @@
-.scroll-snap-y-mandatory {
-    scroll-snap-type: y mandatory;
+.scroll-snap-y-proximity {
+    scroll-snap-type: y proximity;
 }
 
 .scroll-snap-align-start {

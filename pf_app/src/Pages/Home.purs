@@ -46,7 +46,7 @@ render
   => State
   -> H.ComponentHTML Action ChildSlots m
 render _ =
-  HH.div [ css "bg-gray-100 h-screen overflow-auto scroll-snap-y-mandatory"  ]
+  HH.div [ css "bg-gray-100 h-screen overflow-auto scroll-snap-y-proximity"  ]
   [ HH.div [ css "h-auto w-full lg:w-11/12 mx-auto" ]
     [ HH.div [ css "h-screen flex flex-col justify-center items-center space-y-5 scroll-snap-align-start" ]
       [ HH.div [ css "h-56 w-56 bg-green-200 rounded-full shadow-xl" ]
