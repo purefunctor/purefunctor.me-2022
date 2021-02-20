@@ -7,6 +7,7 @@ import Effect.Aff.Class (class MonadAff)
 import Halogen as H
 import Halogen.HTML as HH
 import Website.Capability.Resources (class ManageRepository)
+import Website.Component.AboutCard as AboutCard
 import Website.Component.ContactCards as ContactCards
 import Website.Component.ProjectCards as ProjectCards
 import Website.Component.Utils (css, css')
@@ -47,17 +48,15 @@ render _ =
       [ HH.div [ css "h-56 w-56 bg-green-200 rounded-full shadow-xl" ]
         [
         ]
-      , HH.div [ css "text-4xl text-center" ]
+      , HH.div [ css "text-4xl font-extralight text-center" ]
         [ HH.text "PureFunctor"
         ]
       , HH.div [ css "text-4xl font-thin text-center" ]
         [ HH.text "Student, Python, FP"
         ]
       ]
-    , subsection "h-screen" "About"
-      [ HH.div [ css "text-lg p-5" ]
-        [ HH.text "Text"
-        ]
+    , subsection "min-h-screen" "About"
+      [ AboutCard.element
       ]
     , subsection "min-h-screen" "Projects"
       [ ProjectCards.make ( SProxy :: SProxy "projects" )
@@ -70,7 +69,7 @@ render _ =
   where
     subsection extra title child =
       HH.div [ css' [ extra, "flex flex-col scroll-snap-align-start divide-y-2" ] ] $
-      [ HH.div [ css "text-4xl p-5" ]
+      [ HH.div [ css "font-extralight text-4xl p-5" ]
         [ HH.text title
         ]
       ] <> child
