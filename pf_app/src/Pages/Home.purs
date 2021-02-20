@@ -16,7 +16,7 @@ import Website.Component.Utils (css, css')
 type State = Unit
 data Action = Initialize
 type ChildSlots =
-  ( projects :: forall query. H.Slot query Void Unit )
+  ( projects :: RepoCard.Slot )
 
 
 component
@@ -65,7 +65,7 @@ render _ =
         ]
       ]
     , subsection "min-h-screen" "Projects"
-      [ HH.slot ( SProxy :: SProxy "projects" ) unit RepoCard.component exampleRepositories absurd
+      [ RepoCard.make ( SProxy :: SProxy "projects" ) exampleRepositories
       ]
     , subsection "h-screen" "Contact"
       [ HH.div [ css "text-lg p-5" ]

@@ -2,15 +2,28 @@ module Website.Component.RepoCard where
 
 import Prelude
 
+import Data.Symbol (class IsSymbol, SProxy)
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
+import Prim.Row (class Cons)
 import Website.Component.Utils (css, css')
 import Website.Data.Resources (Repository)
 
 
 type Input = Array Repository
 type State = Array Repository
+type Slot = forall query. H.Slot query Void Unit
+
+
+make
+  :: forall l query _1 slots action m.
+     Cons l (H.Slot query Void Unit) _1 slots
+  => IsSymbol l
+  => SProxy l
+  -> Array Repository
+  -> HH.HTML (H.ComponentSlot HH.HTML slots m action) action
+make label repositories = HH.slot label unit component repositories absurd
 
 
 component :: forall query output m. H.Component HH.HTML query Input output m
