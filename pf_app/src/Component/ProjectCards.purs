@@ -2,6 +2,7 @@ module Website.Component.ProjectCards where
 
 import Prelude
 
+import Data.Array (length)
 import Data.Maybe (Maybe(..))
 import Data.Symbol (class IsSymbol, SProxy)
 import Effect.Aff.Class (class MonadAff)
@@ -15,10 +16,12 @@ import Website.Data.Resources (Repository)
 
 
 type Input = Array Repository
-type State = Array Repository
+type State =
+  { fromAPI :: Boolean
+  , repositories :: Array Repository
+  }
 data Action = Initialize
 type Slot = forall query. H.Slot query Void Unit
-
 
 
 make
@@ -50,14 +53,18 @@ component =
 
 
 initialState :: Input -> State
-initialState = identity
+initialState repositories = { fromAPI: false, repositories }
 
 
 render :: forall action slots m. State -> H.ComponentHTML action slots m
-render repositories =
-  HH.div
-  [ css "p-5 flex-grow flex flex-wrap place-content-center" ]
-  cards
+render { fromAPI, repositories } =
+  HH.div [ css "p-5 flex-grow flex flex-wrap place-content-center" ]
+  if fromAPI && length repositories /= 0
+     then
+       makeCard <$> repositories
+     else
+       [ HH.div [ css "text-4xl animate-pulse" ] [ HH.text "..." ]
+       ]
   where
     makeCard :: forall w i. Repository -> HH.HTML w i
     makeCard repository =
@@ -99,9 +106,6 @@ render repositories =
         ]
        ]
 
-    cards :: forall w i. Array (HH.HTML w i)
-    cards = makeCard <$> repositories
-
 
 handleAction
   :: forall slots output m.
@@ -113,5 +117,5 @@ handleAction = case _ of
   Initialize ->
     getRepositories >>=
       case _ of
-        Just repositories -> H.put repositories
+        Just repositories -> H.put { fromAPI: true, repositories }
         Nothing -> pure unit
