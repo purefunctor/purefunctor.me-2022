@@ -62,7 +62,9 @@ let
       };
     };
   };
+
+  nixpkgs = import (fetchTarball sources.nixpkgs.url) { inherit config; };
+  easy-purescript-nix = import sources.easy-purescript-nix { pkgs = nixpkgs; };
 in
-  { compiler = compiler;
-    nixpkgs = import (fetchTarball sources.nixpkgs.url) { inherit config; };
+  { inherit compiler nixpkgs easy-purescript-nix;
   }

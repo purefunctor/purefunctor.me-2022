@@ -3,8 +3,9 @@
 let
 
   config = import ./config.nix { inherit doCheck; };
+  inherit (config) compiler nixpkgs easy-purescript-nix ;
 
-  haskellPackages = config.nixpkgs.haskell.packages.${config.compiler};
+  haskellPackages = nixpkgs.haskell.packages.${compiler};
 
 in
   haskellPackages.shellFor {
@@ -13,6 +14,10 @@ in
       haskellPackages.purefunctor-me
     ];
     buildInputs = [
-      config.nixpkgs.cabal-install
+      nixpkgs.cabal-install
+      easy-purescript-nix.purs
+      easy-purescript-nix.spago
+      easy-purescript-nix.zephyr
+      nixpkgs.nodejs-15_x
     ];
   }
