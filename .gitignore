@@ -34,6 +34,7 @@ node_modules
 output
 static
 .psc-ide-port
+dce-output
 
 # Misc
 .cache

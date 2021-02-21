@@ -5,15 +5,14 @@
   "main": "index.js",
   "scripts": {
     "css": "tailwindcss build pf_app/css/tailwind.css -o pf_app/css/style.css",
-
+    "css:prod": "NODE_ENV=production npm run css",
+    "build:zephyr": "spago build -u '--codegen corefn' && zephyr -f Main.main",
     "parceldev": "parcel dev ./pf_app/dev/index.html",
-    "parcelprod": "parcel build ./pf_app/dev/index.html --out-dir ./dist --no-source-maps",
-
+    "parcelprod": "parcel build ./pf_app/prod/index.html --out-dir ./dist --no-source-maps",
     "dev": "spago build && npm run css && npm run parceldev",
-    "prod": "spago build && NODE_ENV=production npm run css && npm run parcelprod",
-
     "dev:api": "spago build && npm run css && npm run parcelprod && cabal run purefunctor-me",
-
+    "prod": "spago build && npm run css:min && npm run parcelprod",
+    "prod:zephyr": "npm run build:zephyr && npm run css:prod && npm run parcelprod",
     "purge": "git clean -fdx && rm -rf .spago",
     "test": "spago test"
   },
