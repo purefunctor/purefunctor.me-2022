@@ -1,8 +1,10 @@
-{ doCheck ? false }:
+{ doCheck ? false 
+, doMinimal ? false
+}:
 
 let
 
-  config = import ./config.nix { inherit doCheck; };
+  config = import ./config.nix { inherit doCheck doMinimal; };
   inherit (config) compiler nixpkgs easy-purescript-nix ;
 
   haskellPackages = nixpkgs.haskell.packages.${compiler};
