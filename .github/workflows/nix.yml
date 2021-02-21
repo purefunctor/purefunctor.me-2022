@@ -45,7 +45,7 @@ jobs:
       run: ln -s config-default.toml config.toml
 
     - name: Build Package
-      run: nix-build release.nix
+      run: nix-build release.nix --arg doCheck true
 
   haskell-tests:
     name: Haskell Tests

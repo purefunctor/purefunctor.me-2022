@@ -1,4 +1,5 @@
 { doCheck ? false 
+, doMinimal ? false
 }:
 
 let
@@ -37,13 +38,19 @@ let
                             srcIgnored path type
                               || builtins.elem (builtins.baseNameOf path) dontIgnore;
 
-                      purefunctor-me-src = pkgs.lib.cleanSourceWith {
+                      src = pkgs.lib.cleanSourceWith {
                         filter = srcFilter ./.;
                         src = ./.;
                         name = "purefunctor-me-src";
                       };
+
+                      full = super.callCabal2nix "purefunctor-me" src { };
+
+                      minimal = pkgs.haskell.lib.overrideCabal
+                        ( pkgs.haskell.lib.justStaticExecutables full ) ( _: { } );
+
                     in
-                      check (super.callCabal2nix "purefunctor-me" purefunctor-me-src { });
+                      check (if doMinimal then minimal else full);
 
                   # Disable tests and benchmarks for all packages.
                   mkDerivation = args: super.mkDerivation ({
