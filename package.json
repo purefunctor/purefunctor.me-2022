@@ -13,7 +13,7 @@
     "dev:api": "spago build && npm run css && npm run parcelprod && cabal run purefunctor-me",
     "prod": "spago build && npm run css:min && npm run parcelprod",
     "prod:zephyr": "npm run build:zephyr && npm run css:prod && npm run parcelprod",
-    "purge": "git clean -fdx && rm -rf .spago",
+    "purge": "rm -rf .spago dce-output output node_modules .cache .psci_modules dist-newstyle",
     "test": "spago test"
   },
   "repository": {
