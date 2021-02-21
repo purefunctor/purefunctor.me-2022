@@ -47,7 +47,18 @@ let
                       full = super.callCabal2nix "purefunctor-me" src { };
 
                       minimal = pkgs.haskell.lib.overrideCabal
-                        ( pkgs.haskell.lib.justStaticExecutables full ) ( _: { } );
+                      full
+                      ( _: { 
+                        enableSharedExecutables = false;
+                        enableSharedLibraries = false;
+                        configureFlags = [
+                          "--ghc-option=-optl=-static"
+                          "--ghc-option=-optl=-pthread"
+                          "--ghc-option=-optl=-L${pkgs.gmp6.override { withStatic = true; }}/lib"
+                          "--ghc-option=-optl=-L${pkgs.zlib.static}/lib"
+                          "--ghc-option=-optl=-L${pkgs.glibc.static}/lib"
+                        ];
+                      } );
 
                     in
                       check (if doMinimal then minimal else full);
