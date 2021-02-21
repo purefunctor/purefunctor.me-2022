@@ -86,12 +86,3 @@ render _ =
         [ HH.text title
         ]
       ] <> child
-
-
-handleAction
-  :: forall action output m.
-     MonadAff m
-  => ManageRepository m
-  => action
-  -> H.HalogenM State action ChildSlots output m Unit
-handleAction _ = pure unit
