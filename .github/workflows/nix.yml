@@ -47,6 +47,27 @@ jobs:
     - name: Build Package
       run: nix-build release.nix --arg doCheck true
 
+  nix-minimal-builds:
+    name: Nix Minimal Builds
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Install Nix
+      uses: cachix/install-nix-action@v12
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+    
+    - name: Install Cachix
+      uses: cachix/cachix-action@v8
+      with:
+        name: ${{ secrets.CACHIX_CACHE_NAME }}
+        authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
+    - name: Build Package
+      run: nix-build release.nix --arg doCheck false --arg doMinimal true
+
   haskell-tests:
     name: Haskell Tests
     runs-on: ubuntu-latest
