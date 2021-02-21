@@ -6,6 +6,7 @@ import Data.Symbol (SProxy(..))
 import Effect.Aff.Class (class MonadAff)
 import Halogen as H
 import Halogen.HTML as HH
+import Halogen.HTML.Properties as HP
 import Website.Capability.Resources (class ManageRepository)
 import Website.Component.Utils (css, css')
 import Website.Pages.Home.AboutCard as AboutCard
@@ -51,8 +52,9 @@ render _ =
         , "scroll-snap-align-start"
         ]
       ]
-      [ HH.div [ css "h-56 w-56 bg-green-200 rounded-full shadow-xl" ]
-        [
+      [ HH.img
+        [ css "h-56 w-56 rounded-full shadow-xl"
+        , HP.src "https://avatars.githubusercontent.com/u/66708316?v=4"
         ]
       , HH.div [ css "text-4xl font-extralight text-center" ]
         [ HH.text "PureFunctor"
