@@ -8,7 +8,14 @@ module.exports = {
     fontFamily: {
       'sans': ['Montserrat']
     },
-    extend: {},
+    extend: {
+      colors: {
+	"faint": {
+	  DEFAULT: "#fffdf2",
+	  100: "#e5e2ce"
+	},
+      },
+    },
   },
   variants: {
     extend: {},

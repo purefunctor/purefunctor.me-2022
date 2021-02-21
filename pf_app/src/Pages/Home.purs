@@ -42,7 +42,7 @@ render
   => State
   -> H.ComponentHTML action ChildSlots m
 render _ =
-  HH.div [ css "bg-gray-100 h-screen overflow-auto scroll-snap-y-proximity"  ]
+  HH.div [ css "bg-faint h-screen overflow-auto scroll-snap-y-proximity"  ]
   [ HH.div [ css "h-auto w-full lg:w-11/12 mx-auto" ]
     [ HH.div [ css "h-screen flex flex-col justify-center items-center space-y-5 scroll-snap-align-start" ]
       [ HH.div [ css "h-56 w-56 bg-green-200 rounded-full shadow-xl" ]
@@ -68,7 +68,14 @@ render _ =
   ]
   where
     subsection extra title child =
-      HH.div [ css' [ extra, "flex flex-col scroll-snap-align-start divide-y-2" ] ] $
+      HH.div
+      [ css'
+        [ extra
+        , "flex flex-col"
+        , "scroll-snap-align-start"
+        , "divide-y divide-faint-100"
+        ]
+      ] $
       [ HH.div [ css "font-extralight text-4xl p-5" ]
         [ HH.text title
         ]
