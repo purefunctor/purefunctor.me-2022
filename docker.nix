@@ -3,9 +3,10 @@
 }:
 let
   config = import ./config.nix { inherit doCheck doMinimal; };
+  inherit (config) nixpkgs hsPkgs;
 in
-  config.nixpkgs.dockerTools.streamLayeredImage {
+  nixpkgs.dockerTools.streamLayeredImage {
     name = "purefunctor-me";
     tag = "latest";
-    contents = config.nixpkgs.haskell.packages."${config.compiler}".purefunctor-me;
+    contents = hsPkgs.purefunctor-me;
   }

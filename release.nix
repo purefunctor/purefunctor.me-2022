@@ -4,7 +4,8 @@
 
 let
   config = import ./config.nix { inherit doCheck doMinimal; };
+  inherit (config) hsPkgs;
 
 in
-  { purefunctor-me = config.nixpkgs.haskell.packages.${config.compiler}.purefunctor-me;
+  { purefunctor-me = hsPkgs.purefunctor-me;
   }
