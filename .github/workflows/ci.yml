@@ -32,15 +32,26 @@ jobs:
     - name: Install Docker
       uses: docker/setup-buildx-action@v1
 
-    - name: Build Image
+    - name: Build Image (Backend)
       run: $(nix-build docker.nix) | docker load
 
-    - name: Push Image
+    - name: Push Image (Backend)
       run: |
         IMAGE_ID=ghcr.io/purefunctor/site-backend
         VERSION=latest
 
         docker tag purefunctor-me $IMAGE_ID:$VERSION
+        docker push $IMAGE_ID:$VERSION
+
+    - name: Build Image (Frontend)
+      run: $(nix-build docker-frontend.nix) | docker load
+
+    - name: Push Image (Frontend)
+      run: |
+        IMAGE_ID=ghcr.io/purefunctor/site-frontend
+        VERSION=latest
+
+        docker tag site-frontend $IMAGE_ID:$VERSION
         docker push $IMAGE_ID:$VERSION
 
     - name: Show Images
