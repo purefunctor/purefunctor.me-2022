@@ -5,7 +5,7 @@
 let
 
   config = import ./config.nix { inherit doCheck doMinimal; };
-  inherit (config) compiler nixpkgs easy-purescript-nix ;
+  inherit (config) compiler nixpkgs easy-purescript-nix spago2nix;
 
   haskellPackages = nixpkgs.haskell.packages.${compiler};
 
@@ -19,6 +19,7 @@ in
       nixpkgs.cabal-install
       easy-purescript-nix.purs
       easy-purescript-nix.spago
+      spago2nix
       easy-purescript-nix.zephyr
       nixpkgs.nodejs-15_x
       nixpkgs.yarn

@@ -71,6 +71,7 @@ let
 
   nixpkgs = import (fetchTarball sources.nixpkgs.url) { inherit config; };
   easy-purescript-nix = import sources.easy-purescript-nix { pkgs = nixpkgs; };
+  spago2nix = import sources.spago2nix { pkgs = nixpkgs; };
 in
-  { inherit compiler nixpkgs easy-purescript-nix;
+  { inherit compiler nixpkgs easy-purescript-nix spago2nix;
   }
