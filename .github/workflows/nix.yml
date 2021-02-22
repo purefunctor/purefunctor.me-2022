@@ -45,7 +45,7 @@ jobs:
       run: ln -s config-default.toml config.toml
 
     - name: Build Backend
-      run: nix-build release.nix --arg doCheck true
+      run: nix-build release-backend.nix --arg doCheck true
 
   nix-builds-frontend:
     name: Nix Builds (Frontend)
