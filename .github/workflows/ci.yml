@@ -40,7 +40,7 @@ jobs:
         IMAGE_ID=ghcr.io/purefunctor/site-backend
         VERSION=latest
 
-        docker tag purefunctor-me $IMAGE_ID:$VERSION
+        docker tag site-backend $IMAGE_ID:$VERSION
         docker push $IMAGE_ID:$VERSION
 
     - name: Build Image (Frontend)

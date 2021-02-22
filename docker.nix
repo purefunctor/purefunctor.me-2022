@@ -6,7 +6,7 @@ let
   inherit (config) nixpkgs hsPkgs;
 in
   nixpkgs.dockerTools.streamLayeredImage {
-    name = "purefunctor-me";
+    name = "site-backend";
     tag = "latest";
     contents = hsPkgs.purefunctor-me;
   }
