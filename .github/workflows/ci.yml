@@ -26,11 +26,22 @@ jobs:
         name: ${{ secrets.CACHIX_CACHE_NAME }}
         authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
+    - name: Login to GHCR
+      run: echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
     - name: Install Docker
       uses: docker/setup-buildx-action@v1
 
     - name: Build Image
       run: $(nix-build docker.nix) | docker load
+
+    - name: Push Image
+      run: |
+        IMAGE_ID=ghcr.io/purefunctor/site-backend
+        VERSION=latest
+
+        docker tag purefunctor-me $IMAGE_ID:$VERSION
+        docker push $IMAGE_ID:$VERSION
 
     - name: Show Images
       run: docker image ls
