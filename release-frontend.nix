@@ -36,6 +36,6 @@ in
       mkdir -p $out/dist
 
       ${nixpkgs.nodejs-15_x}/bin/node node_modules/.bin/parcel \
-        build pf_app/prod/index.html --out-dir $out/dist/
+        build pf_app/prod/index.html --out-dir $out/dist/ --no-source-maps
     '';
   }
