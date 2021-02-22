@@ -33,7 +33,7 @@ jobs:
       uses: docker/setup-buildx-action@v1
 
     - name: Build Image (Backend)
-      run: $(nix-build docker.nix) | docker load
+      run: $(nix-build docker-backend.nix) | docker load
 
     - name: Push Image (Backend)
       run: |
