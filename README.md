@@ -22,24 +22,10 @@ The project requires the following compilers and build tools to be installed for
 * haskell-language-server
 
 ## Hacking the Project
-Once you have these development dependencies installed, you can now start hacking on the project.
+Once you have these development dependencies installed, you can now start hacking on the project. Alternatively, a `shell.nix` file is also provided for use with Nix and it contains the minimal tools needed for working on the project.
 
 ### Frontend
-To start, install dependencies from `npm`:
-```sh
-λ yarn
-```
-
-To run a development server:
-```sh
-λ yarn run dev
-```
-
-To create a production build:
-```sh
-λ yarn run prod
-```
-The output is then stored in a directory named `dist`.
+Install dependencies through `yarn` and check `package.json` for possible build scripts.
 
 ### Backend
 The Haskell backend can be built either through `cabal` or `nix`.
@@ -53,19 +39,15 @@ The Glorious Glasgow Haskell Compilation System, version 8.8.4
 
 After which you can then build the packages using `cabal`:
 ```sh
-λ cabal update  # Skip if already up-to-date
-λ cabal build
+λ cabal build purefunctor-me
 ```
 
-#### Nix-powered Cabal Builds
-The project also provides `nix` expressions for easier builds and dependency caching.
-* [config.nix](./config.nix) - Determines package overrides and general configuration options for the project itself.
-* [release.nix](./release.nix) - Determines how the package is built by `nix-build` using `cabal`.
-* [shell.nix](./shell.nix) - Provides a development shell that tricks `cabal` and other tools like `haskell-language-server` (when invoked inside of `nix-shell`) to use Nix packages when building the project.
+Likewise, a `hie.yaml` file is provided for use with `haskell-language-server`.
 
+#### Nix-powered Cabal Builds
 To build the project:
 ```sh
-λ nix-build release.nix
+λ nix-build release-backend.nix
 ```
 
 This should produce the `purefunctor-me` binary in a directory named `result`:
@@ -80,33 +62,18 @@ your-user:λ nix-shell
 nix-shell:λ cabal build
 ```
 
-Currently, there are no plans of making Nix-assisted `stack` builds.
+One can also use `nix-shell` to invoke `haskell-language-server` for development. 
 
-### Meta
-The following section is concerned with the development of the project itself as a whole, detailing common project practices and development setups.
-
-#### Haskell Language Server (HLS) Integration
-`haskell-language-server` can be used as-is on `cabal` builds.
-
-##### To use Nix-powered Cabal
-`haskell-language-server` can also be assisted by Nix with project dependencies through `cabal`. You can enter `nix-shell` and invoke `haskell-language-server-wrapper` or any editor that uses `haskell-language-server` as long as the updated environment variables are taken into account:
-```sh
-your-user:λ nix-shell
-...
-nix-shell:λ haskell-language-server-wrapper
-```
-
-#### Dependency Management
-Like most `cabal`-based Haskell packages, the application makes use of a `*.cabal` file to manage dependencies, declare modules, and overall project configuration. `nix` on the other hand makes sure that the project uses a consistent set of packages and a binary cache for fast and reproducible builds.
-
-#### Nix Garbage Collection
-If Nix ever has the need to compile Haskell dependencies for the project, it's advised, especially for lower-end machines, to have this package installed in order to make sure that the built dependencies don't get garbage collected:
-```sh
-λ nix-env -if release.nix
-```
-
-#### Cachix Cache
+### Cachix Cache
 This project uses the `applicative-labs` cache for its dependencies; to use the cache for development:
 ```sh
 λ cachix use applicative-labs
 ```
+
+## Deployment Requirements
+The project requires the following tools to be installed for deployment:
+
+* nix
+* docker
+
+TODO...
