@@ -29,10 +29,8 @@ let
 
         cp -r $src/pf_app/ ./
 
-        cp $src/tailwind.config.js ./
-
         NODE_ENV=production ${nixpkgs.nodejs-15_x}/bin/node node_modules/.bin/tailwindcss \
-          build pf_app/css/tailwind.css -o pf_app/css/style.css
+          build pf_app/css/tailwind.css -o pf_app/css/style.css -c $src/tailwind.config.js
 
         mkdir -p $out/dist
 
