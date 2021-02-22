@@ -53,6 +53,3 @@ jobs:
 
         docker tag site-frontend $IMAGE_ID:$VERSION
         docker push $IMAGE_ID:$VERSION
-
-    - name: Show Images
-      run: docker image ls
