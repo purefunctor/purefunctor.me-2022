@@ -3,7 +3,7 @@ name: Docker Builds
 on:
   push:
     branches:
-      - 'feature/docker'
+      - develop
 
   workflow_dispatch:
 
