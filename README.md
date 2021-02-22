@@ -7,7 +7,7 @@ The project requires the following compilers and build tools to be installed for
 ### Frontend
 * purescript (v0.13.8)
 * spago
-* npm
+* yarn
 * zephyr
 
 ### Backend
@@ -27,17 +27,17 @@ Once you have these development dependencies installed, you can now start hackin
 ### Frontend
 To start, install dependencies from `npm`:
 ```sh
-λ npm install
+λ yarn
 ```
 
 To run a development server:
 ```sh
-λ npm run dev
+λ yarn run dev
 ```
 
 To create a production build:
 ```sh
-λ npm run prod
+λ yarn run prod
 ```
 The output is then stored in a directory named `dist`.
 

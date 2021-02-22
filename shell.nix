@@ -21,5 +21,6 @@ in
       easy-purescript-nix.spago
       easy-purescript-nix.zephyr
       nixpkgs.nodejs-15_x
+      nixpkgs.yarn
     ];
   }
