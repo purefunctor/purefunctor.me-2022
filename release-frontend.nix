@@ -23,6 +23,8 @@ let
       ];
 
       postBuild = ''
+        cp -r $src .
+
         purs compile --codegen corefn "$src/pf_app/**/*.purs" ${builtins.toString
           (builtins.map
             (x: ''"${x.outPath}/src/**/*.purs"'')
@@ -30,12 +32,7 @@ let
 
         zephyr -f Main.main
 
-        mkdir -p ./pf_app/css
-
-        cp -r $src/pf_app/ ./
-
-        NODE_ENV=production node node_modules/.bin/tailwindcss \
-          build pf_app/css/tailwind.css -o pf_app/css/style.css -c $src/tailwind.config.js
+        NODE_ENV=production yarn run --offline css
 
         mkdir -p $out/dist
 
@@ -46,7 +43,7 @@ let
 in
   nixpkgs.stdenv.mkDerivation {
     name = "site-frontend";
-    src = ./.;
+    src = gitignoreSource ./.;
     installPhase = ''
       mkdir $out
       cp -r ${site-frontend-build}/dist $out
