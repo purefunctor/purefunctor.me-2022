@@ -100,5 +100,5 @@ jobs:
 
     - name: Test Package
       run: |
-        nix-shell --pure --run "cabal update"
-        nix-shell --pure --run "cabal test --test-show-details=streaming"
+        nix-shell --pure --arg forHsDev true --run "cabal update"
+        nix-shell --pure --arg forHsDev true --run "cabal test --test-show-details=streaming"

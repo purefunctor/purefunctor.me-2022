@@ -1,24 +1,52 @@
 { doCheck ? false 
 , doMinimal ? false
+, forHsDev ? true
+, forPsDev ? true
+, forBuild ? false
 }:
 
 let
   config = import ./config.nix { inherit doCheck doMinimal; };
   inherit (config) compiler nixpkgs hsPkgs pursPkgs;
 
+  sources = import ./nix/sources.nix { };
+
+  gitignore = import sources."gitignore.nix" { };
+  inherit (gitignore) gitignoreSource;
+
+  name = "development-shell";
+
+  backendPkgs = [
+    nixpkgs.cabal-install
+  ];
+
+  frontendPkgs = [
+    pursPkgs.purs
+    pursPkgs.spago
+    pursPkgs.zephyr
+    nixpkgs.nodejs-15_x
+    nixpkgs.yarn
+  ];
+
+  buildPkgs = [
+    nixpkgs.bash nixpkgs.git
+  ];
+
+  buildInputs = [
+    ( if forHsDev then backendPkgs  else [ ] )
+    ( if forPsDev then frontendPkgs else [ ] )
+    ( if forBuild then buildPkgs    else [ ] )
+  ];
+
 in
-  hsPkgs.shellFor {
-    name = "development-shell";
+  if forHsDev
+  then hsPkgs.shellFor {
+    inherit name buildInputs;
     packages = _: [
       hsPkgs.purefunctor-me
     ];
-    buildInputs = [
-      nixpkgs.cabal-install
-      pursPkgs.purs
-      pursPkgs.spago
-      pursPkgs.spago2nix
-      pursPkgs.zephyr
-      nixpkgs.nodejs-15_x
-      nixpkgs.yarn
-    ];
+  }
+  else nixpkgs.stdenv.mkDerivation {
+    inherit name buildInputs;
+    src = gitignoreSource ./.;
   }
