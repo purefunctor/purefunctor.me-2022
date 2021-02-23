@@ -17,8 +17,11 @@ services:
       dockerfile: docker/frontend/Dockerfile
     ports:
       - 80:80
+      - 443:443
     depends_on:
       - site-backend
+    volumes:
+      - ./app/ssl:/etc/ssl:ro
 
 volumes:
   app:

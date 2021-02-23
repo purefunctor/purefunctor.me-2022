@@ -75,4 +75,6 @@ The project uses `docker` and `docker-compose` for deployment; make sure you hav
 
 1) Create a `config.toml` in the `app` directory; a `config-default.toml` file is provided.
 
-2) Run `docker-compose up --build`, this should bind the machine's port 80 to NGINX.
+2) Create an `ssl` directory within `app` and add `certificate.pem` and `certkey.pem`.
+
+3) Run `docker-compose up --build`, this should bind the 80 and 443 machine ports to NGINX.

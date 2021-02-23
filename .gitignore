@@ -43,3 +43,4 @@ result
 # Runtime
 database.sqlite3*
 config.toml
+ssl/
