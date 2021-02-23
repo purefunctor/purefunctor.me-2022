@@ -1,0 +1,14 @@
+version: "3.7"
+services:
+  site-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    expose:
+      - 3000
+  site-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - 80:80
