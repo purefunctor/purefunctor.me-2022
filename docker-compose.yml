@@ -1,14 +1,24 @@
 version: "3.7"
+
 services:
+
   site-backend:
     build:
       context: .
-      dockerfile: Dockerfile.backend
+      dockerfile: docker/backend/Dockerfile
     expose:
       - 3000
+    volumes:
+      - ./app:/app
+
   site-frontend:
     build:
       context: .
-      dockerfile: Dockerfile.frontend
+      dockerfile: docker/frontend/Dockerfile
     ports:
       - 80:80
+    depends_on:
+      - site-backend
+
+volumes:
+  app:

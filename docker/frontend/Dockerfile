@@ -9,4 +9,4 @@ COPY --from=site-frontend /nix/ /nix/
 COPY --from=site-frontend /dist/ /usr/share/nginx/html/
 
 # Copy configuration for NGINX
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./docker/frontend/nginx.conf /etc/nginx/conf.d/default.conf

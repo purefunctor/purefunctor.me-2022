@@ -2,6 +2,4 @@ FROM ghcr.io/purefunctor/site-backend:latest
 
 WORKDIR /app
 
-COPY ./config.toml ./
-
 CMD [ "purefunctor-me" ]
