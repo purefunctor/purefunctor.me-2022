@@ -1,3 +1,5 @@
+const plugin = require("tailwindcss/plugin");
+
 module.exports = {
   purge: [
     "pf_app/**/*.purs",           // Inline classes
@@ -10,15 +12,36 @@ module.exports = {
     },
     extend: {
       colors: {
-	"faint": {
-	  DEFAULT: "#fffdf2",
-	  100: "#e5e2ce"
-	},
+	      "faint": {
+	      DEFAULT: "#fffdf2",
+	      100: "#e5e2ce"
+	      },
       },
     },
   },
   variants: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    plugin(function({ addUtilities }) {
+      const scrollSnap = {
+        ".scroll-snap-y-proximity": {
+          "scroll-snap-type": "y proximity",
+        },
+	".scroll-snap-align-start": {
+          "scroll-snap-align": "start",
+	},
+	".no-scroll-snap-type": {
+	  "scroll-snap-type": "none",
+	},
+	".no-scroll-snap-align": {
+	  "scroll-snap-align": "none",
+	},
+      }
+
+      addUtilities(scrollSnap, {
+        variants: ["responsive"]
+      })
+    })
+  ],
 }
