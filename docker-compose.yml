@@ -14,7 +14,7 @@ services:
   site-frontend:
     build:
       context: .
-      dockerfile: docker/frontend/Dockerfile
+      dockerfile: docker/frontend/Dockerfile.prod
     ports:
       - 80:80
       - 443:443

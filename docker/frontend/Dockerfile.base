@@ -1,0 +1,12 @@
+FROM nixos/nix as build
+
+WORKDIR /src
+
+COPY . .
+
+RUN nix-shell --arg forBuild true --run "yarn"\
+ && nix-shell --arg forBuild true --run "yarn run prod:zephyr"
+
+FROM scratch
+
+COPY --from=build /src/dist /dist
