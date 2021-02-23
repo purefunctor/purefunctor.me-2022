@@ -1,0 +1,12 @@
+FROM ghcr.io/purefunctor/site-frontend:latest as site-frontend
+
+FROM nginx
+
+# Copy configuration for NGINX 
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy Nix derivations from the frontend
+COPY --from=site-frontend /nix/ /nix/
+
+# Copy symlinks from the dist folder into NGINX
+COPY --from=site-frontend /dist/ /usr/share/nginx/html/
