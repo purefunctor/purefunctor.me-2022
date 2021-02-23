@@ -70,10 +70,9 @@ This project uses the `applicative-labs` cache for its dependencies; to use the 
 λ cachix use applicative-labs
 ```
 
-## Deployment Requirements
-The project requires the following tools to be installed for deployment:
+## Deployment
+The project uses `docker` and `docker-compose` for deployment; make sure you have both installed.
 
-* nix
-* docker
+1) Create a `config.toml` in the `app` directory; a `config-default.toml` file is provided.
 
-TODO...
+2) Run `docker-compose up --build`, this should bind the machine's port 80 to NGINX.
