@@ -43,13 +43,18 @@ render
   => State
   -> H.ComponentHTML action ChildSlots m
 render _ =
-  HH.div [ css "bg-faint h-screen overflow-auto scroll-snap-y-proximity" ]
+  HH.div
+  [ css'
+    [ "bg-faint h-screen overflow-auto"
+    , "lg:scroll-snap-y-proximity no-scroll-snap-type"
+    ]
+  ]
   [ HH.div [ css "h-auto w-full lg:w-11/12 mx-auto" ]
     [ HH.div
       [ css'
         [ "h-screen flex flex-col"
         , "justify-center items-center space-y-5"
-        , "scroll-snap-align-start"
+        , "lg:scroll-snap-align-start no-scroll-snap-align"
         ]
       ]
       [ HH.img
@@ -80,7 +85,7 @@ render _ =
       [ css'
         [ extra
         , "flex flex-col"
-        , "scroll-snap-align-start"
+        , "lg:scroll-snap-align-start no-scroll-snap-align"
         , "divide-y divide-faint-100"
         ]
       ] $
