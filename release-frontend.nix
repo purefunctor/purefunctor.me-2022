@@ -1,13 +1,18 @@
 let
+  sources = import ./nix/sources.nix { };
+
   config = import ./config.nix { };
   inherit (config) nixpkgs pursPkgs;
+
+  gitignore = import sources."gitignore.nix" { };
+  inherit (gitignore) gitignoreSource;
 
   spagoPkgs = import ./spago-packages.nix { pkgs = nixpkgs; };
 
   site-frontend-build =
     nixpkgs.mkYarnPackage rec {
       name = "site-frontend-build";
-      src = ./.;
+      src = gitignoreSource ./.;
       packageJSON = ./package.json;
       yarnLock = ./yarn.lock;
 
@@ -18,7 +23,7 @@ let
       ];
 
       postBuild = ''
-        ${pursPkgs.purs}/bin/purs compile --codegen corefn "$src/pf_app/**/*.purs" ${builtins.toString
+        purs compile --codegen corefn "$src/pf_app/**/*.purs" ${builtins.toString
           (builtins.map
             (x: ''"${x.outPath}/src/**/*.purs"'')
             (builtins.attrValues spagoPkgs.inputs))}
@@ -29,12 +34,12 @@ let
 
         cp -r $src/pf_app/ ./
 
-        NODE_ENV=production ${nixpkgs.nodejs-15_x}/bin/node node_modules/.bin/tailwindcss \
+        NODE_ENV=production node node_modules/.bin/tailwindcss \
           build pf_app/css/tailwind.css -o pf_app/css/style.css -c $src/tailwind.config.js
 
         mkdir -p $out/dist
 
-        ${nixpkgs.nodejs-15_x}/bin/node node_modules/.bin/parcel \
+        node node_modules/.bin/parcel \
           build pf_app/prod/index.html --out-dir $out/dist/ --no-source-maps
       '';
     };
