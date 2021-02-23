@@ -1,7 +1,7 @@
 module.exports = {
   purge: [
-    "./output/**/*.js",           // Inline classes
-    "./pf_app/css/tailwind.css",  // Composed classes
+    "pf_app/**/*.purs",           // Inline classes
+    "pf_app/css/tailwind.css",  // Composed classes
   ],
   darkMode: false, // or 'media' or 'class'
   theme: {

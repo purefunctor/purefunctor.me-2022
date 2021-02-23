@@ -1,0 +1,55 @@
+name: Docker Builds
+
+on:
+  push:
+    branches:
+      - develop
+
+  workflow_dispatch:
+
+jobs:
+  docker-builds:
+    name: Docker Builds
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Install Nix
+      uses: cachix/install-nix-action@v12
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+    
+    - name: Install Cachix
+      uses: cachix/cachix-action@v8
+      with:
+        name: ${{ secrets.CACHIX_CACHE_NAME }}
+        authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
+    - name: Login to GHCR
+      run: echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+    - name: Install Docker
+      uses: docker/setup-buildx-action@v1
+
+    - name: Build Image (Backend)
+      run: $(nix-build docker-backend.nix) | docker load
+
+    - name: Push Image (Backend)
+      run: |
+        IMAGE_ID=ghcr.io/purefunctor/site-backend
+        VERSION=latest
+
+        docker tag site-backend $IMAGE_ID:$VERSION
+        docker push $IMAGE_ID:$VERSION
+
+    - name: Build Image (Frontend)
+      run: $(nix-build docker-frontend.nix) | docker load
+
+    - name: Push Image (Frontend)
+      run: |
+        IMAGE_ID=ghcr.io/purefunctor/site-frontend
+        VERSION=latest
+
+        docker tag site-frontend $IMAGE_ID:$VERSION
+        docker push $IMAGE_ID:$VERSION

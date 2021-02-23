@@ -1,23 +1,24 @@
-{ doCheck ? false }:
+{ doCheck ? false 
+, doMinimal ? false
+}:
 
 let
-
-  config = import ./config.nix { inherit doCheck; };
-  inherit (config) compiler nixpkgs easy-purescript-nix ;
-
-  haskellPackages = nixpkgs.haskell.packages.${compiler};
+  config = import ./config.nix { inherit doCheck doMinimal; };
+  inherit (config) compiler nixpkgs hsPkgs pursPkgs;
 
 in
-  haskellPackages.shellFor {
+  hsPkgs.shellFor {
     name = "development-shell";
     packages = _: [
-      haskellPackages.purefunctor-me
+      hsPkgs.purefunctor-me
     ];
     buildInputs = [
       nixpkgs.cabal-install
-      easy-purescript-nix.purs
-      easy-purescript-nix.spago
-      easy-purescript-nix.zephyr
+      pursPkgs.purs
+      pursPkgs.spago
+      pursPkgs.spago2nix
+      pursPkgs.zephyr
       nixpkgs.nodejs-15_x
+      nixpkgs.yarn
     ];
   }
