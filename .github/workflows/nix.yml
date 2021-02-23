@@ -42,7 +42,7 @@ jobs:
         authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
     - name: Link Config File
-      run: ln -s config-default.toml config.toml
+      run: ln -s app/config-default.toml config.toml
 
     - name: Build Backend
       run: nix-build release-backend.nix --arg doCheck true
@@ -96,7 +96,7 @@ jobs:
         key: ${{ hashFiles('purefunctor-me.cabal') }}-${{ hashFiles('cabal.project.freeze') }}
 
     - name: Link Config File
-      run: ln -s config-default.toml config.toml
+      run: ln -s app/config-default.toml config.toml
 
     - name: Test Package
       run: |
