@@ -42,7 +42,7 @@ withAuth env operations = do
         ]
 
   mAuthHeaders <-
-    mkAuthHeaders . parseSetCookies <$> postJSON "/login" [] loginPayload
+    mkAuthHeaders . parseSetCookies <$> postJSON "/api/login" [] loginPayload
 
   case mAuthHeaders of
     Just authHeaders -> operations authHeaders

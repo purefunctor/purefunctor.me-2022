@@ -23,7 +23,7 @@ import Website.Tasks
 import Website.WebsiteM
 
 
-type WebsiteAPI = LoginAPI :<|> BlogPostAPI :<|> RepositoryAPI
+type WebsiteAPI = "api" :> ( LoginAPI :<|> BlogPostAPI :<|> RepositoryAPI )
 
 
 websiteServer :: CookieSettings -> JWTSettings -> ServerT WebsiteAPI WebsiteM

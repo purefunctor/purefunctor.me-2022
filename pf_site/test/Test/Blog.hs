@@ -32,13 +32,13 @@ testBlog env app = with (pure app) $ do
 
   let loginPayload = mkLoginPayload env
 
-  describe "GET /blog" $ do
+  describe "GET /api/blog" $ do
     it "should return all blog posts" $ do
-      get "/blog" `shouldRespondWith` matchCodeJSON 200 posts
+      get "/api/blog" `shouldRespondWith` matchCodeJSON 200 posts
 
     it "should return a specific post" $ do
       forM_ posts $ \post' -> do
-        let endpoint = "/blog/" <> encodeUtf8 (blogPostShort post')
+        let endpoint = "/api/blog/" <> encodeUtf8 (blogPostShort post')
         get endpoint `shouldRespondWith` matchCodeJSON 200 post'
 
   let lTitle  = "Testing With Hspec"
@@ -50,13 +50,13 @@ testBlog env app = with (pure app) $ do
   let newPost = MutableBlogPostData
         (Just lTitle) (Just sTitle) (Just pBody) (Just tNow) (Just tNext)
 
-  describe "POST /blog" $ do
+  describe "POST /api/blog" $ do
     it "should require authentication" $ do
-      postJSON "/blog" [] (toJSON newPost) `shouldRespondWith` 401
+      postJSON "/api/blog" [] (toJSON newPost) `shouldRespondWith` 401
 
     it "should mutate the database" $ do
       withAuth env $ \authHeaders -> do
-        postJSON "/blog" authHeaders (toJSON newPost) `shouldRespondWith` 200
+        postJSON "/api/blog" authHeaders (toJSON newPost) `shouldRespondWith` 200
 
         inDB <-  WaiTest.liftIO $ flip Sqlite.runSqlPool (env^.pool) $ do
           Sqlite.exists [ BlogPostShort ==. sTitle ]
@@ -71,10 +71,10 @@ testBlog env app = with (pure app) $ do
 
       withAuth env $ \authHeaders ->
         forM_ invalid $ \payload ->
-          postJSON "/blog" authHeaders (toJSON payload) `shouldRespondWith` 400
+          postJSON "/api/blog" authHeaders (toJSON payload) `shouldRespondWith` 400
 
-  describe "PUT /blog/<short-title>" $ do
-    let endpoint = "/blog/" <> encodeUtf8 sTitle
+  describe "PUT /api/blog/<short-title>" $ do
+    let endpoint = "/api/blog/" <> encodeUtf8 sTitle
     let contents' = "BDD in Haskell with Hspec"
     let mutation = object
           [ "contents" .= contents'
@@ -99,8 +99,8 @@ testBlog env app = with (pure app) $ do
       withAuth env $ \authHeaders ->
         putJSON endpoint authHeaders (object []) `shouldRespondWith` 400
 
-  describe "DELETE /blog/<short-title>" $ do
-    let endpoint = "/blog/" <> encodeUtf8 sTitle
+  describe "DELETE /api/blog/<short-title>" $ do
+    let endpoint = "/api/blog/" <> encodeUtf8 sTitle
 
     it "should require authentication" $ do
       delete' endpoint [] `shouldRespondWith` 401

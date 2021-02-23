@@ -29,13 +29,13 @@ testRepo env app = with (pure app) $ do
 
   let loginPayload = mkLoginPayload env
 
-  describe "GET /repo" $ do
+  describe "GET /api/repo" $ do
     it "should return all repositories" $ do
-      get "/repo" `shouldRespondWith` matchCodeJSON 200 repos
+      get "/api/repo" `shouldRespondWith` matchCodeJSON 200 repos
 
     it "should return a specific repository" $ do
       forM_ repos $ \repo' -> do
-        let endpoint = "/repo/" <> encodeUtf8 (repositoryName repo')
+        let endpoint = "/api/repo/" <> encodeUtf8 (repositoryName repo')
         get endpoint `shouldRespondWith` matchCodeJSON 200 repo'
 
   let rName        = "purefunctor.me-legacy"
@@ -53,13 +53,13 @@ testRepo env app = with (pure app) $ do
         (Just rStars)
         (Just rCommits)
 
-  describe "POST /repo" $ do
+  describe "POST /api/repo" $ do
     it "should require authentication" $ do
-      postJSON "/repo" [] (toJSON newRepo) `shouldRespondWith` 401
+      postJSON "/api/repo" [] (toJSON newRepo) `shouldRespondWith` 401
 
     it "should mutate the datababse" $ do
       withAuth env $ \authHeaders -> do
-        postJSON "/repo" authHeaders (toJSON newRepo) `shouldRespondWith` 200
+        postJSON "/api/repo" authHeaders (toJSON newRepo) `shouldRespondWith` 200
 
         inDB <- WaiTest.liftIO $ flip Sqlite.runSqlPool (env^.pool) $ do
           Sqlite.exists [ RepositoryName ==. rName ]
@@ -75,10 +75,10 @@ testRepo env app = with (pure app) $ do
 
       withAuth env $ \authHeaders ->
         forM_ invalid $ \payload ->
-          postJSON "/repo" authHeaders (toJSON payload) `shouldRespondWith` 400
+          postJSON "/api/repo" authHeaders (toJSON payload) `shouldRespondWith` 400
 
-  describe "PUT /repo/<repository-name>" $ do
-    let endpoint = "/repo/" <> encodeUtf8 rName
+  describe "PUT /api/repo/<repository-name>" $ do
+    let endpoint = "/api/repo/" <> encodeUtf8 rName
     let commits' = 573 :: Int
     let mutation = object
           [ "commits" .= commits'
@@ -103,8 +103,8 @@ testRepo env app = with (pure app) $ do
       withAuth env $ \authHeaders ->
         putJSON endpoint authHeaders (object []) `shouldRespondWith` 400
 
-  describe "DELETE /repo/<repository-name>" $ do
-    let endpoint = "/repo/" <> encodeUtf8 rName
+  describe "DELETE /api/repo/<repository-name>" $ do
+    let endpoint = "/api/repo/" <> encodeUtf8 rName
 
     it "should require authentication" $ do
       delete' endpoint [] `shouldRespondWith` 401
