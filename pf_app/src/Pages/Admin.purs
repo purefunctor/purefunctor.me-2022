@@ -2,11 +2,12 @@ module Website.Pages.Admin where
 
 import Prelude
 
-import Data.Const (Const)
 import Data.Either (hush)
 import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype)
 import Data.Symbol (SProxy(..))
+import Effect.Aff (Milliseconds(..))
+import Effect.Aff as Aff
 import Effect.Aff.Class (class MonadAff)
 import Formless as F
 import Halogen as H
@@ -32,8 +33,16 @@ data FormAction
   = Submit Event.Event
 
 
-type FormQuery
-  = Const Void
+data LoginState
+  = Waiting
+  | Failed
+  | Granted
+
+
+data FormQuery a
+  = SetLoginState LoginState a
+
+derive instance functorFormQuery :: Functor FormQuery
 
 
 formComponent
@@ -44,6 +53,7 @@ formComponent = F.component formInput $ F.defaultSpec
   { render = formRender
   , handleEvent = formHandleEvent
   , handleAction = formHandleAction
+  , handleQuery = formHandleQuery
   }
   where
     formInput _ =
@@ -52,9 +62,10 @@ formComponent = F.component formInput $ F.defaultSpec
           { username: F.noValidation
           , password: F.noValidation
           }
+      , loginState: Waiting
       }
 
-    formRender { form } =
+    formRender { form, loginState } =
       HH.form
       [ css'
         [ "flex flex-col bg-faint overflow-hidden"
@@ -63,17 +74,29 @@ formComponent = F.component formInput $ F.defaultSpec
         ]
       , HE.onSubmit \ev -> Just $ F.injAction $ Submit ev
       ]
-      [ HH.div [ css "bg-purple-200 p-3 text-center" ]
-        [ HH.text "Admin Page"
+      [ HH.div
+        [ css'
+          [ "p-3 text-center"
+          , case loginState of
+               Waiting -> "bg-purple-200"
+               Failed -> "bg-pink-200"
+               Granted -> "bg-green-200"
+          ]
+        ]
+        [ HH.text
+          case loginState of
+             Waiting -> "Admin Page"
+             Failed -> "Login Failed!"
+             Granted -> "Login Success"
         ]
       , HH.input
-        [ css "flex-grow rounded-md p-2 bg-faint-100 shadow-inner focus:ring-2 mx-5"
+        [ css $ "flex-grow rounded-md p-2 bg-faint-100 shadow-inner focus:ring-2 mx-5"
         , HP.value $ F.getInput _username form
         , HE.onValueInput $ Just <<< F.set _username
         , HP.placeholder "Username"
         ]
       , HH.input
-        [ css "flex-grow rounded-md p-2 bg-faint-100 shadow-inner focus:ring-2 mx-5"
+        [ css $ "flex-grow rounded-md p-2 bg-faint-100 shadow-inner focus:ring-2 mx-5"
         , HP.value $ F.getInput _password form
         , HE.onValueInput $ Just <<< F.set _password
         , HP.type_ $ HP.InputPassword
@@ -104,6 +127,12 @@ formComponent = F.component formInput $ F.defaultSpec
         eval F.submit
       where
         eval act = F.handleAction formHandleAction formHandleEvent act
+
+    formHandleQuery :: forall a. FormQuery a -> H.HalogenM _ _ _ _ _ (Maybe a)
+    formHandleQuery = case _ of
+      SetLoginState e a -> do
+        H.modify_ _ { loginState = e }
+        pure (Just a)
 
 
 type State = { isLoggedIn :: Boolean }
@@ -157,10 +186,28 @@ handleAction
   => Action
   -> H.HalogenM State Action ChildSlots output m Unit
 handleAction = case _ of
+
   Initialize -> do
     case hush getXsrfToken of
       Just _ -> H.put { isLoggedIn: true }
       Nothing -> pure unit
+
   HandleLoginForm creds -> do
     success <- login creds
+
+    void $ H.query F._formless unit $ F.injQuery $
+      SetLoginState Waiting unit
+
+    let loginState = if success then Granted else Failed
+        holdTime = if success then 1500.0 else 3000.0
+
+    void $ H.query F._formless unit $ F.injQuery $
+      SetLoginState loginState unit
+
+    H.liftAff $ Aff.delay $ Milliseconds holdTime
+
+    when (not success) $
+      void $ H.query F._formless unit $ F.injQuery $
+        SetLoginState Waiting unit
+
     H.put { isLoggedIn: success }
