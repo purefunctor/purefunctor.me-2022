@@ -15,6 +15,7 @@ import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Web.Event.Event as Event
 import Website.Capability.Resources (class ManageLogin, login)
+import Website.Component.Utils (css, css')
 import Website.Data.Resources (LoginCreds)
 import Website.Utils.Cookies (getXsrfToken)
 
@@ -55,20 +56,39 @@ formComponent = F.component formInput $ F.defaultSpec
 
     formRender { form } =
       HH.form
-        [ HE.onSubmit \ev -> Just $ F.injAction $ Submit ev
+      [ css'
+        [ "flex flex-col bg-faint overflow-hidden"
+        , "h-64 md:w-1/3 sm:w-2/3 w-5/6 m-auto space-y-5"
+        , "shadow-xl rounded-xl"
         ]
-        [ HH.input
-          [ HP.value $ F.getInput _username form
-          , HE.onValueInput $ Just <<< F.set _username
-          ]
-        , HH.input
-          [ HP.value $ F.getInput _password form
-          , HE.onValueInput $ Just <<< F.set _password
-          ]
-        , HH.button
-          [ HP.type_ HP.ButtonSubmit ]
-          [ HH.text "Submit" ]
+      , HE.onSubmit \ev -> Just $ F.injAction $ Submit ev
+      ]
+      [ HH.div [ css "bg-purple-200 p-3 text-center" ]
+        [ HH.text "Admin Page"
         ]
+      , HH.input
+        [ css "flex-grow rounded-md p-2 bg-faint-100 shadow-inner focus:ring-2 mx-5"
+        , HP.value $ F.getInput _username form
+        , HE.onValueInput $ Just <<< F.set _username
+        , HP.placeholder "Username"
+        ]
+      , HH.input
+        [ css "flex-grow rounded-md p-2 bg-faint-100 shadow-inner focus:ring-2 mx-5"
+        , HP.value $ F.getInput _password form
+        , HE.onValueInput $ Just <<< F.set _password
+        , HP.type_ $ HP.InputPassword
+        , HP.placeholder "Password"
+        ]
+      , HH.button
+        [ css'
+          [ "flex-grow bg-green-200 hover:bg-green-300 focus:bg-green-300"
+          , "focus:ring-2 focus:ring-green-200"
+          ]
+        , HP.type_ HP.ButtonSubmit
+        ]
+        [ HH.text "Login"
+        ]
+      ]
       where
         _username :: SProxy "username"
         _username = SProxy
@@ -123,7 +143,7 @@ render
   => State
   -> H.ComponentHTML Action ChildSlots m
 render { isLoggedIn } =
-  HH.div_
+  HH.div [ css "flex flex-1 h-screen bg-faint" ]
   [ if isLoggedIn
       then HH.div_ [ HH.text "Logged In" ]
       else HH.slot F._formless unit formComponent unit (Just <<< HandleLoginForm)
