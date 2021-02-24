@@ -86,7 +86,7 @@ render _ =
         [ extra
         , "flex flex-col"
         , "lg:scroll-snap-align-start no-scroll-snap-align"
-        , "divide-y divide-faint-100"
+        , "divide-y divide-faint-200"
         ]
       ] $
       [ HH.div [ css "font-extralight text-4xl p-5" ]

@@ -12,10 +12,11 @@ module.exports = {
     },
     extend: {
       colors: {
-	      "faint": {
-	      DEFAULT: "#fffdf2",
-	      100: "#e5e2ce"
-	      },
+	"faint": {
+          DEFAULT: "#fffdf2",
+          100: "#f2f0e6",
+	  200: "#e5e2ce",
+	},
       },
     },
   },
