@@ -46,7 +46,7 @@ library
                        TypeOperators,
                        UndecidableInstances
 
-  build-depends:       base ^>=4.13.0.0,
+  build-depends:       base ^>=4.14.1.0,
                        aeson,
                        async,
                        cron,
@@ -80,7 +80,7 @@ library
 
 executable purefunctor-me
   main-is:             Main.hs
-  build-depends:       base ^>=4.13.0.0, purefunctor-me
+  build-depends:       base ^>=4.14.1.0, purefunctor-me
   hs-source-dirs:      pf_site/app
   default-language:    Haskell2010
 
@@ -94,7 +94,7 @@ test-suite purefunctor-me-test
                        Test.Data,
                        Test.Repo,
                        Test.Utils
-  build-depends:       base ^>=4.13.0.0,
+  build-depends:       base ^>=4.14.1.0,
                        hspec,
                        hspec-wai,
                        aeson,
