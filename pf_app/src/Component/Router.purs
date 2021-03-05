@@ -6,17 +6,14 @@ import Data.Either (hush)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Symbol (SProxy(..))
 import Effect.Aff.Class (class MonadAff)
-import Effect.Class (liftEffect)
 import Halogen as H
 import Halogen.HTML as HH
 import Routing.Duplex as RD
-import Routing.Hash as RH
-import Website.Capability.Navigation (class Navigate, navigate)
-import Website.Capability.Resources
-  ( class ManageBlogPost
-  , class ManageRepository
-  , class ManageLogin
-  )
+import Web.HTML (window)
+import Web.HTML.Location as Location
+import Web.HTML.Window as Window
+import Website.Capability.Navigation (class Navigate)
+import Website.Capability.Resources (class ManageBlogPost, class ManageRepository, class ManageLogin)
 import Website.Data.Routes (Route(..), routeCodec)
 import Website.Pages.Admin as Admin
 import Website.Pages.Home as Home
@@ -80,9 +77,13 @@ handleAction
   => Action
   -> H.HalogenM State Action ChildSlots output m Unit
 handleAction = case _ of
-  Initialize ->
-    hush <<< (RD.parse routeCodec) <$> liftEffect RH.getHash >>=
-      navigate <<< fromMaybe HomeR
+  Initialize -> do
+    route_ <- H.liftEffect $
+      window >>= Window.location >>= Location.pathname
+
+    let mRoute = hush $ RD.parse routeCodec route_
+
+    H.modify_ _ { currentRoute = fromMaybe HomeR mRoute }
 
 
 handleQuery

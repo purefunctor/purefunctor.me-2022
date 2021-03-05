@@ -12,7 +12,7 @@ import Effect.Aff (Aff)
 import Effect.Aff.Class (class MonadAff)
 import Effect.Class (class MonadEffect, liftEffect)
 import Routing.Duplex as RD
-import Routing.Hash as RH
+import Simple.JSON (write)
 import Type.Equality (class TypeEquals, from)
 import Website.API.Endpoint (Endpoint(..))
 import Website.API.Request (RequestMethod(..), mkRequest, mkRequest_)
@@ -44,7 +44,9 @@ instance monadAskAppM ∷ TypeEquals e Env ⇒ MonadAsk e AppM where
 
 
 instance navigateAppM ∷ Navigate AppM where
-  navigate = AppM <<< liftEffect <<< RH.setHash <<< RD.print routeCodec
+  navigate route = do
+    pushInterface <- asks _.pushInterface
+    liftEffect $ pushInterface.pushState (write { }) (RD.print routeCodec route)
 
 
 instance manageBlogPostAppM ∷ ManageBlogPost AppM where

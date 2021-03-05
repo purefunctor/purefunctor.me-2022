@@ -2,13 +2,9 @@ module Website.Capability.Navigation where
 
 import Prelude
 
-import Effect.Aff (Aff)
 import Effect.Aff.Class (class MonadAff)
-import Effect.Class (liftEffect)
 import Halogen (HalogenM, lift)
-import Routing.Duplex as RD
-import Routing.Hash as RH
-import Website.Data.Routes (Route, routeCodec)
+import Website.Data.Routes (Route)
 
 
 class MonadAff m <= Navigate m where
