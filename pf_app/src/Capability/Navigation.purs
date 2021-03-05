@@ -15,10 +15,6 @@ class MonadAff m <= Navigate m where
   navigate :: Route -> m Unit
 
 
-instance navigateAff :: Navigate Aff where
-  navigate = liftEffect <<< RH.setHash <<< RD.print routeCodec
-
-
 instance navigateHalogenM
   :: Navigate m
   => Navigate (HalogenM state action slots output m) where
