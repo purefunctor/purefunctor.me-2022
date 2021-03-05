@@ -2,7 +2,7 @@ module Website.App where
 
 import Control.Lens hiding ( Context )
 
-import Data.List ( foldl' )
+import Data.List ( elem, foldl' )
 
 import Database.Persist.Sqlite
 
@@ -84,8 +84,8 @@ serveStaticPolicy :: Policy
 serveStaticPolicy = root <|> misc
   where
     root :: Policy
-    root = policy $ \uri ->
-      if uri == ""
+    root = policy $ \uri -> 
+      if uri `elem` [ "", "admin" ] 
       then Just "dist/index.html"
       else Nothing
 
