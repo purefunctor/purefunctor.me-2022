@@ -44,3 +44,4 @@ result
 database.sqlite3*
 config.toml
 ssl/
+style.css
