@@ -3,7 +3,7 @@ module Main where
 import Prelude
 
 import Data.Either (hush)
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe(..), fromMaybe)
 import Effect (Effect)
 import Effect.Aff (Aff, launchAff_)
 import Effect.Class (liftEffect)
@@ -13,9 +13,12 @@ import Halogen.HTML as HH
 import Halogen.VDom.Driver (runUI)
 import Routing.Duplex (parse)
 import Routing.PushState (makeInterface)
+import Web.HTML (window)
+import Web.HTML.Location as Location
+import Web.HTML.Window as Window
 import Website.AppM (runAppM)
 import Website.Component.Router as Router
-import Website.Data.Routes as Routes
+import Website.Data.Routes (Route(..), routeCodec)
 
 
 main :: Effect Unit
@@ -25,14 +28,20 @@ main = HA.runHalogenAff do
   pushInterface <- liftEffect makeInterface
 
   let
-    rootComponent ∷ H.Component HH.HTML Router.Query Unit Void Aff
+    rootComponent ∷ H.Component HH.HTML Router.Query Router.Input Void Aff
     rootComponent = H.hoist (runAppM { pushInterface }) Router.component
 
-  halogenIO <- runUI rootComponent unit body
+  route_ <- liftEffect $
+    window >>= Window.location >>= Location.pathname
+
+  let
+    route = fromMaybe NotFoundR (hush $ parse routeCodec route_)
+
+  halogenIO <- runUI rootComponent route body
 
   void $ liftEffect $ pushInterface.listen \location -> do
     let
-      mNew = hush $ parse Routes.routeCodec $ location.pathname
+      mNew = hush $ parse routeCodec $ location.pathname
     case mNew of
       Just new -> do
         launchAff_ $ halogenIO.query $ H.tell $ Router.Navigate new
