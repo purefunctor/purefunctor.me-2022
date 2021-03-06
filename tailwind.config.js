@@ -18,10 +18,15 @@ module.exports = {
 	  200: "#e5e2ce",
 	},
       },
+      backgroundImage: theme => ({
+	'pixel-pattern': "url('https://avatars.githubusercontent.com/u/66708316?v=4')"
+      }),
     },
   },
   variants: {
-    extend: {},
+    extend: {
+      textColor: ['visited']
+    },
   },
   plugins: [
     plugin(function({ addUtilities }) {
