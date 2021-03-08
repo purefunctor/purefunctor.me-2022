@@ -76,5 +76,5 @@ jobs:
 
     - name: Test Package
       run: |
-        CONFIG_FILE=app/config-default.toml
-        nix-shell --pure --arg forHsDev true --run "cabal test purefunctor-me --test-show-details=streaming"
+        nix-shell --run "cabal update" 
+        nix-shell --run "cabal test purefunctor-me --test-show-details=streaming"
