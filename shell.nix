@@ -6,7 +6,7 @@
 }:
 
 let
-  config = import ./config.nix { inherit doCheck doMinimal; };
+  config = import ./nix/truths.nix { inherit doCheck doMinimal; };
   inherit (config) compiler nixpkgs hsPkgs pursPkgs;
 
   sources = import ./nix/sources.nix { };

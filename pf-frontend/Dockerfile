@@ -9,4 +9,4 @@ RUN nix-shell --arg forBuild true --arg forHsDev false --run "yarn"\
 
 FROM scratch
 
-COPY --from=build /src/dist /dist
+COPY --from=build /src/pf-frontend/dist /dist

@@ -2,7 +2,7 @@
 , doMinimal ? true
 }:
 let
-  config = import ./config.nix { inherit doCheck doMinimal; };
+  config = import ../nix/truths.nix { inherit doCheck doMinimal; };
   inherit (config) nixpkgs hsPkgs;
 in
   nixpkgs.dockerTools.streamLayeredImage {

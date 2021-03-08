@@ -73,7 +73,7 @@ This project uses the `applicative-labs` cache for its dependencies; to use the 
 ## Deployment
 The project uses `docker` and `docker-compose` for deployment; make sure you have both installed.
 
-1) Create a `config.toml` in the `app` directory; a `config-default.toml` file is provided.
+1) Create the `app` directory, copy `pf-backend/config-default.toml` into `config.toml`, and modify the default fields.
 
 2) Create an `ssl` directory within `app` and add `certificate.pem` and `certkey.pem`.
 

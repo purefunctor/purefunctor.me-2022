@@ -4,12 +4,18 @@ import Control.Lens ( makeFieldsNoPrefix, makeLenses, (^.) )
 
 import Control.Monad.Logger ( runStderrLoggingT )
 
+import Data.Maybe ( fromMaybe )
+
 import Data.Text ( Text )
 
 import Database.Persist.Sqlite ( ConnectionPool, createSqlitePool )
 
 import           Toml ( TomlCodec, (.=) )
 import qualified Toml
+
+import System.Environment.Blank ( getEnv )
+
+import Paths_purefunctor_me ( getDataFileName )
 
 
 data AdminCreds
@@ -106,7 +112,9 @@ makeFieldsNoPrefix ''Environment
 
 mkEnvironment :: IO Environment
 mkEnvironment = do
-  conf <- Toml.decodeFile configFileCodec "config.toml"
+  defaultConfig <- getDataFileName "config-default.toml"
+  configFile <- fromMaybe defaultConfig <$> getEnv "CONFIG_FILE"
+  conf <- Toml.decodeFile configFileCodec configFile
 
   pool' <- runStderrLoggingT $
     createSqlitePool (conf^.database.filename) (conf^.database.connections)

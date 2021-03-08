@@ -5,7 +5,7 @@
 let
   compiler = "ghc8103";
 
-  sources = import ./nix/sources.nix { };
+  sources = import ./sources.nix { };
 
   gitignore = import sources."gitignore.nix" { };
   inherit (gitignore) gitignoreFilter;
@@ -39,8 +39,8 @@ let
                               || builtins.elem (builtins.baseNameOf path) dontIgnore;
 
                       src = pkgs.lib.cleanSourceWith {
-                        filter = srcFilter ./.;
-                        src = ./.;
+                        filter = srcFilter ../pf-backend;
+                        src = ../pf-backend;
                         name = "purefunctor-me-src";
                       };
 
