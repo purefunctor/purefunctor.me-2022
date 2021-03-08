@@ -20,5 +20,5 @@ You can edit this file as you like.
   , "slug"
   ]
 , packages = ./packages.dhall
-, sources = [ "pf_app/src/**/*.purs", "pf_app/test/**/*.purs" ]
+, sources = [ "src/**/*.purs", "test/**/*.purs" ]
 }

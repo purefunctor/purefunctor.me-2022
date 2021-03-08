@@ -4,17 +4,17 @@
   "description": "My personal portfolio website written in PureScript and Haskell.",
   "main": "index.js",
   "scripts": {
-    "css": "tailwindcss build pf_app/css/tailwind.css -o pf_app/css/style.css",
+    "css": "tailwindcss build ./css/tailwind.css -o ./css/style.css",
     "css:prod": "NODE_ENV=production yarn run css",
     "build:zephyr": "spago build -u '--codegen corefn' && zephyr -f Main.main",
-    "parceldev": "parcel dev ./pf_app/dev/index.html",
-    "parcelprod": "parcel build ./pf_app/prod/index.html --out-dir ./dist --no-source-maps",
-    "parcelprod:api": "parcel build ./pf_app/dev/index.html --out-dir ./dist --no-source-maps",
+    "parceldev": "parcel dev ./dev/index.html",
+    "parcelprod": "parcel build ./prod/index.html --out-dir ./dist --no-source-maps",
+    "parcelprod:api": "parcel build ./dev/index.html --out-dir ./dist --no-source-maps",
     "dev": "spago build && yarn run css && yarn run parceldev",
     "dev:api": "spago build && yarn run css && yarn run parcelprod:api && cabal run purefunctor-me",
     "prod": "spago build && yarn run css:prod && yarn run parcelprod",
     "prod:zephyr": "yarn run build:zephyr && yarn run css:prod && yarn run parcelprod",
-    "purge": "rm -rf .spago dce-output output node_modules .cache .psci_modules dist-newstyle",
+    "purge": "rm -rf .spago dce-output output node_modules .cache .psci_modules",
     "test": "spago test"
   },
   "repository": {
