@@ -15,6 +15,8 @@ import qualified Toml
 
 import System.Environment.Blank ( getEnv )
 
+import Paths_purefunctor_me ( getDataFileName )
+
 
 data AdminCreds
   = AdminCreds
@@ -110,8 +112,9 @@ makeFieldsNoPrefix ''Environment
 
 mkEnvironment :: IO Environment
 mkEnvironment = do
-  file <- fromMaybe "config.toml" <$> getEnv "CONFIG_FILE"
-  conf <- Toml.decodeFile configFileCodec file
+  defaultConfig <- getDataFileName "config-default.toml"
+  configFile <- fromMaybe defaultConfig <$> getEnv "CONFIG_FILE"
+  conf <- Toml.decodeFile configFileCodec configFile
 
   pool' <- runStderrLoggingT $
     createSqlitePool (conf^.database.filename) (conf^.database.connections)

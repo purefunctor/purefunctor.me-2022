@@ -13,6 +13,7 @@ maintainer:          purefunctor@gmail.com
 copyright:           (c) 2020, PureFunctor
 category:            Web
 extra-source-files:  CHANGELOG.md, README.md
+data-files:          config-default.toml
 
 library
   exposed-modules:     Website.App,
@@ -26,6 +27,8 @@ library
                        Website.Tasks,
                        Website.Utils,
                        Website.WebsiteM
+
+  other-modules:       Paths_purefunctor_me
 
   default-extensions:  DataKinds,
                        DeriveAnyClass,
