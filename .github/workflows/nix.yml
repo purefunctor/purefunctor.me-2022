@@ -41,11 +41,10 @@ jobs:
         name: ${{ secrets.CACHIX_CACHE_NAME }}
         authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
-    - name: Link Config File
-      run: ln -s app/config-default.toml config.toml
-
     - name: Build Backend
-      run: nix-build pf-backend/release.nix --arg doCheck true
+      run: |
+        CONFIG_FILE=app/config-default.toml
+        nix-build pf-backend/release.nix --arg doCheck true
 
   haskell-tests:
     name: Haskell Tests
@@ -75,9 +74,7 @@ jobs:
           dist-newstyle
         key: ${{ hashFiles('pf-backend/purefunctor-me.cabal') }} }}
 
-    - name: Link Config File
-      run: ln -s app/config-default.toml config.toml
-
     - name: Test Package
       run: |
+        CONFIG_FILE=app/config-default.toml
         nix-shell --pure --arg forHsDev true --run "cabal test purefunctor-me --test-show-details=streaming"
