@@ -37,7 +37,7 @@ jobs:
       run: $(nix-build pf-backend/docker.nix) | docker load
 
     - name: Build Image (Frontend)
-      run: docker build pf-frontend -f pf-frontend/Dockerfile -t site-frontend:latest
+      run: docker build . -f pf-frontend/Dockerfile -t site-frontend:latest
 
     - name: Push Image (Backend)
       run: |
