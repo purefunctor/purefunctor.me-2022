@@ -45,7 +45,7 @@ jobs:
       run: ln -s app/config-default.toml config.toml
 
     - name: Build Backend
-      run: nix-build release-backend.nix --arg doCheck true
+      run: nix-build pf-backend/release.nix --arg doCheck true
 
   haskell-tests:
     name: Haskell Tests
@@ -73,12 +73,11 @@ jobs:
           ~/.cabal/packages
           ~/.cabal/store
           dist-newstyle
-        key: ${{ hashFiles('purefunctor-me.cabal') }}-${{ hashFiles('cabal.project.freeze') }}
+        key: ${{ hashFiles('pf-backend/purefunctor-me.cabal') }} }}
 
     - name: Link Config File
       run: ln -s app/config-default.toml config.toml
 
     - name: Test Package
       run: |
-        nix-shell --pure --arg forHsDev true --run "cabal update"
-        nix-shell --pure --arg forHsDev true --run "cabal test --test-show-details=streaming"
+        nix-shell --pure --arg forHsDev true --run "cabal test purefunctor-me --test-show-details=streaming"

@@ -34,10 +34,10 @@ jobs:
       uses: docker/setup-buildx-action@v1
 
     - name: Build Image (Backend)
-      run: $(nix-build docker-backend.nix) | docker load
+      run: $(nix-build pf-backend/docker.nix) | docker load
 
     - name: Build Image (Frontend)
-      run: docker build . -f docker/frontend/Dockerfile.base -t site-frontend:latest
+      run: docker build pf-frontend -f pf-frontend/Dockerfile -t site-frontend:latest
 
     - name: Push Image (Backend)
       run: |
