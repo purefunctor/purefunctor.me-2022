@@ -11,6 +11,8 @@ services:
     volumes:
       - ./app:/app
       - /etc/ssl:/etc/ssl:ro
+    environment:
+      - CONFIG_FILE=config.toml
 
   site-frontend:
     build:
