@@ -3,7 +3,7 @@
 }:
 
 let
-  config = import ./config.nix { inherit doCheck doMinimal; };
+  config = import ../nix/truths.nix { inherit doCheck doMinimal; };
   inherit (config) hsPkgs;
 
 in
