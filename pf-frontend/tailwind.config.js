@@ -2,8 +2,8 @@ const plugin = require("tailwindcss/plugin");
 
 module.exports = {
   purge: [
-    "pf_app/**/*.purs",           // Inline classes
-    "pf_app/css/tailwind.css",  // Composed classes
+    "src/**/*.purs",     // Inline classes
+    "css/tailwind.css",  // Composed classes
   ],
   darkMode: false, // or 'media' or 'class'
   theme: {
