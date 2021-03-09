@@ -24,6 +24,10 @@ library
                        Website.Config,
                        Website.Debug,
                        Website.Models,
+                       Website.PseudoSSR.Inject,
+                       Website.PseudoSSR.Routes,
+                       Website.PseudoSSR.Static,
+                       Website.PseudoSSR.Types,
                        Website.Tasks,
                        Website.Utils,
                        Website.WebsiteM
@@ -66,6 +70,7 @@ library
                        servant-server,
                        servant-auth,
                        servant-auth-server,
+                       tagsoup,
                        text,
                        time,
                        tomland,
