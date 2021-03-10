@@ -17,6 +17,7 @@ data-files:          config-default.toml
 
 library
   exposed-modules:     Website.App,
+                       Website.API,
                        Website.API.Auth,
                        Website.API.Common,
                        Website.API.Blog,

@@ -16,9 +16,7 @@ import           Network.Wai.Middleware.Static ( addBase, staticPolicy )
 import Servant
 import Servant.Auth.Server
 
-import Website.API.Auth
-import Website.API.Blog
-import Website.API.Repo
+import Website.API
 import Website.Config
 import Website.Models
 import Website.PseudoSSR
@@ -26,12 +24,12 @@ import Website.Tasks
 import Website.Types
 
 
-type WebsiteAPI = PseudoSSR :<|> ( "api" :> ( LoginAPI :<|> BlogPostAPI :<|> RepositoryAPI ) )
+type WebsiteAPI = PseudoSSR :<|> API
 
 
 websiteServer :: CookieSettings -> JWTSettings -> ServerT WebsiteAPI WebsiteM
 websiteServer cookieSettings jwtSettings =
-  ssrServer :<|> loginServer cookieSettings jwtSettings :<|> blogPostServer :<|> repositoryServer
+  ssrServer :<|> apiServer cookieSettings jwtSettings
 
 
 websiteApp :: JWTSettings -> Environment -> Application
