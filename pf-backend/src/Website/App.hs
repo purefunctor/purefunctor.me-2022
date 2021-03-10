@@ -21,16 +21,17 @@ import Website.API.Blog
 import Website.API.Repo
 import Website.Config
 import Website.Models
+import Website.PseudoSSR
 import Website.Tasks
 import Website.Types
 
 
-type WebsiteAPI = "api" :> ( LoginAPI :<|> BlogPostAPI :<|> RepositoryAPI )
+type WebsiteAPI = PseudoSSR :<|> ( "api" :> ( LoginAPI :<|> BlogPostAPI :<|> RepositoryAPI ) )
 
 
 websiteServer :: CookieSettings -> JWTSettings -> ServerT WebsiteAPI WebsiteM
 websiteServer cookieSettings jwtSettings =
-  loginServer cookieSettings jwtSettings :<|> blogPostServer :<|> repositoryServer
+  ssrServer :<|> loginServer cookieSettings jwtSettings :<|> blogPostServer :<|> repositoryServer
 
 
 websiteApp :: JWTSettings -> Environment -> Application
