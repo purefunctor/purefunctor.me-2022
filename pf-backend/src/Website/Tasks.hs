@@ -24,17 +24,7 @@ import System.Cron
 
 import Website.Config
 import Website.Models
-
-
-type RequestM = ExceptT Text Req
-
-
-instance MonadHttp RequestM where
-  handleHttpException e = throwError (pack $ show e)
-
-
-runRequestM :: RequestM r -> IO (Either Text r)
-runRequestM = runReq defaultHttpConfig . runExceptT
+import Website.Types
 
 
 getRepositoryData :: Environment -> Repository -> IO (Maybe (Text, Int, Int))

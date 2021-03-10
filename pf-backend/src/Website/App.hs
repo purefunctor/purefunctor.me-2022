@@ -20,7 +20,7 @@ import Website.API.Repo
 import Website.Config
 import Website.Models
 import Website.Tasks
-import Website.WebsiteM
+import Website.Types
 
 
 type WebsiteAPI = "api" :> ( LoginAPI :<|> BlogPostAPI :<|> RepositoryAPI )

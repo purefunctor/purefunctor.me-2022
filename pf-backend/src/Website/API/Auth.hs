@@ -16,7 +16,7 @@ import Servant.Auth
 import Servant.Auth.Server
 
 import Website.Config
-import Website.WebsiteM
+import Website.Types
 
 
 type CookieAuthResult =

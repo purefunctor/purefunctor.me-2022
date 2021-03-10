@@ -29,8 +29,8 @@ library
                        Website.PseudoSSR.Static,
                        Website.PseudoSSR.Types,
                        Website.Tasks,
-                       Website.Utils,
-                       Website.WebsiteM
+                       Website.Types,
+                       Website.Utils
 
   other-modules:       Paths_purefunctor_me
 
