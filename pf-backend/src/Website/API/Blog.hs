@@ -22,7 +22,6 @@ import Servant.Auth.Server
 import Website.API.Auth
 import Website.API.Common
 import Website.Models
-import Website.Utils
 import Website.Types
 
 
