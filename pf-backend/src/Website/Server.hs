@@ -1,8 +1,8 @@
 module Website.Server 
   ( module Website.Server.API
   , module Website.Server.PseudoSSR
-  , Website
-  , websiteServer
+  , FullSite
+  , fullSiteServer
   )
   where
 
@@ -14,9 +14,9 @@ import Website.Server.PseudoSSR
 import Website.Types
 
 
-type Website = PseudoSSR :<|> API
+type FullSite = PseudoSSR :<|> API
 
 
-websiteServer :: CookieSettings -> JWTSettings -> ServerT Website WebsiteM
-websiteServer cookieSettings jwtSettings =
+fullSiteServer :: CookieSettings -> JWTSettings -> ServerT FullSite WebsiteM
+fullSiteServer cookieSettings jwtSettings =
   ssrServer :<|> apiServer cookieSettings jwtSettings

@@ -27,7 +27,7 @@ websiteApp :: JWTSettings -> Environment -> Application
 websiteApp jwtSettings env =
   serveWithContext api ctx $ hoistServerWithContext api ctx' unwrap server
   where
-    api :: Proxy Website
+    api :: Proxy FullSite
     api = Proxy
 
     ctx :: Context '[CookieSettings, JWTSettings]
@@ -39,8 +39,8 @@ websiteApp jwtSettings env =
     unwrap :: WebsiteM r -> Handler r
     unwrap = runWebsiteM env
 
-    server :: ServerT Website WebsiteM
-    server = websiteServer defaultCookieSettings jwtSettings
+    server :: ServerT FullSite WebsiteM
+    server = fullSiteServer defaultCookieSettings jwtSettings
 
 
 run :: Port -> IO ()
