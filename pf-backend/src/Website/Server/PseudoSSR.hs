@@ -39,12 +39,13 @@ ssrServer = getIndex :<|> getAdmin
 
     tags :: Tags
     tags = Tags
-      "Pure's Website"
+      "PureFunctor"
       "https://avatars.githubusercontent.com/u/66708316"
       "purefunctor.me"
+      "Full-stack web project written in Haskell and PureScript." 
 
     getIndex :: WebsiteM TagSoupHTML
     getIndex = injectTags tags <$> getIndex_
 
     getAdmin :: WebsiteM TagSoupHTML
-    getAdmin = injectTags tags { ogTitle = "Admin Page" } <$> getIndex_
+    getAdmin = injectTags tags { ogTitle = "PureFunctor | Admin Page" } <$> getIndex_

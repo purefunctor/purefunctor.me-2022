@@ -4,14 +4,15 @@ import Data.ByteString.Lazy ( ByteString )
 
 import Text.HTML.TagSoup ( Tag(TagClose, TagOpen), isTagCloseName )
 
-import Website.Server.PseudoSSR.Types ( TagSoupHTML(TagSoupHTML), Tags(Tags) )
+import Website.Server.PseudoSSR.Types
 
 
 mkTags :: Tags -> [Tag ByteString]
-mkTags (Tags title image url) = concat
-  [ meta "og:title" title
-  , meta "og:image" image
-  , meta "og:url" url
+mkTags tags = concat
+  [ meta "og:title"       $ ogTitle tags
+  , meta "og:image"       $ ogImage tags
+  , meta "og:url"         $ ogUrl tags
+  , meta "og:description" $ ogDesc tags
   ]
   where
     meta :: ByteString -> ByteString -> [Tag ByteString]

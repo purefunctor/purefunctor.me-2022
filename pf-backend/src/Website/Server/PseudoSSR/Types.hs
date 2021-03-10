@@ -30,5 +30,6 @@ data Tags
       { ogTitle :: ByteString
       , ogImage :: ByteString
       , ogUrl   :: ByteString
+      , ogDesc  :: ByteString
       }
   deriving (Eq, Show)
