@@ -20,11 +20,15 @@ import Website.Types
 
 
 type PseudoSSR =
-  Get '[HTML] TagSoupHTML :<|> "admin" :> Get '[HTML] TagSoupHTML
+  Get '[HTML] TagSoupHTML :<|>
+
+  "admin" :> Get '[HTML] TagSoupHTML :<|>
+
+  "404.html" :> Verb 'GET 404 '[HTML] TagSoupHTML
 
 
 ssrServer :: ServerT PseudoSSR WebsiteM
-ssrServer = getIndex :<|> getAdmin
+ssrServer = getIndex :<|> getAdmin :<|> get404
   where
     getIndex_ :: WebsiteM TagSoupHTML
     getIndex_ = do
@@ -53,4 +57,13 @@ ssrServer = getIndex :<|> getAdmin
       { title = "PureFunctor | Admin Page"
       , ogTitle = "PureFunctor | Admin Page"
       , ogUrl = "https://purefunctor.me/admin"
+      } <$> getIndex_
+
+
+    get404 :: WebsiteM TagSoupHTML
+    get404 = injectMeta tags
+      { title = "404 Not Found"
+      , ogTitle = "404 Not Found"
+      , ogUrl = "https://purefunctor.me/404.html"
+      , ogDesc = "404 Not Found"
       } <$> getIndex_
