@@ -2,14 +2,16 @@ module Website.App where
 
 import Control.Lens hiding ( Context )
 
-import Data.List ( elem, foldl' )
+import Data.List ( foldl' )
+
+import Data.Text ( unpack )
 
 import Database.Persist.Sqlite
 
 import           Network.Wai ( Middleware )
 import           Network.Wai.Handler.Warp ( Port )
 import qualified Network.Wai.Handler.Warp as Warp
-import           Network.Wai.Middleware.Static ((<|>), addBase,  Policy, policy, staticPolicy)
+import           Network.Wai.Middleware.Static ( addBase, staticPolicy )
 
 import Servant
 import Servant.Auth.Server
@@ -76,18 +78,11 @@ applyMiddleware env = middleware
 
     middleware :: Middleware
     middleware = composeMiddleware . filterEnabled $
-      [ (env^.config.debug.static, staticPolicy serveStaticPolicy)
-      ]
+      [ ( serveStatic_, staticBase_ ) ]
+      where
+        serveStatic_ :: Bool
+        serveStatic_ = env^.config.debug.serveStatic
 
-
-serveStaticPolicy :: Policy
-serveStaticPolicy = root <|> misc
-  where
-    root :: Policy
-    root = policy $ \uri -> 
-      if uri `elem` [ "", "admin" ] 
-      then Just "dist/index.html"
-      else Nothing
-
-    misc :: Policy
-    misc = addBase "dist"
+        staticBase_ :: Middleware
+        staticBase_ = staticPolicy . addBase . unpack $
+          env^.config.debug.staticBase

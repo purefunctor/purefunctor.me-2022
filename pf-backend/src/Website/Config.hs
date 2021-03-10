@@ -58,8 +58,11 @@ data SSRConfig
 makeLenses ''SSRConfig
 
 
-newtype DebugConfig
-  = DebugConfig { _static :: Bool }
+data DebugConfig
+  = DebugConfig
+      { _serveStatic :: Bool
+      , _staticBase  :: Text
+      }
   deriving (Eq, Show)
 
 makeLenses ''DebugConfig
@@ -104,7 +107,8 @@ ssrConfigCodec = SSRConfig
 
 debugConfigCodec :: TomlCodec DebugConfig
 debugConfigCodec = DebugConfig
-  <$> Toml.bool "static" .= _static
+  <$> Toml.bool "serveStatic" .= _serveStatic
+  <*> Toml.text "staticBase"  .= _staticBase
 
 
 configFileCodec :: TomlCodec ConfigFile
