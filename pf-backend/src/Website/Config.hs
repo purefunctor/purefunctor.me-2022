@@ -48,10 +48,18 @@ data GitHubCreds
 makeFieldsNoPrefix ''GitHubCreds
 
 
-newtype DebugConfig
-  = DebugConfig
-      { _static :: Bool
+data SSRConfig
+  = SSRConfig
+      { _staticUrl  :: [Text]
+      , _staticPort :: Int
       }
+  deriving (Eq, Show)
+
+makeLenses ''SSRConfig
+
+
+newtype DebugConfig
+  = DebugConfig { _static :: Bool }
   deriving (Eq, Show)
 
 makeLenses ''DebugConfig
@@ -62,6 +70,7 @@ data ConfigFile
       { _admin    :: AdminCreds
       , _database :: DatabaseConfig
       , _github   :: GitHubCreds
+      , _ssr      :: SSRConfig
       , _debug    :: DebugConfig
       }
   deriving (Eq, Show)
@@ -87,6 +96,12 @@ githubCredsCodec = GitHubCreds
   <*> Toml.text "token"    .= _token
 
 
+ssrConfigCodec :: TomlCodec SSRConfig
+ssrConfigCodec = SSRConfig
+  <$> Toml.arrayOf Toml._Text "staticUrl"  .= _staticUrl
+  <*> Toml.int                "staticPort" .= _staticPort
+
+
 debugConfigCodec :: TomlCodec DebugConfig
 debugConfigCodec = DebugConfig
   <$> Toml.bool "static" .= _static
@@ -97,6 +112,7 @@ configFileCodec = ConfigFile
   <$> Toml.table adminCredsCodec     "admin"    .= _admin
   <*> Toml.table databaseConfigCodec "database" .= _database
   <*> Toml.table githubCredsCodec    "github"   .= _github
+  <*> Toml.table ssrConfigCodec      "ssr"      .= _ssr
   <*> Toml.table debugConfigCodec    "debug"    .= _debug
 
 
