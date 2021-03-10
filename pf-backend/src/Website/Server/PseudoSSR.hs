@@ -37,15 +37,20 @@ ssrServer = getIndex :<|> getAdmin
         Left _          -> throwError err404
         Right indexFile -> return indexFile
 
-    tags :: Tags
-    tags = Tags
+    tags :: MetaTags
+    tags = MetaTags
+      "PureFunctor"
       "PureFunctor"
       "https://avatars.githubusercontent.com/u/66708316"
-      "purefunctor.me"
+      "https://purefunctor.me/"
       "Full-stack web project written in Haskell and PureScript." 
 
     getIndex :: WebsiteM TagSoupHTML
-    getIndex = injectTags tags <$> getIndex_
+    getIndex = injectMeta tags <$> getIndex_
 
     getAdmin :: WebsiteM TagSoupHTML
-    getAdmin = injectTags tags { ogTitle = "PureFunctor | Admin Page" } <$> getIndex_
+    getAdmin = injectMeta tags
+      { title = "PureFunctor | Admin Page"
+      , ogTitle = "PureFunctor | Admin Page"
+      , ogUrl = "https://purefunctor.me/admin"
+      } <$> getIndex_

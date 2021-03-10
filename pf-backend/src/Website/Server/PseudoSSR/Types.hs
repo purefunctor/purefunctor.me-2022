@@ -25,9 +25,10 @@ instance MimeRender HTML TagSoupHTML where
   mimeRender _ = TS.renderTags . unTagSoupHTML
 
 
-data Tags
-  = Tags
-      { ogTitle :: ByteString
+data MetaTags
+  = MetaTags
+      { title   :: ByteString
+      , ogTitle :: ByteString
       , ogImage :: ByteString
       , ogUrl   :: ByteString
       , ogDesc  :: ByteString

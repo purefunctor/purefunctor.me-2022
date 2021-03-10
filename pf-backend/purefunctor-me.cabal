@@ -58,6 +58,7 @@ library
                        aeson,
                        async,
                        bytestring,
+                       containers,
                        cron,
                        http-media,
                        jose,
