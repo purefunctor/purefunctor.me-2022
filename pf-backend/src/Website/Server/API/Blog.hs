@@ -1,4 +1,4 @@
-module Website.API.Blog where
+module Website.Server.API.Blog where
 
 import Control.Applicative
 
@@ -19,8 +19,8 @@ import Database.Persist.Sqlite
 import Servant
 import Servant.Auth.Server
 
-import Website.API.Auth
-import Website.API.Common
+import Website.Server.API.Auth
+import Website.Server.API.Common
 import Website.Models
 import Website.Types
 

@@ -1,4 +1,4 @@
-module Website.PseudoSSR.Types where
+module Website.Server.PseudoSSR.Types where
 
 import Data.ByteString.Lazy as LBS ( ByteString )
 

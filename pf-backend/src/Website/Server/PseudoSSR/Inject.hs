@@ -1,10 +1,10 @@
-module Website.PseudoSSR.Inject where
+module Website.Server.PseudoSSR.Inject where
 
 import Data.ByteString.Lazy ( ByteString )
 
 import Text.HTML.TagSoup ( Tag(TagClose, TagOpen), isTagCloseName )
 
-import Website.PseudoSSR.Types ( TagSoupHTML(TagSoupHTML), Tags(Tags) )
+import Website.Server.PseudoSSR.Types ( TagSoupHTML(TagSoupHTML), Tags(Tags) )
 
 
 mkTags :: Tags -> [Tag ByteString]

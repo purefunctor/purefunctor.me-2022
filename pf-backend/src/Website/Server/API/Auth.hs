@@ -1,4 +1,4 @@
-module Website.API.Auth where
+module Website.Server.API.Auth where
 
 import Control.Lens
 

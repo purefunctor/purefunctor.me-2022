@@ -1,7 +1,7 @@
-module Website.PseudoSSR
-  ( module Website.PseudoSSR.Inject
-  , module Website.PseudoSSR.Static
-  , module Website.PseudoSSR.Types
+module Website.Server.PseudoSSR
+  ( module Website.Server.PseudoSSR.Inject
+  , module Website.Server.PseudoSSR.Static
+  , module Website.Server.PseudoSSR.Types
   , PseudoSSR
   , ssrServer
   ) where
@@ -13,9 +13,9 @@ import Control.Monad.Trans.Reader ( asks )
 import Servant
 
 import Website.Config
-import Website.PseudoSSR.Inject
-import Website.PseudoSSR.Static
-import Website.PseudoSSR.Types
+import Website.Server.PseudoSSR.Inject
+import Website.Server.PseudoSSR.Static
+import Website.Server.PseudoSSR.Types
 import Website.Types
 
 

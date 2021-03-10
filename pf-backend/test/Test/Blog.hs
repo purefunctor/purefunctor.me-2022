@@ -22,7 +22,7 @@ import Test.Hspec
 import Test.Hspec.Wai as WaiTest
 import Test.Utils
 
-import Website.API.Blog
+import Website.Server.API.Blog
 import Website.Config
 import Website.Models
 

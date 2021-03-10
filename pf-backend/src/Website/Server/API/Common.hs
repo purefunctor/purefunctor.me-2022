@@ -1,4 +1,4 @@
-module Website.API.Common where
+module Website.Server.API.Common where
 
 import Data.Aeson ( FromJSON, ToJSON )
 import Data.Aeson.TH ( defaultOptions, deriveJSON, fieldLabelModifier )

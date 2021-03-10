@@ -1,7 +1,7 @@
-module Website.API
-  ( module Website.API.Auth
-  , module Website.API.Blog
-  , module Website.API.Repo
+module Website.Server.API
+  ( module Website.Server.API.Auth
+  , module Website.Server.API.Blog
+  , module Website.Server.API.Repo
   , API
   , apiServer
   ) where
@@ -9,9 +9,9 @@ module Website.API
 import Servant
 import Servant.Auth.Server
 
-import Website.API.Auth
-import Website.API.Blog
-import Website.API.Repo
+import Website.Server.API.Auth
+import Website.Server.API.Blog
+import Website.Server.API.Repo
 import Website.Types
 
 

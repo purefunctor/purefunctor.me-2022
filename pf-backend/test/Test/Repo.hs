@@ -19,7 +19,7 @@ import Test.Hspec
 import Test.Hspec.Wai as WaiTest
 import Test.Utils
 
-import Website.API.Repo
+import Website.Server.API.Repo
 import Website.Config
 import Website.Models
 

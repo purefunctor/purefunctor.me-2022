@@ -1,4 +1,4 @@
-module Website.PseudoSSR.Static where
+module Website.Server.PseudoSSR.Static where
 
 import Control.Monad.IO.Class ( MonadIO(liftIO) )
 
@@ -10,7 +10,7 @@ import Network.HTTP.Req
 
 import qualified Text.HTML.TagSoup as TS
 
-import Website.PseudoSSR.Types
+import Website.Server.PseudoSSR.Types
 import Website.Types
 
 
