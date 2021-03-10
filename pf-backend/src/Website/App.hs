@@ -24,10 +24,10 @@ import Website.Tasks
 import Website.Types
 
 
-type WebsiteAPI = PseudoSSR :<|> API
+type Website = PseudoSSR :<|> API
 
 
-websiteServer :: CookieSettings -> JWTSettings -> ServerT WebsiteAPI WebsiteM
+websiteServer :: CookieSettings -> JWTSettings -> ServerT Website WebsiteM
 websiteServer cookieSettings jwtSettings =
   ssrServer :<|> apiServer cookieSettings jwtSettings
 
@@ -36,7 +36,7 @@ websiteApp :: JWTSettings -> Environment -> Application
 websiteApp jwtSettings env =
   serveWithContext api ctx $ hoistServerWithContext api ctx' unwrap server
   where
-    api :: Proxy WebsiteAPI
+    api :: Proxy Website
     api = Proxy
 
     ctx :: Context '[CookieSettings, JWTSettings]
@@ -48,7 +48,7 @@ websiteApp jwtSettings env =
     unwrap :: WebsiteM r -> Handler r
     unwrap = runWebsiteM env
 
-    server :: ServerT WebsiteAPI WebsiteM
+    server :: ServerT Website WebsiteM
     server = websiteServer defaultCookieSettings jwtSettings
 
 
