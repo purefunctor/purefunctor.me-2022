@@ -40,7 +40,7 @@ websiteApp jwtSettings env =
     unwrap = runWebsiteM env
 
     server :: ServerT FullSite WebsiteM
-    server = fullSiteServer defaultCookieSettings jwtSettings
+    server = fullSiteServer defaultCookieSettings jwtSettings env
 
 
 run :: Port -> IO ()

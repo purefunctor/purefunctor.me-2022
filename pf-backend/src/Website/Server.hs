@@ -9,14 +9,20 @@ module Website.Server
 import Servant
 import Servant.Auth.Server
 
+import Website.Config
 import Website.Server.API
+import Website.Server.Extra
 import Website.Server.PseudoSSR
 import Website.Types
 
 
-type FullSite = PseudoSSR :<|> API
+type FullSite = PseudoSSR :<|> API :<|> Raw
 
 
-fullSiteServer :: CookieSettings -> JWTSettings -> ServerT FullSite WebsiteM
-fullSiteServer cookieSettings jwtSettings =
-  ssrServer :<|> apiServer cookieSettings jwtSettings
+fullSiteServer
+  :: CookieSettings
+  -> JWTSettings
+  -> Environment
+  -> ServerT FullSite WebsiteM
+fullSiteServer cookieSettings jwtSettings env = do
+  ssrServer :<|> apiServer cookieSettings jwtSettings :<|> custom404 env
