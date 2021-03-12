@@ -22,9 +22,9 @@ import Test.Hspec
 import Test.Hspec.Wai as WaiTest
 import Test.Utils
 
-import Website.Server.API.Blog
 import Website.Config
 import Website.Models
+import Website.Server.API.Blog
 
 
 testBlog :: Environment -> Application -> Spec

@@ -1,4 +1,4 @@
-module Website.Server 
+module Website.Server
   ( module Website.Server.API
   , module Website.Server.PseudoSSR
   , FullSite

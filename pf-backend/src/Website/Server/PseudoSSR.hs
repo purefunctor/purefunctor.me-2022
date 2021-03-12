@@ -47,7 +47,7 @@ ssrServer = getIndex :<|> getAdmin :<|> get404
       "PureFunctor"
       "https://avatars.githubusercontent.com/u/66708316"
       "https://purefunctor.me/"
-      "Full-stack web project written in Haskell and PureScript." 
+      "Full-stack web project written in Haskell and PureScript."
 
     getIndex :: WebsiteM TagSoupHTML
     getIndex = injectMeta tags <$> getIndex_

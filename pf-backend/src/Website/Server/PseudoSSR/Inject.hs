@@ -6,7 +6,7 @@ import qualified Data.Foldable as Foldable
 
 import qualified Data.Sequence as Sequence
 
-import Data.Maybe (fromMaybe)
+import Data.Maybe ( fromMaybe )
 
 import Text.HTML.TagSoup
 

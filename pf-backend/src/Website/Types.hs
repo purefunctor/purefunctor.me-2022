@@ -1,9 +1,9 @@
 module Website.Types where
 
-import Control.Monad.Reader
 import Control.Monad.Except
+import Control.Monad.Reader
 
-import Data.Text (Text, pack)
+import Data.Text ( Text, pack )
 
 import Network.HTTP.Req as Req
 

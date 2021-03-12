@@ -17,9 +17,9 @@ import Database.Persist.Sqlite
 import Servant
 import Servant.Auth.Server
 
+import Website.Models
 import Website.Server.API.Auth
 import Website.Server.API.Common
-import Website.Models
 import Website.Tasks
 import Website.Types
 

@@ -19,9 +19,9 @@ import Test.Hspec
 import Test.Hspec.Wai as WaiTest
 import Test.Utils
 
-import Website.Server.API.Repo
 import Website.Config
 import Website.Models
+import Website.Server.API.Repo
 
 
 testRepo :: Environment -> Application -> Spec
