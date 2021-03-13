@@ -1,5 +1,6 @@
 module Website.Server
   ( module Website.Server.API
+  , module Website.Server.Extra
   , module Website.Server.PseudoSSR
   , FullSite
   , fullSiteServer
