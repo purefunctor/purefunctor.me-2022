@@ -31,7 +31,7 @@ getRepositoryData :: Environment -> Repository -> IO (Maybe (Text, Int, Int))
 getRepositoryData env repository = runMaybeT $
   do (stars, descr) <- getGeneralData
      commits <- getCommits
-     return (descr, stars, commits)
+     pure (descr, stars, commits)
   where
     repoUrl :: Url 'Https
     repoUrl =
@@ -49,7 +49,7 @@ getRepositoryData env repository = runMaybeT $
                         (encodeUtf8 $ env^.config.github.token)
             )
 
-      return $ responseBody <$> response
+      pure $ responseBody <$> response
 
     getGeneralData :: MaybeT IO (Int, Text)
     getGeneralData = do
@@ -57,7 +57,7 @@ getRepositoryData env repository = runMaybeT $
       case value of
         Left err ->
           liftIO (runStderrLoggingT $ logErrorN err) >> mzero
-        Right val -> MaybeT . return $
+        Right val -> MaybeT . pure $
           (,) <$> parseMaybe (withObject "stargazers" (.: "stargazers_count")) val
               <*> parseMaybe (withObject "description" (.: "description")) val
 
@@ -67,7 +67,7 @@ getRepositoryData env repository = runMaybeT $
       case value of
         Left err ->
           liftIO (runStderrLoggingT $ logErrorN err) >> mzero
-        Right val -> MaybeT . return $
+        Right val -> MaybeT . pure $
           sum <$>
             (parseMaybe (withObject "participation" (.: "all")) val :: Maybe [Int])
 

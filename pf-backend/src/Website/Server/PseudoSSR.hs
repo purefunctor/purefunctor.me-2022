@@ -39,7 +39,7 @@ ssrServer = getIndex :<|> getAdmin :<|> get404
 
       case eIndexFile of
         Left _          -> throwError err404
-        Right indexFile -> return indexFile
+        Right indexFile -> pure indexFile
 
     tags :: MetaTags
     tags = MetaTags

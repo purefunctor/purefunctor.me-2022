@@ -76,7 +76,7 @@ mkAuthHeaders setCookies = do
   let jwtToken' = "JWT-Cookie=" <> jwtToken
   let xsrfToken' = "XSRF-TOKEN=" <> xsrfToken
 
-  return [("Cookie", jwtToken' <> "; " <> xsrfToken'), ("X-XSRF-TOKEN", xsrfToken)]
+  pure [("Cookie", jwtToken' <> "; " <> xsrfToken'), ("X-XSRF-TOKEN", xsrfToken)]
   where
     findCookieValue name =
       setCookieValue <$> List.find ((== name) . setCookieName) setCookies

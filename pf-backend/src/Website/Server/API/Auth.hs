@@ -56,7 +56,7 @@ loginServer cookieSettings jwtSettings = verify
         then do
           mApplyCookies <- liftIO $ acceptLogin cookieSettings' jwtSettings login
           case mApplyCookies of
-             Just applyCookies -> return $ applyCookies NoContent
+             Just applyCookies -> pure $ applyCookies NoContent
              Nothing           -> throwError err401
         else
           throwError err401

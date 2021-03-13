@@ -139,4 +139,4 @@ mkEnvironment = do
   pool' <- runStderrLoggingT $
     createSqlitePool (conf^.database.filename) (conf^.database.connections)
 
-  return $ Environment conf pool'
+  pure $ Environment conf pool'

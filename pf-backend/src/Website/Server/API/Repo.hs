@@ -72,7 +72,7 @@ repositoryServer =
       repositories <- runDb env $
         selectList [ ] [ ]
 
-      return $ entityVal <$> repositories
+      pure $ entityVal <$> repositories
 
     getRepository :: Text -> WebsiteM Repository
     getRepository n = do
@@ -82,7 +82,7 @@ repositoryServer =
         get $ RepositoryKey n
 
       case repository of
-        (Just repository') -> return repository'
+        (Just repository') -> pure repository'
         Nothing            -> throwError err404
 
     createRepository
@@ -129,7 +129,7 @@ repositoryServer =
                              }
                   Nothing -> repo
 
-              return $
+              pure $
                 MutableEndpointResult 200 $
                   "Repository created: " <> unRepositoryKey repoKey
             else
@@ -166,7 +166,7 @@ repositoryServer =
             Just updates -> do
               runDb env $
                 update (RepositoryKey rName) updates
-              return $ MutableEndpointResult 200 "Repository updated."
+              pure $ MutableEndpointResult 200 "Repository updated."
 
             Nothing -> throwError err400
 
@@ -185,7 +185,7 @@ repositoryServer =
       if inDatabase
         then do
           runDb env $ delete $ RepositoryKey rName
-          return $ MutableEndpointResult 200 "Repository deleted."
+          pure $ MutableEndpointResult 200 "Repository deleted."
         else
           throwError err404
 

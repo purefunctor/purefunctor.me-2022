@@ -35,4 +35,4 @@ mkDebug posts repos = do
       inDB <- exists [ RepositoryName ==. repositoryName repo ]
       unless inDB $ void $ insert repo
 
-  return (env, app)
+  pure (env, app)

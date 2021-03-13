@@ -70,7 +70,7 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
       posts <- runDb env $
         selectList [ ] [ ]
 
-      return $ entityVal <$> posts
+      pure $ entityVal <$> posts
 
     getPost :: Text -> WebsiteM BlogPost
     getPost t = do
@@ -80,7 +80,7 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
         get (BlogPostKey t)
 
       case post of
-        (Just post') -> return post'
+        (Just post') -> pure post'
         Nothing      -> throwError err404
 
     createPost
@@ -116,7 +116,7 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
           if not inDb
             then do
               runDb env $ insert post
-              return $
+              pure $
                 MutableEndpointResult 200 $
                   "Post created with short name: " <> blogPostShort post
             else
@@ -154,7 +154,7 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
             Just updates -> do
               runDb env $
                 update (BlogPostKey sTitle) updates
-              return $ MutableEndpointResult 200 "Post updated."
+              pure $ MutableEndpointResult 200 "Post updated."
 
             Nothing -> throwError err400
 
@@ -173,7 +173,7 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
       if inDatabase
         then do
           runDb env $ delete $ BlogPostKey sTitle
-          return $ MutableEndpointResult 200 "Post deleted."
+          pure $ MutableEndpointResult 200 "Post deleted."
         else
           throwError err404
 
