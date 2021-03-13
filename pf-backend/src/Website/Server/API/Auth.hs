@@ -1,12 +1,10 @@
-module Website.API.Auth where
+module Website.Server.API.Auth where
 
 import Control.Lens
-
 import Control.Monad.IO.Class ( liftIO )
 import Control.Monad.Reader ( asks )
 
 import Data.Aeson ( FromJSON, ToJSON )
-
 import Data.Text ( Text )
 
 import GHC.Generics ( Generic )
@@ -16,7 +14,7 @@ import Servant.Auth
 import Servant.Auth.Server
 
 import Website.Config
-import Website.WebsiteM
+import Website.Types
 
 
 type CookieAuthResult =
@@ -56,7 +54,7 @@ loginServer cookieSettings jwtSettings = verify
         then do
           mApplyCookies <- liftIO $ acceptLogin cookieSettings' jwtSettings login
           case mApplyCookies of
-             Just applyCookies -> return $ applyCookies NoContent
+             Just applyCookies -> pure $ applyCookies NoContent
              Nothing           -> throwError err401
         else
           throwError err401

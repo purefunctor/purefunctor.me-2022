@@ -2,14 +2,12 @@
 module Website.Models where
 
 import Control.Lens ( (^.) )
-
 import Control.Monad.IO.Class ( MonadIO(liftIO) )
 
 import Data.Text ( Text )
 import Data.Time ( UTCTime )
 
-import Database.Persist.Sqlite ( SqlPersistM, runSqlPersistMPool )
-
+import           Database.Persist.Sqlite ( SqlPersistM, runSqlPersistMPool )
 import qualified Database.Persist.TH as PTH
 
 import Website.Config ( Environment, HasPool(pool) )

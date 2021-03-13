@@ -1,7 +1,6 @@
 module Website.Debug where
 
 import Control.Lens
-
 import Control.Monad ( forM_, unless, void )
 
 import Database.Persist.Sqlite
@@ -35,4 +34,4 @@ mkDebug posts repos = do
       inDB <- exists [ RepositoryName ==. repositoryName repo ]
       unless inDB $ void $ insert repo
 
-  return (env, app)
+  pure (env, app)

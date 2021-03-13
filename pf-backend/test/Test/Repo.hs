@@ -2,15 +2,13 @@
 module Test.Repo where
 
 import Control.Lens ( (^.) )
-
 import Control.Monad
 
 import Data.Aeson
+import Data.Text.Encoding
 
 import           Database.Persist.Sqlite ( (==.) )
 import qualified Database.Persist.Sqlite as Sqlite
-
-import Data.Text.Encoding
 
 import Network.Wai
 
@@ -19,9 +17,9 @@ import Test.Hspec
 import Test.Hspec.Wai as WaiTest
 import Test.Utils
 
-import Website.API.Repo
 import Website.Config
 import Website.Models
+import Website.Server.API.Repo
 
 
 testRepo :: Environment -> Application -> Spec

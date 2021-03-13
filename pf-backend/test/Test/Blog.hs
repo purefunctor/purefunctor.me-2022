@@ -2,13 +2,10 @@
 module Test.Blog where
 
 import Control.Lens ( (^.) )
-
 import Control.Monad
 
 import Data.Aeson
-
 import Data.Text.Encoding
-
 import Data.Time
 import Data.Time.Calendar.Julian
 
@@ -22,9 +19,9 @@ import Test.Hspec
 import Test.Hspec.Wai as WaiTest
 import Test.Utils
 
-import Website.API.Blog
 import Website.Config
 import Website.Models
+import Website.Server.API.Blog
 
 
 testBlog :: Environment -> Application -> Spec

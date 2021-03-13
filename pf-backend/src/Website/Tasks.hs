@@ -2,9 +2,7 @@ module Website.Tasks where
 
 import Control.Concurrent ( ThreadId )
 import Control.Concurrent.Async
-
 import Control.Lens
-
 import Control.Monad
 import Control.Monad.Except
 import Control.Monad.Logger
@@ -12,7 +10,6 @@ import Control.Monad.Trans.Maybe ( MaybeT(MaybeT, runMaybeT) )
 
 import Data.Aeson
 import Data.Aeson.Types
-
 import Data.Text
 import Data.Text.Encoding
 
@@ -24,24 +21,14 @@ import System.Cron
 
 import Website.Config
 import Website.Models
-
-
-type RequestM = ExceptT Text Req
-
-
-instance MonadHttp RequestM where
-  handleHttpException e = throwError (pack $ show e)
-
-
-runRequestM :: RequestM r -> IO (Either Text r)
-runRequestM = runReq defaultHttpConfig . runExceptT
+import Website.Types
 
 
 getRepositoryData :: Environment -> Repository -> IO (Maybe (Text, Int, Int))
 getRepositoryData env repository = runMaybeT $
   do (stars, descr) <- getGeneralData
      commits <- getCommits
-     return (descr, stars, commits)
+     pure (descr, stars, commits)
   where
     repoUrl :: Url 'Https
     repoUrl =
@@ -59,7 +46,7 @@ getRepositoryData env repository = runMaybeT $
                         (encodeUtf8 $ env^.config.github.token)
             )
 
-      return $ responseBody <$> response
+      pure $ responseBody <$> response
 
     getGeneralData :: MaybeT IO (Int, Text)
     getGeneralData = do
@@ -67,7 +54,7 @@ getRepositoryData env repository = runMaybeT $
       case value of
         Left err ->
           liftIO (runStderrLoggingT $ logErrorN err) >> mzero
-        Right val -> MaybeT . return $
+        Right val -> MaybeT . pure $
           (,) <$> parseMaybe (withObject "stargazers" (.: "stargazers_count")) val
               <*> parseMaybe (withObject "description" (.: "description")) val
 
@@ -77,7 +64,7 @@ getRepositoryData env repository = runMaybeT $
       case value of
         Left err ->
           liftIO (runStderrLoggingT $ logErrorN err) >> mzero
-        Right val -> MaybeT . return $
+        Right val -> MaybeT . pure $
           sum <$>
             (parseMaybe (withObject "participation" (.: "all")) val :: Maybe [Int])
 

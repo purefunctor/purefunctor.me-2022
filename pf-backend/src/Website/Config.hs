@@ -1,11 +1,9 @@
 module Website.Config where
 
 import Control.Lens ( makeFieldsNoPrefix, makeLenses, (^.) )
-
 import Control.Monad.Logger ( runStderrLoggingT )
 
 import Data.Maybe ( fromMaybe )
-
 import Data.Text ( Text )
 
 import Database.Persist.Sqlite ( ConnectionPool, createSqlitePool )
@@ -48,9 +46,20 @@ data GitHubCreds
 makeFieldsNoPrefix ''GitHubCreds
 
 
-newtype DebugConfig
+data SSRConfig
+  = SSRConfig
+      { _staticUrl  :: [Text]
+      , _staticPort :: Int
+      }
+  deriving (Eq, Show)
+
+makeLenses ''SSRConfig
+
+
+data DebugConfig
   = DebugConfig
-      { _static :: Bool
+      { _serveStatic :: Bool
+      , _staticBase  :: Text
       }
   deriving (Eq, Show)
 
@@ -62,6 +71,7 @@ data ConfigFile
       { _admin    :: AdminCreds
       , _database :: DatabaseConfig
       , _github   :: GitHubCreds
+      , _ssr      :: SSRConfig
       , _debug    :: DebugConfig
       }
   deriving (Eq, Show)
@@ -87,9 +97,16 @@ githubCredsCodec = GitHubCreds
   <*> Toml.text "token"    .= _token
 
 
+ssrConfigCodec :: TomlCodec SSRConfig
+ssrConfigCodec = SSRConfig
+  <$> Toml.arrayOf Toml._Text "staticUrl"  .= _staticUrl
+  <*> Toml.int                "staticPort" .= _staticPort
+
+
 debugConfigCodec :: TomlCodec DebugConfig
 debugConfigCodec = DebugConfig
-  <$> Toml.bool "static" .= _static
+  <$> Toml.bool "serveStatic" .= _serveStatic
+  <*> Toml.text "staticBase"  .= _staticBase
 
 
 configFileCodec :: TomlCodec ConfigFile
@@ -97,6 +114,7 @@ configFileCodec = ConfigFile
   <$> Toml.table adminCredsCodec     "admin"    .= _admin
   <*> Toml.table databaseConfigCodec "database" .= _database
   <*> Toml.table githubCredsCodec    "github"   .= _github
+  <*> Toml.table ssrConfigCodec      "ssr"      .= _ssr
   <*> Toml.table debugConfigCodec    "debug"    .= _debug
 
 
@@ -119,4 +137,4 @@ mkEnvironment = do
   pool' <- runStderrLoggingT $
     createSqlitePool (conf^.database.filename) (conf^.database.connections)
 
-  return $ Environment conf pool'
+  pure $ Environment conf pool'

@@ -2,14 +2,11 @@
 module Test.Utils where
 
 import Control.Lens ( (^.) )
-
 import Control.Monad.IO.Class ( MonadIO )
 
-import Data.Aeson ( FromJSON, Value, decode, encode, object, (.=) )
-
+import           Data.Aeson ( FromJSON, Value, decode, encode, object, (.=) )
+import           Data.ByteString ( ByteString )
 import qualified Data.List as List
-
-import Data.ByteString ( ByteString )
 
 import Network.HTTP.Types ( Header, methodDelete, methodPost, methodPut )
 import Network.Wai.Test ( SResponse(simpleHeaders) )
@@ -76,7 +73,7 @@ mkAuthHeaders setCookies = do
   let jwtToken' = "JWT-Cookie=" <> jwtToken
   let xsrfToken' = "XSRF-TOKEN=" <> xsrfToken
 
-  return [("Cookie", jwtToken' <> "; " <> xsrfToken'), ("X-XSRF-TOKEN", xsrfToken)]
+  pure [("Cookie", jwtToken' <> "; " <> xsrfToken'), ("X-XSRF-TOKEN", xsrfToken)]
   where
     findCookieValue name =
       setCookieValue <$> List.find ((== name) . setCookieName) setCookies

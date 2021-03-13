@@ -17,16 +17,22 @@ data-files:          config-default.toml
 
 library
   exposed-modules:     Website.App,
-                       Website.API.Auth,
-                       Website.API.Common,
-                       Website.API.Blog,
-                       Website.API.Repo,
                        Website.Config,
                        Website.Debug,
                        Website.Models,
+                       Website.Server,
+                       Website.Server.API,
+                       Website.Server.API.Auth,
+                       Website.Server.API.Common,
+                       Website.Server.API.Blog,
+                       Website.Server.API.Repo,
+                       Website.Server.Extra,
+                       Website.Server.PseudoSSR,
+                       Website.Server.PseudoSSR.Inject,
+                       Website.Server.PseudoSSR.Static,
+                       Website.Server.PseudoSSR.Types,
                        Website.Tasks,
-                       Website.Utils,
-                       Website.WebsiteM
+                       Website.Types
 
   other-modules:       Paths_purefunctor_me
 
@@ -52,7 +58,11 @@ library
   build-depends:       base ^>=4.14.1.0,
                        aeson,
                        async,
+                       bytestring,
+                       containers,
                        cron,
+                       http-media,
+                       http-types,
                        jose,
                        lens,
                        monad-logger,
@@ -66,6 +76,7 @@ library
                        servant-server,
                        servant-auth,
                        servant-auth-server,
+                       tagsoup,
                        text,
                        time,
                        tomland,

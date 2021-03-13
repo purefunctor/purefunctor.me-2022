@@ -1,14 +1,11 @@
-module Website.API.Repo where
+module Website.Server.API.Repo where
 
 import Control.Applicative
-
 import Control.Lens
-
 import Control.Monad.IO.Class ( liftIO )
 import Control.Monad.Reader ( ask )
 
-import Data.Maybe ( fromMaybe, isJust )
-
+import           Data.Maybe ( fromMaybe, isJust )
 import           Data.Text ( Text )
 import qualified Data.Text as Text
 
@@ -17,12 +14,11 @@ import Database.Persist.Sqlite
 import Servant
 import Servant.Auth.Server
 
-import Website.API.Auth
-import Website.API.Common
 import Website.Models
+import Website.Server.API.Auth
+import Website.Server.API.Common
 import Website.Tasks
-import Website.Utils
-import Website.WebsiteM
+import Website.Types
 
 
 type RepositoryAPI =
@@ -73,7 +69,7 @@ repositoryServer =
       repositories <- runDb env $
         selectList [ ] [ ]
 
-      return $ entityVal <$> repositories
+      pure $ entityVal <$> repositories
 
     getRepository :: Text -> WebsiteM Repository
     getRepository n = do
@@ -83,7 +79,7 @@ repositoryServer =
         get $ RepositoryKey n
 
       case repository of
-        (Just repository') -> return repository'
+        (Just repository') -> pure repository'
         Nothing            -> throwError err404
 
     createRepository
@@ -130,7 +126,7 @@ repositoryServer =
                              }
                   Nothing -> repo
 
-              return $
+              pure $
                 MutableEndpointResult 200 $
                   "Repository created: " <> unRepositoryKey repoKey
             else
@@ -167,7 +163,7 @@ repositoryServer =
             Just updates -> do
               runDb env $
                 update (RepositoryKey rName) updates
-              return $ MutableEndpointResult 200 "Repository updated."
+              pure $ MutableEndpointResult 200 "Repository updated."
 
             Nothing -> throwError err400
 
@@ -186,7 +182,7 @@ repositoryServer =
       if inDatabase
         then do
           runDb env $ delete $ RepositoryKey rName
-          return $ MutableEndpointResult 200 "Repository deleted."
+          pure $ MutableEndpointResult 200 "Repository deleted."
         else
           throwError err404
 

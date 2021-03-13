@@ -10,5 +10,10 @@ connections = 2
 username = "PureFunctor"
 token = ""
 
+[ssr]
+staticUrl = [ "localhost", "static", "index.html" ]
+staticPort = 3000
+
 [debug]
-static = true
+serveStatic = true
+staticBase = "pf-frontend"

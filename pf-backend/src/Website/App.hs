@@ -2,40 +2,31 @@ module Website.App where
 
 import Control.Lens hiding ( Context )
 
-import Data.List ( elem, foldl' )
+import Data.List ( foldl' )
+import Data.Text ( unpack )
 
 import Database.Persist.Sqlite
 
 import           Network.Wai ( Middleware )
 import           Network.Wai.Handler.Warp ( Port )
 import qualified Network.Wai.Handler.Warp as Warp
-import           Network.Wai.Middleware.Static ((<|>), addBase,  Policy, policy, staticPolicy)
+import           Network.Wai.Middleware.Static ( addBase, staticPolicy )
 
 import Servant
 import Servant.Auth.Server
 
-import Website.API.Auth
-import Website.API.Blog
-import Website.API.Repo
 import Website.Config
 import Website.Models
+import Website.Server
 import Website.Tasks
-import Website.WebsiteM
-
-
-type WebsiteAPI = "api" :> ( LoginAPI :<|> BlogPostAPI :<|> RepositoryAPI )
-
-
-websiteServer :: CookieSettings -> JWTSettings -> ServerT WebsiteAPI WebsiteM
-websiteServer cookieSettings jwtSettings =
-  loginServer cookieSettings jwtSettings :<|> blogPostServer :<|> repositoryServer
+import Website.Types
 
 
 websiteApp :: JWTSettings -> Environment -> Application
 websiteApp jwtSettings env =
   serveWithContext api ctx $ hoistServerWithContext api ctx' unwrap server
   where
-    api :: Proxy WebsiteAPI
+    api :: Proxy FullSite
     api = Proxy
 
     ctx :: Context '[CookieSettings, JWTSettings]
@@ -47,8 +38,8 @@ websiteApp jwtSettings env =
     unwrap :: WebsiteM r -> Handler r
     unwrap = runWebsiteM env
 
-    server :: ServerT WebsiteAPI WebsiteM
-    server = websiteServer defaultCookieSettings jwtSettings
+    server :: ServerT FullSite WebsiteM
+    server = fullSiteServer defaultCookieSettings jwtSettings env
 
 
 run :: Port -> IO ()
@@ -76,18 +67,11 @@ applyMiddleware env = middleware
 
     middleware :: Middleware
     middleware = composeMiddleware . filterEnabled $
-      [ (env^.config.debug.static, staticPolicy serveStaticPolicy)
-      ]
+      [ ( serveStatic_, staticBase_ ) ]
+      where
+        serveStatic_ :: Bool
+        serveStatic_ = env^.config.debug.serveStatic
 
-
-serveStaticPolicy :: Policy
-serveStaticPolicy = root <|> misc
-  where
-    root :: Policy
-    root = policy $ \uri -> 
-      if uri `elem` [ "", "admin" ] 
-      then Just "dist/index.html"
-      else Nothing
-
-    misc :: Policy
-    misc = addBase "dist"
+        staticBase_ :: Middleware
+        staticBase_ = staticPolicy . addBase . unpack $
+          env^.config.debug.staticBase
