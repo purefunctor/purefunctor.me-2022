@@ -2,9 +2,7 @@ module Website.Tasks where
 
 import Control.Concurrent ( ThreadId )
 import Control.Concurrent.Async
-
 import Control.Lens
-
 import Control.Monad
 import Control.Monad.Except
 import Control.Monad.Logger
@@ -12,7 +10,6 @@ import Control.Monad.Trans.Maybe ( MaybeT(MaybeT, runMaybeT) )
 
 import Data.Aeson
 import Data.Aeson.Types
-
 import Data.Text
 import Data.Text.Encoding
 

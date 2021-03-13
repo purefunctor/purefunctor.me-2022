@@ -4,7 +4,6 @@ module Test.Data where
 import Control.Lens ( (^.) )
 
 import Data.Aeson
-
 import Data.Time
 import Data.Time.Calendar.Julian
 

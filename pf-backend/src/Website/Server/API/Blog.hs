@@ -1,18 +1,14 @@
 module Website.Server.API.Blog where
 
 import Control.Applicative
-
 import Control.Lens
-
 import Control.Monad.IO.Class ( liftIO )
 import Control.Monad.Reader ( ask )
 
-import Data.Maybe ( isJust )
-
+import           Data.Maybe ( isJust )
 import           Data.Text ( Text )
 import qualified Data.Text as Text
-
-import Data.Time ( UTCTime, getCurrentTime )
+import           Data.Time ( UTCTime, getCurrentTime )
 
 import Database.Persist.Sqlite
 

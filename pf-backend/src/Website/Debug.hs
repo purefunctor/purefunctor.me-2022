@@ -1,7 +1,6 @@
 module Website.Debug where
 
 import Control.Lens
-
 import Control.Monad ( forM_, unless, void )
 
 import Database.Persist.Sqlite

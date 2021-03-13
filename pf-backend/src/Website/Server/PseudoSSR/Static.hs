@@ -2,9 +2,8 @@ module Website.Server.PseudoSSR.Static where
 
 import Control.Monad.IO.Class ( MonadIO(liftIO) )
 
-import Data.Text ( Text )
-
 import qualified Data.List as List
+import           Data.Text ( Text )
 
 import Network.HTTP.Req
 

@@ -1,12 +1,9 @@
 module Website.Server.PseudoSSR.Inject where
 
-import Data.ByteString.Lazy ( ByteString )
-
+import           Data.ByteString.Lazy ( ByteString )
 import qualified Data.Foldable as Foldable
-
+import           Data.Maybe ( fromMaybe )
 import qualified Data.Sequence as Sequence
-
-import Data.Maybe ( fromMaybe )
 
 import Text.HTML.TagSoup
 

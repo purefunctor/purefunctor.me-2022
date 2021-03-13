@@ -7,7 +7,6 @@ module Website.Server.PseudoSSR
   ) where
 
 import Control.Lens
-
 import Control.Monad.Trans.Reader ( asks )
 
 import Servant

@@ -2,15 +2,13 @@
 module Test.Repo where
 
 import Control.Lens ( (^.) )
-
 import Control.Monad
 
 import Data.Aeson
+import Data.Text.Encoding
 
 import           Database.Persist.Sqlite ( (==.) )
 import qualified Database.Persist.Sqlite as Sqlite
-
-import Data.Text.Encoding
 
 import Network.Wai
 

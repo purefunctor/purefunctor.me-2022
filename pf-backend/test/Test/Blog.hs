@@ -2,13 +2,10 @@
 module Test.Blog where
 
 import Control.Lens ( (^.) )
-
 import Control.Monad
 
 import Data.Aeson
-
 import Data.Text.Encoding
-
 import Data.Time
 import Data.Time.Calendar.Julian
 

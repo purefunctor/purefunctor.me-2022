@@ -1,14 +1,11 @@
 module Website.Server.API.Repo where
 
 import Control.Applicative
-
 import Control.Lens
-
 import Control.Monad.IO.Class ( liftIO )
 import Control.Monad.Reader ( ask )
 
-import Data.Maybe ( fromMaybe, isJust )
-
+import           Data.Maybe ( fromMaybe, isJust )
 import           Data.Text ( Text )
 import qualified Data.Text as Text
 

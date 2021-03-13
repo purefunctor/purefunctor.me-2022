@@ -1,12 +1,10 @@
 module Website.Server.API.Auth where
 
 import Control.Lens
-
 import Control.Monad.IO.Class ( liftIO )
 import Control.Monad.Reader ( asks )
 
 import Data.Aeson ( FromJSON, ToJSON )
-
 import Data.Text ( Text )
 
 import GHC.Generics ( Generic )

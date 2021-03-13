@@ -3,7 +3,6 @@ module Website.App where
 import Control.Lens hiding ( Context )
 
 import Data.List ( foldl' )
-
 import Data.Text ( unpack )
 
 import Database.Persist.Sqlite

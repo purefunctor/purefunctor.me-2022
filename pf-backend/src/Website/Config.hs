@@ -1,11 +1,9 @@
 module Website.Config where
 
 import Control.Lens ( makeFieldsNoPrefix, makeLenses, (^.) )
-
 import Control.Monad.Logger ( runStderrLoggingT )
 
 import Data.Maybe ( fromMaybe )
-
 import Data.Text ( Text )
 
 import Database.Persist.Sqlite ( ConnectionPool, createSqlitePool )
