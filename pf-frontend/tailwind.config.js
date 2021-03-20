@@ -12,14 +12,14 @@ module.exports = {
     },
     extend: {
       colors: {
-	"faint": {
+        "faint": {
           DEFAULT: "#fffdf2",
           100: "#f2f0e6",
-	  200: "#e5e2ce",
-	},
+          200: "#e5e2ce",
+        },
       },
       backgroundImage: theme => ({
-	'pixel-pattern': "url('https://avatars.githubusercontent.com/u/66708316?v=4')"
+        'pixel-pattern': "url('https://avatars.githubusercontent.com/u/66708316?v=4')"
       }),
     },
   },
@@ -34,15 +34,15 @@ module.exports = {
         ".scroll-snap-y-proximity": {
           "scroll-snap-type": "y proximity",
         },
-	".scroll-snap-align-start": {
+        ".scroll-snap-align-start": {
           "scroll-snap-align": "start",
-	},
-	".no-scroll-snap-type": {
-	  "scroll-snap-type": "none",
-	},
-	".no-scroll-snap-align": {
-	  "scroll-snap-align": "none",
-	},
+        },
+        ".no-scroll-snap-type": {
+          "scroll-snap-type": "none",
+        },
+        ".no-scroll-snap-align": {
+          "scroll-snap-align": "none",
+        },
       }
 
       addUtilities(scrollSnap, {
@@ -51,14 +51,14 @@ module.exports = {
     }),
     plugin(function({ addUtilities }) {
       const hoverBox = {
-	".hover-box:hover::after": {
-	  "content": '""',
-	  "display": "block",
-	  "position": "absolute",
-	  "width": "100%",
-	  "height": "15px",
-	  "bottom": "-15px",
-	},
+        ".hover-box:hover::after": {
+          "content": '""',
+          "display": "block",
+          "position": "absolute",
+          "width": "100%",
+          "height": "15px",
+          "bottom": "-15px",
+        },
       }
 
       addUtilities(hoverBox, { })
