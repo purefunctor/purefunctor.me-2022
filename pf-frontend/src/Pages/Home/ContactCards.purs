@@ -14,12 +14,12 @@ element =
     ]
   ]
   [ makeCard "bg-pink-100 text-pink-500" "mailto:justin@purefunctor.me"
-    [ HH.i [ css "fas fa-envelope fa-4x" ] [ ]
+    [ HH.i [ css "fas fa-mail-bulk fa-4x" ] [ ]
     ]
   , makeCard "bg-blue-100 text-blue-500" "https://twitter.com/PureFunctor"
     [ HH.i [ css "fab fa-twitter fa-4x" ] [ ]
     ]
-  , makeCard "bg-purple-100 text-gray-900" "https://pythondiscord.org"
+  , makeCard "bg-green-100 text-gray-900" "https://pythondiscord.org"
     [ HH.i [ css "fab fa-discord fa-4x" ] [ ]
     ]
   ]
@@ -29,10 +29,11 @@ element =
       HH.a
       [ css'
         [ extra
-        , "flex-grow flex"
-        , "h-64 rounded-lg shadow-md"
-        , "items-center justify-center"
+        , "flex flex-col h-64 w-full overflow-hidden"
+        , "ring-2 ring-black shadow-xl rounded-xl"
         ]
       , HP.href link
       ]
-      child
+      [ HH.div [ css "ring-2 ring-black h-20 bg-pixel-pattern" ] [ ]
+      , HH.div [ css "flex flex-grow items-center justify-center" ] child
+      ]
