@@ -39,11 +39,29 @@ jobs:
         restore-keys: |
           ${{ hashFiles('pf-backend/purefunctor-me.cabal') }}
 
+    - name: Cache Spago Directories
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cache/spago
+          node_modules
+        key:
+          ${{ hashFiles('pf-frontend/spago.dhall') }}-${{ steps.sha_tag.outputs.tag }}
+        restore-keys: |
+          ${{ hashFiles('pf-frontend/spago.dhall') }}
+
     - name: Install Haskell
       uses: haskell/actions/setup@v1
       with:
         ghc-version: "8.10.3"
         cabal-version: "3.4.0.0"
+
+    - name: Install PureScript
+      uses: purescript-contrib/setup-purescript@main
+      with:
+        purescript: "0.13.8"
+        spago: "0.19.1"
+        zephyr: "0.3.2"
 
     - name: Build Application (Backend)
       run: |
@@ -53,7 +71,11 @@ jobs:
           --ghc-options=-split-sections \
           --install-method=copy \
           --installdir=dist-newstyle/bin
-    
+
+    - name: Build Application (Frontend)
+      run: |
+        yarn && yarn run prod:zephyr
+
     - name: Create Image (Backend)
       uses: docker/build-push-action@v2
       with:
@@ -64,4 +86,16 @@ jobs:
           ghcr.io/purefunctor/site-backend:staging
           ghcr.io/purefunctor/site-backend:${{ steps.sha_tag.outputs.tag }}
         cache-from: type=registry,ref=ghcr.io/purefunctor/site-backend:staging
+        cache-to: type=inline
+
+    - name: Create Image (Frontend)
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: pf-frontend/Dockerfile
+        push: true
+        tags: |
+          ghcr.io/purefunctor/site-frontend:staging
+          ghcr.io/purefunctor/site-frontend:${{ steps.sha_tag.outputs.tag }}
+        cache-from: type=registry,ref=ghcr.io/purefunctor/site-frontend:staging
         cache-to: type=inline
