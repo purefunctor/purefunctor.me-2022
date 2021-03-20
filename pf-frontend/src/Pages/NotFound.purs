@@ -34,7 +34,7 @@ render _ =
       , "ring-2 ring-black shadow-xl rounded-xl"
       ]
     ]
-    [ HH.div [ css "h-20 bg-pixel-pattern" ] [ ]
+    [ HH.div [ css "h-20 bg-pixel-pattern ring-2 ring-black" ] [ ]
     , HH.div
       [ css "m-5 space-y-5" ]
       [ HH.p
