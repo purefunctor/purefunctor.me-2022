@@ -69,7 +69,7 @@ jobs:
           ~/.cabal/packages
           ~/.cabal/store
           dist-newstyle
-        key: ${{ hashFiles('pf-backend/purefunctor-me.cabal') }} }}
+        key: ${{ hashFiles('pf-backend/purefunctor-me.cabal') }}
 
     - name: Test Package
       run: |
