@@ -89,7 +89,7 @@ render _ =
         , "divide-y divide-faint-200"
         ]
       ] $
-      [ HH.div [ css "font-extralight text-4xl p-5" ]
+      [ HH.div [ css "font-extralight text-4xl p-5 mx-auto" ]
         [ HH.text title
         ]
       ] <> child
