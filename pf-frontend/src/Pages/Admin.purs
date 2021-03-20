@@ -70,13 +70,13 @@ formComponent = F.component formInput $ F.defaultSpec
       [ css'
         [ "flex flex-col bg-faint overflow-hidden"
         , "h-64 md:w-1/3 sm:w-2/3 w-5/6 m-auto space-y-5"
-        , "shadow-xl rounded-xl"
+        , "shadow-xl rounded-xl ring-2 ring-black"
         ]
       , HE.onSubmit \ev -> Just $ F.injAction $ Submit ev
       ]
       [ HH.div
         [ css'
-          [ "p-3 text-center"
+          [ "p-3 text-center ring-2 ring-black"
           , case loginState of
                Waiting -> "bg-purple-200"
                Failed -> "bg-pink-200"
@@ -105,7 +105,7 @@ formComponent = F.component formInput $ F.defaultSpec
       , HH.button
         [ css'
           [ "flex-grow bg-green-200 hover:bg-green-300 focus:bg-green-300"
-          , "focus:ring-2 focus:ring-green-200"
+          , "ring-2 ring-black"
           ]
         , HP.type_ HP.ButtonSubmit
         ]
