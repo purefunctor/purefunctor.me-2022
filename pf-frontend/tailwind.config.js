@@ -48,6 +48,20 @@ module.exports = {
       addUtilities(scrollSnap, {
         variants: ["responsive"]
       })
+    }),
+    plugin(function({ addUtilities }) {
+      const hoverBox = {
+	".hover-box:hover::after": {
+	  "content": '""',
+	  "display": "block",
+	  "position": "absolute",
+	  "width": "100%",
+	  "height": "15px",
+	  "bottom": "-15px",
+	},
+      }
+
+      addUtilities(hoverBox, { })
     })
   ],
 }

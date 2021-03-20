@@ -71,7 +71,7 @@ render { shown, repositories } =
         [ "md:w-max w-full h-40 m-2"
         , "flex flex-col flex-none"
         , "bg-white rounded-xl md:shadow-lg shadow-md divide-solid divide-y-2"
-        , "transform hover:-translate-y-2 cursor-pointer"
+        , "transform transition ease-out hover:-translate-y-2 cursor-pointer hover-box"
         ]
       , HP.href repository.url
       ]
