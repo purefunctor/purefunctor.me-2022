@@ -1,17 +1,12 @@
 name: Nix Builds
 
 on:
-
   push:
-    branches:
-    - 'feature/**'
-
     paths-ignore:
     - '**.md'
 
   pull_request:
     branches:
-    - develop
     - stable
 
     paths-ignore:
