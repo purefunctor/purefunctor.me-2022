@@ -12,7 +12,8 @@ author:              PureFunctor
 maintainer:          purefunctor@gmail.com
 copyright:           (c) 2020, PureFunctor
 category:            Web
-data-files:          config-default.toml
+data-files:          config-default.toml,
+                     migration.sql
 
 library
   exposed-modules:     Website.App,
