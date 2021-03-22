@@ -1,6 +1,7 @@
 {-# LANGUAGE ImpredicativeTypes #-}
 module Website.Database
   ( module Website.Database.Models
+  , module Website.Database.Pool
   , WebsiteDb
   , websiteDb
   , posts
@@ -11,6 +12,7 @@ import Database.Beam
 import Database.Beam.Sqlite
 
 import Website.Database.Models
+import Website.Database.Pool
 
 
 data WebsiteDb f = WebsiteDb
