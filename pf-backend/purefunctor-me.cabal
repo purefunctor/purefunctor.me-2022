@@ -17,6 +17,10 @@ data-files:          config-default.toml
 library
   exposed-modules:     Website.App,
                        Website.Config,
+                       Website.Database,
+                       Website.Database.Models,
+                       Website.Database.Models.BlogPost,
+                       Website.Database.Models.Repository,
                        Website.Debug,
                        Website.Models,
                        Website.Server,
