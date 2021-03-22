@@ -5,6 +5,7 @@ import Control.Monad.Logger ( runStderrLoggingT )
 
 import Data.Maybe ( fromMaybe )
 import Data.Text ( Text )
+import qualified Data.Text as T
 
 import Database.Persist.Sqlite ( ConnectionPool, createSqlitePool )
 
@@ -13,7 +14,10 @@ import qualified Toml
 
 import System.Environment.Blank ( getEnv )
 
+import Website.Database.Pool (ConnPool, mkConnPool)
+
 import Paths_purefunctor_me ( getDataFileName )
+
 
 
 data AdminCreds
@@ -122,6 +126,7 @@ data Environment
   = Environment
       { _config :: ConfigFile
       , _pool   :: ConnectionPool
+      , _beamPool :: ConnPool -- TODO: (REFACTOR)
       }
   deriving (Show)
 
@@ -137,4 +142,8 @@ mkEnvironment = do
   pool' <- runStderrLoggingT $
     createSqlitePool (conf^.database.filename) (conf^.database.connections)
 
-  pure $ Environment conf pool'
+  -- TODO: (REFACTOR)
+  beamPool' <-
+    mkConnPool (T.unpack $ conf^.database.filename) (conf^.database.connections)
+
+  pure $ Environment conf pool' beamPool'
