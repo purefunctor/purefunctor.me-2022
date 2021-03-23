@@ -1,41 +1,41 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Test.Blog where
 
-import Control.Lens ( (^.) )
+import Control.Lens ( (^.), _Just )
 import Control.Monad
 
 import Data.Aeson
 import Data.Text.Encoding
 import Data.Time
 import Data.Time.Calendar.Julian
+import Data.Maybe (isJust)
 
-import           Database.Persist.Sqlite ( (==.) )
-import qualified Database.Persist.Sqlite as Sqlite
+import Database.Beam
 
 import Network.Wai
 
-import Test.Data
+import qualified Test.Data as TD
 import Test.Hspec
 import Test.Hspec.Wai as WaiTest
 import Test.Utils
 
 import Website.Config
-import Website.Models
+import Website.Database
 import Website.Server.API.Blog
 
 
 testBlog :: Environment -> Application -> Spec
 testBlog env app = with (pure app) $ do
 
-  let loginPayload = mkLoginPayload env
+  let loginPayload = TD.mkLoginPayload env
 
   describe "GET /api/blog" $ do
     it "should return all blog posts" $ do
-      get "/api/blog" `shouldRespondWith` matchCodeJSON 200 posts
+      get "/api/blog" `shouldRespondWith` matchCodeJSON 200 TD.posts
 
     it "should return a specific post" $ do
-      forM_ posts $ \post' -> do
-        let endpoint = "/api/blog/" <> encodeUtf8 (blogPostShort post')
+      forM_ TD.posts $ \post' -> do
+        let endpoint = "/api/blog/" <> encodeUtf8 (post'^.pSlug)
         get endpoint `shouldRespondWith` matchCodeJSON 200 post'
 
   let lTitle  = "Testing With Hspec"
@@ -55,10 +55,10 @@ testBlog env app = with (pure app) $ do
       withAuth env $ \authHeaders -> do
         postJSON "/api/blog" authHeaders (toJSON newPost) `shouldRespondWith` 200
 
-        inDB <-  WaiTest.liftIO $ flip Sqlite.runSqlPool (env^.pool) $ do
-          Sqlite.exists [ BlogPostShort ==. sTitle ]
+        post' <- runBeamDb env $ runSelectReturningOne $
+          lookup_ (websiteDb^.posts) (BlogPostSlug sTitle)
 
-        inDB `shouldBe'` True
+        isJust post' `shouldBe'` True
 
     it "should require title and contents" $ do
       let invalid =
@@ -84,13 +84,10 @@ testBlog env app = with (pure app) $ do
       withAuth env $ \authHeaders -> do
         putJSON endpoint authHeaders mutation `shouldRespondWith` 200
 
-        mMutated <-
-          WaiTest.liftIO $ flip Sqlite.runSqlPersistMPool (env^.pool) $
-            Sqlite.get (BlogPostKey sTitle)
+        mMutated <- runBeamDb env $ runSelectReturningOne $
+          lookup_ (websiteDb^.posts) (BlogPostSlug sTitle)
 
-        case mMutated of
-          Just mutated -> blogPostContents mutated `shouldBe'` contents'
-          Nothing      -> fail "failed to obtain blog post"
+        ( mMutated^._Just.pCont ) `shouldBe'` contents'
 
     it "should require either title, contents, or short" $ do
       withAuth env $ \authHeaders ->
@@ -106,7 +103,7 @@ testBlog env app = with (pure app) $ do
       withAuth env $ \authHeaders -> do
         delete' endpoint authHeaders `shouldRespondWith` 200
 
-        inDB <- WaiTest.liftIO $ flip Sqlite.runSqlPool (env^.pool) $ do
-          Sqlite.exists [ BlogPostShort ==. sTitle ]
+        post' <- runBeamDb env $ runSelectReturningOne $
+          lookup_ (websiteDb^.posts) (BlogPostSlug sTitle)
 
-        inDB `shouldBe'` False
+        isJust post' `shouldBe'` False
