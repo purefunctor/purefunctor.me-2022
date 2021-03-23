@@ -39,5 +39,5 @@ runMigration = liftIO . flip withConnPool runMigration_
 runBeamDb :: MonadIO m => Environment -> SqliteM a -> m a
 runBeamDb env
   = liftIO
-  . withConnPool (env^.beamPool) -- TODO: REFACTOR
+  . withConnPool (env^.pool)
   . flip runBeamSqlite
