@@ -1,19 +1,20 @@
 module Website.Config where
 
 import Control.Lens ( makeFieldsNoPrefix, makeLenses, (^.) )
-import Control.Monad.Logger ( runStderrLoggingT )
 
-import Data.Maybe ( fromMaybe )
-import Data.Text ( Text )
-
-import Database.Persist.Sqlite ( ConnectionPool, createSqlitePool )
+import           Data.Maybe ( fromMaybe )
+import           Data.Text ( Text )
+import qualified Data.Text as T
 
 import           Toml ( TomlCodec, (.=) )
 import qualified Toml
 
 import System.Environment.Blank ( getEnv )
 
+import Website.Database.Pool ( ConnPool, mkConnPool )
+
 import Paths_purefunctor_me ( getDataFileName )
+
 
 
 data AdminCreds
@@ -121,7 +122,7 @@ configFileCodec = ConfigFile
 data Environment
   = Environment
       { _config :: ConfigFile
-      , _pool   :: ConnectionPool
+      , _pool   :: ConnPool
       }
   deriving (Show)
 
@@ -134,7 +135,7 @@ mkEnvironment = do
   configFile <- fromMaybe defaultConfig <$> getEnv "CONFIG_FILE"
   conf <- Toml.decodeFile configFileCodec configFile
 
-  pool' <- runStderrLoggingT $
-    createSqlitePool (conf^.database.filename) (conf^.database.connections)
+  pool' <-
+    mkConnPool (T.unpack $ conf^.database.filename) (conf^.database.connections)
 
   pure $ Environment conf pool'

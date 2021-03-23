@@ -1,21 +1,23 @@
+{-# LANGUAGE TypeApplications #-}
 module Website.Server.API.Blog where
 
 import Control.Applicative
 import Control.Lens
-import Control.Monad.IO.Class ( liftIO )
+import Control.Monad ( unless )
 import Control.Monad.Reader ( ask )
 
 import           Data.Maybe ( isJust )
-import           Data.Text ( Text )
+import           Data.String ( IsString(fromString) )
+import           Data.Text ( Text, unpack )
 import qualified Data.Text as Text
 import           Data.Time ( UTCTime, getCurrentTime )
 
-import Database.Persist.Sqlite
+import Database.Beam
 
 import Servant
 import Servant.Auth.Server
 
-import Website.Models
+import Website.Database
 import Website.Server.API.Auth
 import Website.Server.API.Common
 import Website.Types
@@ -46,7 +48,7 @@ type BlogPostAPI =
 data MutableBlogPostData
   = MutableBlogPostData
       { _title     :: Maybe Text
-      , _short     :: Maybe Text
+      , _slug      :: Maybe Text
       , _contents  :: Maybe Text
       , _published :: Maybe UTCTime
       , _updated   :: Maybe UTCTime
@@ -63,21 +65,19 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
     getPosts = do
       env <- ask
 
-      posts <- runDb env $
-        selectList [ ] [ ]
-
-      pure $ entityVal <$> posts
+      runBeamDb env $ runSelectReturningList $
+        select $ all_ (websiteDb^.posts)
 
     getPost :: Text -> WebsiteM BlogPost
-    getPost t = do
+    getPost slug_ = do
       env <- ask
 
-      post <- runDb env $
-        get (BlogPostKey t)
+      post <- runBeamDb env $ runSelectReturningOne $
+        select $ filter_ (\p -> p^.pSlug ==. fromString (unpack slug_)) (all_ $ websiteDb^.posts)
 
       case post of
-        (Just post') -> pure post'
-        Nothing      -> throwError err404
+        Just post' -> pure post'
+        Nothing    -> throwError err404
 
     createPost
       :: AuthResult LoginPayload
@@ -88,14 +88,16 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
 
       now <- liftIO getCurrentTime
 
-      let autoShort
-            = Text.intercalate "-"
-            . take 3
-            . Text.words
+      let
+        autoShort =
+          Text.intercalate "-"
+          . take 3
+          . Text.words
 
-      let mPost = BlogPost
+        mPost =
+          BlogPost
             <$> payload^.title
-            <*> ( payload^.short <|>
+            <*> ( payload^.slug <|>
                   payload^.title <&> autoShort
                 )
             <*> payload^.contents
@@ -103,22 +105,22 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
             <*> ( payload^.updated <|> pure now )
 
       case mPost of
-
-        Just post -> do
-
-          inDb <- runDb env $
-            exists [ BlogPostShort ==. blogPostShort post ]
-
-          if not inDb
-            then do
-              runDb env $ insert post
-              pure $
-                MutableEndpointResult 200 $
-                  "Post created with short name: " <> blogPostShort post
-            else
-              throwError err400
-
         Nothing -> throwError err400
+        Just post -> do
+          let
+            keySlug = BlogPostSlug $
+              fromString $ unpack $ post^.pSlug
+
+          inDb <- runBeamDb env $ runSelectReturningOne $
+            lookup_ (websiteDb^.posts) keySlug
+
+          case inDb of
+            Just _ -> throwError err400
+            Nothing ->
+              runBeamDb env $ runInsert $
+                insert (websiteDb^.posts) $ insertValues [post]
+
+          pure $ MutableEndpointResult 200 "Post created."
 
     createPost _ _ = throwError err401
 
@@ -127,32 +129,38 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
       -> Text
       -> MutableBlogPostData
       -> WebsiteM MutableEndpointResult
-    updatePost (Authenticated _) sTitle payload = do
+    updatePost (Authenticated _) slug_ payload = do
       env <- ask
 
       now <- liftIO getCurrentTime
 
-      let mUpdates = filter isJust
-            [ (BlogPostTitle  =.) <$> payload^.title
-            , (BlogPostContents   =.) <$> payload^.contents
-            , (BlogPostShort =.) <$> payload^.short
-            ]
+      let
+        keySlug = BlogPostSlug $ fromString $ unpack slug_
 
-      case mUpdates of
+      mPost <- runBeamDb env $ runSelectReturningOne $
+        lookup_ (websiteDb^.posts) keySlug
 
-        [] -> throwError err400
+      unless
+        ( any isJust
+          [ payload^.title
+          , payload^.contents
+          , payload^.slug
+          ]
+        )
+        $ throwError err400
 
-        mUpdates' -> do
-          let postUpdated = Just $ BlogPostUpdated =. payload^.updated.non now
+      case mPost of
+        Nothing -> throwError err400
+        Just post ->
+          runBeamDb env $ runUpdate $
+            save (websiteDb^.posts)
+              ( post & pTitle .~ payload^.title    . non (post^.pTitle)
+                     & pCont  .~ payload^.contents . non (post^.pCont)
+                     & pSlug  .~ payload^.slug     . non (post^.pSlug)
+                     & pUpdt  .~ payload^.updated  . non now
+              )
 
-          case sequenceA $ postUpdated : mUpdates' of
-
-            Just updates -> do
-              runDb env $
-                update (BlogPostKey sTitle) updates
-              pure $ MutableEndpointResult 200 "Post updated."
-
-            Nothing -> throwError err400
+      pure $ MutableEndpointResult 200 "Post updated."
 
     updatePost _ _ _ = throwError err401
 
@@ -160,17 +168,17 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
       :: AuthResult LoginPayload
       -> Text
       -> WebsiteM MutableEndpointResult
-    deletePost (Authenticated _) sTitle = do
+    deletePost (Authenticated _) slug_ = do
       env <- ask
 
-      inDatabase <- runDb env $
-        exists [ BlogPostShort ==. sTitle ]
+      mPost <- runBeamDb env $ runSelectReturningOne $
+        lookup_ (websiteDb^.posts) (BlogPostSlug $ fromString (unpack slug_))
 
-      if inDatabase
-        then do
-          runDb env $ delete $ BlogPostKey sTitle
-          pure $ MutableEndpointResult 200 "Post deleted."
-        else
-          throwError err404
+      case mPost of
+        Nothing -> throwError err404
+        Just _ -> runBeamDb env $ runDelete $
+          delete (websiteDb^.posts) (\p -> p^.pSlug ==. fromString (unpack slug_))
+
+      pure $ MutableEndpointResult 200 "Post deleted."
 
     deletePost _ _ = throwError err401

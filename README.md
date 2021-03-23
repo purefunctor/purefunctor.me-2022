@@ -11,7 +11,7 @@ The project requires the following compilers and build tools to be installed for
 * zephyr
 
 ### Backend
-* ghc (8.8.4)
+* ghc (8.10.3)
 * cabal
 
 ### Optional
@@ -31,10 +31,10 @@ Install dependencies through `yarn` and check `package.json` for possible build 
 The Haskell backend can be built either through `cabal` or `nix`.
 
 #### Cabal-based Builds
-To start, ensure that you have GHC 8.8.4
+To start, ensure that you have GHC 8.10.3
 ```sh
 λ ghc --version
-The Glorious Glasgow Haskell Compilation System, version 8.8.4
+The Glorious Glasgow Haskell Compilation System, version 8.10.3
 ```
 
 After which you can then build the packages using `cabal`:
@@ -73,8 +73,12 @@ This project uses the `applicative-labs` cache for its dependencies; to use the 
 ## Deployment
 The project uses `docker` and `docker-compose` for deployment; make sure you have both installed.
 
-1) Create the `app` directory, copy `pf-backend/config-default.toml` into `config.toml`, and modify the default fields.
+1) Create a directory named `app`.
 
-2) Create an `ssl` directory within `app` and add `certificate.pem` and `certkey.pem`.
+2) Copy `pf-backend/config-default.toml` into `app/config.toml` and modify the default fields.
 
-3) Run `docker-compose up --build`, this should bind the 80 and 443 machine ports to NGINX.
+3) Copy `pf-backend/migration.sql` into `app/migration.sql`.
+
+4) Create a directory named `ssl` under `app` and add `certificate.pem` and `certkey.pem`.
+
+5) Run `docker-compose up --build`, this should bind the 80 and 443 machine ports to NGINX.

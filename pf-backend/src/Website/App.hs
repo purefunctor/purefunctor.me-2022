@@ -5,8 +5,6 @@ import Control.Lens hiding ( Context )
 import Data.List ( foldl' )
 import Data.Text ( unpack )
 
-import Database.Persist.Sqlite
-
 import           Network.Wai ( Middleware )
 import           Network.Wai.Handler.Warp ( Port )
 import qualified Network.Wai.Handler.Warp as Warp
@@ -16,7 +14,7 @@ import Servant
 import Servant.Auth.Server
 
 import Website.Config
-import Website.Models
+import Website.Database
 import Website.Server
 import Website.Tasks
 import Website.Types
@@ -47,7 +45,7 @@ run port = do
   env <- mkEnvironment
   jwtSettings <- defaultJWTSettings <$> generateKey
 
-  runSqlPool (runMigration migrateAll) (env^.pool)
+  runMigration env
 
   let vanillaApp = websiteApp jwtSettings env
 

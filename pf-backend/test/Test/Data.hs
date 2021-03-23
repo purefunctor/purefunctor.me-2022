@@ -1,20 +1,36 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeApplications #-}
 module Test.Data where
 
 import Control.Lens ( (^.) )
 
 import Data.Aeson
+import Data.Functor.Identity
 import Data.Time
 import Data.Time.Calendar.Julian
 
 import Website.Config
-import Website.Models
+import Website.Database
 
 
 repos :: [Repository]
 repos =
-  [ Repository "amalgam-lisp" "PureFunctor" "https://github.com/PureFunctor/amalgam-lisp" "LISP Implementation" 0 0
-  , Repository "purefunctor.me" "PureFunctor" "https://github.com/PureFunctor/purefunctor.me" "Personal Website" 0 0
+  [ Repository @Identity
+      "amalgam-lisp"
+      "PureFunctor"
+      "https://github.com/PureFunctor/amalgam-lisp"
+      "Python"
+      "LISP Implementation"
+      0
+      0
+  , Repository @Identity
+      "purefunctor.me"
+      "PureFunctor"
+      "https://github.com/PureFunctor/purefunctor-me"
+      "Haskell"
+      "Personal Website"
+      0
+      0
   ]
 
 
