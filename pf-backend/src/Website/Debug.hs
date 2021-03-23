@@ -25,6 +25,8 @@ mkDebug posts_ repos_ = do
   let jwtSettings = defaultJWTSettings jwk
   let app = websiteApp jwtSettings env
 
+  runMigration env
+
   runBeamDb env $ do
     forM_ posts_ $ \post_ -> do
       inDb <- runBeamDb env $ runSelectReturningOne $
