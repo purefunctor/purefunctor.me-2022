@@ -128,9 +128,10 @@ repositoryServer =
               let
                 repo' = case mStats of
                   Nothing -> repo
-                  Just (ghDescr, ghStars, ghCommits) ->
+                  Just (ghDescr, ghLang, ghStars, ghCommits) ->
                     let
                       descr' = fromMaybe ghDescr   $ payload^.description
+                      lang'  = fromMaybe ghLang    $ payload^.language
                       stars' = fromMaybe ghStars   $ payload^.stars
                       comms' = fromMaybe ghCommits $ payload^.commits
 
@@ -138,6 +139,7 @@ repositoryServer =
                       toInt32 = toEnum . fromEnum
                     in
                       repo & rDesc .~ descr'
+                           & rLang .~ lang'
                            & rStar .~ toInt32 stars'
                            & rComm .~ toInt32 comms'
 

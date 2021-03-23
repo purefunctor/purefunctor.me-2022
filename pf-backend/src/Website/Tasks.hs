@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deferred-type-errors #-}
 module Website.Tasks where
 
 import Control.Concurrent ( ThreadId )
@@ -10,6 +11,8 @@ import Control.Monad.Trans.Maybe ( MaybeT(MaybeT, runMaybeT) )
 
 import Data.Aeson
 import Data.Aeson.Types
+import Data.List ( maximumBy )
+import Data.Map ( Map, toList )
 import Data.Text
 import Data.Text.Encoding
 
@@ -26,11 +29,15 @@ import Website.Database
 import Website.Types
 
 
-getRepositoryData :: Environment -> Repository -> IO (Maybe (Text, Int, Int))
+getRepositoryData
+  :: Environment
+  -> Repository
+  -> IO (Maybe (Text, Text, Int, Int))
 getRepositoryData env repository = runMaybeT $
   do (stars, descr) <- getGeneralData
      commits <- getCommits
-     pure (descr, stars, commits)
+     language <- getLanguage
+     pure (descr, language, stars, commits)
   where
     repoUrl :: Url 'Https
     repoUrl =
@@ -70,6 +77,19 @@ getRepositoryData env repository = runMaybeT $
           sum <$>
             (parseMaybe (withObject "participation" (.: "all")) val :: Maybe [Int])
 
+    getLanguage :: MaybeT IO Text
+    getLanguage = do
+      value <- liftIO $ getResource $ repoUrl /: "languages"
+
+      languages <-
+        case value of
+          Left err ->
+            liftIO (runStderrLoggingT $ logErrorN err) >> mzero
+          Right val -> MaybeT . pure $
+            toList <$> ( parseMaybe parseJSON val :: Maybe (Map Text Int) )
+
+      pure $ fst $ maximumBy ( curry $ compare <$> fst <*> fst ) languages
+
 
 updateRepositoryData :: Environment -> IO ()
 updateRepositoryData env = do
@@ -81,13 +101,12 @@ updateRepositoryData env = do
     forConcurrently repositories $ \repository ->
       (,) repository <$> getRepositoryData env repository
 
-
   -- Mindfulness of impure operations is a must
   forM_ repoStats $ \(repository, mStats) ->
     case mStats of
       Nothing ->
         runStderrLoggingT $ logErrorN "not updating repository"
-      Just (descr, stars, comms) ->
+      Just (descr, language, stars, comms) ->
         let
           toInt32 :: Int -> Int32
           toInt32 = toEnum . fromEnum
@@ -95,6 +114,7 @@ updateRepositoryData env = do
           runBeamDb env $ runUpdate $
             save (websiteDb^.repos)
               ( repository & rDesc .~ descr
+                           & rLang .~ language
                            & rStar .~ toInt32 stars
                            & rComm .~ toInt32 comms
               )
