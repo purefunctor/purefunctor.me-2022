@@ -113,13 +113,12 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
             lookup_ (websiteDb^.posts) keySlug
 
           case inDb of
-            Nothing -> throwError err400
-            Just _ ->
+            Just _ -> throwError err400
+            Nothing ->
               runBeamDb env $ runInsert $
                 insert (websiteDb^.posts) $ insertValues [post]
 
           pure $ MutableEndpointResult 200 "Post created."
-
 
     createPost _ _ = throwError err401
 
