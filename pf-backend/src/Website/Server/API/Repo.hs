@@ -50,9 +50,9 @@ data MutableRepositoryData
   = MutableRepositoryData
       { _name        :: Maybe Text
       , _owner       :: Maybe Text
-      , _description :: Maybe Text
-      , _language    :: Maybe Text
       , _url         :: Maybe Text
+      , _language    :: Maybe Text
+      , _description :: Maybe Text
       , _stars       :: Maybe Int
       , _commits     :: Maybe Int
       }
