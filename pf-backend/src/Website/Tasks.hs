@@ -13,14 +13,16 @@ import Data.Aeson.Types
 import Data.Text
 import Data.Text.Encoding
 
-import Database.Persist.Sqlite
+import Database.Beam
+
+import GHC.Int ( Int32 )
 
 import Network.HTTP.Req as Req
 
 import System.Cron
 
 import Website.Config
-import Website.Models
+import Website.Database
 import Website.Types
 
 
@@ -34,8 +36,8 @@ getRepositoryData env repository = runMaybeT $
     repoUrl =
       https "api.github.com"
       /: "repos"
-      /: repositoryOwner repository
-      /: repositoryName repository
+      /: view rOwner repository
+      /: view rName repository
 
     getResource :: Url 'Https -> IO (Either Text Value)
     getResource url = do
@@ -71,25 +73,31 @@ getRepositoryData env repository = runMaybeT $
 
 updateRepositoryData :: Environment -> IO ()
 updateRepositoryData env = do
-  repositories <-
-    liftIO $ flip runSqlPersistMPool (env^.pool) $ selectList [ ] [ ]
+  repositories <- runBeamDb env $ runSelectReturningList $
+    select $ all_ (websiteDb^.repos)
 
   -- Pure operations are guaranteed to be safe
   repoStats <-
-    forConcurrently (entityVal <$> repositories) $ \repository ->
+    forConcurrently repositories $ \repository ->
       (,) repository <$> getRepositoryData env repository
+
 
   -- Mindfulness of impure operations is a must
   forM_ repoStats $ \(repository, mStats) ->
     case mStats of
-      Just (descr, stars, commits) ->
-        liftIO $ flip runSqlPersistMPool (env^.pool) $
-          update (RepositoryKey $ repositoryName repository)
-            [ RepositoryStars       =. stars
-            , RepositoryCommits     =. commits
-            , RepositoryDescription =. descr
-            ]
-      Nothing -> runStderrLoggingT $ logErrorN "not updating repository"
+      Nothing ->
+        runStderrLoggingT $ logErrorN "not updating repository"
+      Just (descr, stars, comms) ->
+        let
+          toInt32 :: Int -> Int32
+          toInt32 = toEnum . fromEnum
+        in
+          runBeamDb env $ runUpdate $
+            save (websiteDb^.repos)
+              ( repository & rDesc .~ descr
+                           & rStar .~ toInt32 stars
+                           & rComm .~ toInt32 comms
+              )
 
 
 runTasks :: Environment -> IO [ThreadId]
