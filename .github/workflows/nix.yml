@@ -36,13 +36,12 @@ jobs:
     - name: Prepare Cache
       run: |
         tee ~/.config/nix/nix.conf <<EOF
-          substituters = https://cache.nixos.org https://hydra.iohk.io
-          trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ=
+          substituters = https://cache.nixos.org https://hydra.iohk.io https://applicative-labs.cachix.org
+          trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= applicative-labs.cachix.org-1:3v4Z+xR0yJpzaUldL8kkG6ubbSxbXoKZ20NdeGRCnWo=
         EOF
 
     - name: Build Backend
       run: |
         nix-build -A purefunctor-me.components.exes.purefunctor-me
-        ls result
-        du -sh result
-        ldd result
+        du -sh result/bin/purefunctor-me
+        ldd result/bin/purefunctor-me
