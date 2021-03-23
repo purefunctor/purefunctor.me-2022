@@ -41,4 +41,8 @@ jobs:
         EOF
 
     - name: Build Backend
-      run: nix-build -A purefunctor-me.components.library
+      run: |
+        nix-build -A purefunctor-me.components.exes.purefunctor-me
+        ls result
+        du -sh result
+        ldd result
