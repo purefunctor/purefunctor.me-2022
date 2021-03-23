@@ -3,9 +3,10 @@ module Website.Server.API.Repo where
 
 import Control.Applicative
 import Control.Lens
+import Control.Monad ( unless )
 import Control.Monad.Reader ( ask )
 
-import           Data.Maybe ( fromMaybe )
+import           Data.Maybe ( fromMaybe, isJust )
 import           Data.String ( IsString(fromString) )
 import           Data.Text ( Text, unpack )
 import qualified Data.Text as Text
@@ -159,6 +160,19 @@ repositoryServer =
 
       mRepo <- runBeamDb env $ runSelectReturningOne $
         lookup_ (websiteDb^.repos) keyName
+
+      unless
+        ( any id
+          [ isJust $ payload^.name
+          , isJust $ payload^.owner
+          , isJust $ payload^.url
+          , isJust $ payload^.language
+          , isJust $ payload^.description
+          , isJust $ payload^.stars
+          , isJust $ payload^.commits
+          ]
+        )
+        $ throwError err400
 
       case mRepo of
         Nothing -> throwError err400

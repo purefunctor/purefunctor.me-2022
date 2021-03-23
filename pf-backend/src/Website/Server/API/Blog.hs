@@ -3,8 +3,10 @@ module Website.Server.API.Blog where
 
 import Control.Applicative
 import Control.Lens
+import Control.Monad ( unless )
 import Control.Monad.Reader ( ask )
 
+import           Data.Maybe ( isJust )
 import           Data.String ( IsString(fromString) )
 import           Data.Text ( Text, unpack )
 import qualified Data.Text as Text
@@ -137,6 +139,15 @@ blogPostServer = getPosts :<|> getPost :<|> createPost :<|> updatePost :<|> dele
 
       mPost <- runBeamDb env $ runSelectReturningOne $
         lookup_ (websiteDb^.posts) keySlug
+
+      unless
+        ( any isJust
+          [ payload^.title
+          , payload^.contents
+          , payload^.slug
+          ]
+        )
+        $ throwError err400
 
       case mPost of
         Nothing -> throwError err400
