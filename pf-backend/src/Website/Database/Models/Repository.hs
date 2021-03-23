@@ -16,6 +16,7 @@ data RepositoryT f
   = Repository
       { _rName  :: Columnar f Text
       , _rOwner :: Columnar f Text
+      , _rUrl   :: Columnar f Text
       , _rLang  :: Columnar f Text
       , _rDesc  :: Columnar f Text
       , _rComm  :: Columnar f Int32
@@ -38,14 +39,16 @@ instance Table RepositoryT where
   primaryKey = RepositoryName . _rName
 
 Repository (LensFor rName) (LensFor rOwner)
-           (LensFor rLang) (LensFor rDesc )
-           (LensFor rComm) (LensFor rStar ) = tableLenses
+           (LensFor rUrl ) (LensFor rLang )
+           (LensFor rDesc) (LensFor rComm )
+           (LensFor rStar) = tableLenses
 
 instance FromJSON Repository where
   parseJSON = withObject "repository" $ \v ->
     Repository
       <$> v .: "name"
       <*> v .: "owner"
+      <*> v .: "url"
       <*> v .: "language"
       <*> v .: "description"
       <*> v .: "commits"
@@ -55,6 +58,7 @@ instance ToJSON Repository where
   toJSON repo = object
     [ "name"        .= ( repo^.rName  )
     , "owner"       .= ( repo^.rOwner )
+    , "url"         .= ( repo^.rUrl   )
     , "language"    .= ( repo^.rLang  )
     , "description" .= ( repo^.rDesc  )
     , "commits"     .= ( repo^.rComm  )

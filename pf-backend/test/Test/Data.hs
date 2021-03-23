@@ -18,6 +18,7 @@ repos =
   [ Repository @Identity
       "amalgam-lisp"
       "PureFunctor"
+      "https://github.com/PureFunctor/amalgam-lisp"
       "Python"
       "LISP Implementation"
       0
@@ -25,6 +26,7 @@ repos =
   , Repository @Identity
       "purefunctor.me"
       "PureFunctor"
+      "https://github.com/PureFunctor/purefunctor-me"
       "Haskell"
       "Personal Website"
       0

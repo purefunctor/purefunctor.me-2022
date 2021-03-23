@@ -105,6 +105,7 @@ repositoryServer =
                     <$> payload^.owner
                     <*> payload^.name
                 )
+            <*> Just ""
             <*> Just "No description provided."
             <*> Just 0
             <*> Just 0
