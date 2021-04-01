@@ -3,7 +3,7 @@
 }:
 
 let
-  compiler = "ghc8103";
+  compiler = "ghc8104";
 
   sources = import ./sources.nix { };
 
