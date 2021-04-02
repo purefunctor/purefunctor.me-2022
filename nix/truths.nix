@@ -75,7 +75,7 @@ let
   hsPkgs = nixpkgs.haskell.packages.${compiler};
 
   pursPkgs = {
-    purs = easy-purescript-nix.purs-0_13_8;
+    purs = easy-purescript-nix.purs;
     spago = easy-purescript-nix.spago;
     zephyr = easy-purescript-nix.zephyr;
   };

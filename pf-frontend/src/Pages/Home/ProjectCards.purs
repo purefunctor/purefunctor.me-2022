@@ -4,12 +4,13 @@ import Prelude
 
 import Data.Array (length)
 import Data.Maybe (Maybe(..))
-import Data.Symbol (class IsSymbol, SProxy)
+import Data.Symbol (class IsSymbol)
 import Effect.Aff.Class (class MonadAff)
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
 import Prim.Row (class Cons)
+import Type.Proxy (Proxy)
 import Website.Capability.Resources (class ManageRepository, getRepositories)
 import Website.Component.Utils (css, css')
 import Website.Data.Resources (Repository)
@@ -29,8 +30,8 @@ make
   => ManageRepository m
   => Cons l (H.Slot query Void Unit) _1 slots
   => IsSymbol l
-  => SProxy l
-  -> HH.HTML (H.ComponentSlot HH.HTML slots m action) action
+  => Proxy l
+  -> HH.HTML (H.ComponentSlot slots m action) action
 make label = HH.slot label unit component unit absurd
 
 
@@ -38,7 +39,7 @@ component
   :: forall query input output m.
      MonadAff m
   => ManageRepository m
-  => H.Component HH.HTML query input output m
+  => H.Component query input output m
 component =
   H.mkComponent
   { initialState

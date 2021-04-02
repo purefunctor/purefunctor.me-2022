@@ -8,7 +8,7 @@ import Data.List (find)
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import Effect.Unsafe (unsafePerformEffect)
-import Text.Parsing.StringParser (ParseError(..))
+import Text.Parsing.StringParser (ParseError)
 
 
 foreign import _getDocumentCookie :: Effect String
@@ -29,4 +29,4 @@ getXsrfToken = do
   cookies <- parseMany getDocumentCookie
   case find (\cookie -> getName cookie == "XSRF-TOKEN") cookies of
     Just cookie -> pure <<< XsrfToken <<< getValue $ cookie
-    Nothing -> Left $ ParseError "XSRF-TOKEN not found"
+    Nothing -> Left $ { error: "XSRF-TOKEN not found", pos: -1 }

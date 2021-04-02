@@ -3,10 +3,10 @@ module Website.Component.Router where
 import Prelude
 
 import Data.Maybe (Maybe(..))
-import Data.Symbol (SProxy(..))
 import Effect.Aff.Class (class MonadAff)
 import Halogen as H
 import Halogen.HTML as HH
+import Type.Proxy (Proxy(..))
 import Website.Capability.Navigation (class Navigate)
 import Website.Capability.Resources (class ManageBlogPost, class ManageRepository, class ManageLogin)
 import Website.Data.Routes (Route(..))
@@ -32,7 +32,7 @@ component
   => ManageRepository m
   => ManageLogin m
   => Navigate m
-  => H.Component HH.HTML Query Input output m
+  => H.Component Query Input output m
 component =
   H.mkComponent
   { initialState
@@ -58,9 +58,9 @@ render
   -> H.ComponentHTML action ChildSlots m
 render { currentRoute } =
   case currentRoute of
-    AdminR -> HH.slot (SProxy :: _ "admin") unit Admin.component unit absurd
-    HomeR -> HH.slot (SProxy :: _ "home") unit Home.component unit absurd
-    NotFoundR -> HH.slot (SProxy :: _ "notFound") unit NotFound.component unit absurd
+    AdminR -> HH.slot (Proxy :: _ "admin") unit Admin.component unit absurd
+    HomeR -> HH.slot (Proxy :: _ "home") unit Home.component unit absurd
+    NotFoundR -> HH.slot (Proxy :: _ "notFound") unit NotFound.component unit absurd
 
 
 handleQuery

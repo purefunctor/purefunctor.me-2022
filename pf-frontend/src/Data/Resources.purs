@@ -40,7 +40,7 @@ blogPostCodec :: JsonCodec BlogPost
 blogPostCodec =
   CA.object "BlogPost" $ CAR.record
     { title:  CA.string
-    , short: CA.prismaticCodec Slug.parse Slug.toString CA.string
+    , short: CA.prismaticCodec "Post Slug" Slug.parse Slug.toString CA.string
     , contents: CA.string
     , published: PDT.codec
     , updated: PDT.codec

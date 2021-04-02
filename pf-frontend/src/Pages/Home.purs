@@ -2,11 +2,11 @@ module Website.Pages.Home where
 
 import Prelude
 
-import Data.Symbol (SProxy(..))
 import Effect.Aff.Class (class MonadAff)
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
+import Type.Proxy (Proxy(..))
 import Website.Capability.Resources (class ManageRepository)
 import Website.Component.Utils (css, css')
 import Website.Pages.Home.AboutCard as AboutCard
@@ -23,7 +23,7 @@ component
   :: forall query input output m.
      MonadAff m
   => ManageRepository m
-  => H.Component HH.HTML query input output m
+  => H.Component query input output m
 component =
   H.mkComponent
   { initialState
@@ -72,7 +72,7 @@ render _ =
       [ AboutCard.element
       ]
     , subsection "min-h-screen" "Projects"
-      [ ProjectCards.make ( SProxy :: SProxy "projects" )
+      [ ProjectCards.make ( Proxy :: Proxy "projects" )
       ]
     , subsection "min-h-screen" "Contact"
       [ ContactCards.element
