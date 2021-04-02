@@ -10,7 +10,7 @@ import Data.RFC3339String (RFC3339String(..))
 
 
 codec :: JsonCodec PreciseDateTime
-codec = CA.prismaticCodec from to CA.string
+codec = CA.prismaticCodec "PreciseDateTime" from to CA.string
   where
     from = fromRFC3339String <<< RFC3339String
     to = unwrap <<< toRFC3339String

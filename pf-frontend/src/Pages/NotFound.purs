@@ -10,7 +10,7 @@ import Website.Component.Utils (css, css')
 
 component ∷
   ∀ query input output m
-  . H.Component HH.HTML query input output m
+  . H.Component query input output m
 component = H.mkComponent
   { initialState: \_ -> unit
   , render

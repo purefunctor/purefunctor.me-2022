@@ -5,7 +5,6 @@ import Prelude
 import Data.Either (hush)
 import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype)
-import Data.Symbol (SProxy(..))
 import Effect.Aff (Milliseconds(..))
 import Effect.Aff as Aff
 import Effect.Aff.Class (class MonadAff)
@@ -14,6 +13,7 @@ import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
+import Type.Proxy (Proxy(..))
 import Web.Event.Event as Event
 import Website.Capability.Resources (class ManageLogin, login)
 import Website.Component.Utils (css, css')
@@ -21,7 +21,7 @@ import Website.Data.Resources (LoginCreds)
 import Website.Utils.Cookies (getXsrfToken)
 
 
-newtype LoginForm r f = LoginForm (r
+newtype LoginForm ( r :: Row Type -> Type )  f = LoginForm (r
   ( username :: f Void String String
   , password :: f Void String String
   ))
@@ -72,7 +72,7 @@ formComponent = F.component formInput $ F.defaultSpec
         , "h-64 md:w-1/3 sm:w-2/3 w-5/6 m-auto space-y-5"
         , "shadow-xl rounded-xl ring-2 ring-black"
         ]
-      , HE.onSubmit \ev -> Just $ F.injAction $ Submit ev
+      , HE.onSubmit \ev -> F.injAction $ Submit ev
       ]
       [ HH.div
         [ css'
@@ -92,13 +92,13 @@ formComponent = F.component formInput $ F.defaultSpec
       , HH.input
         [ css $ "flex-grow rounded-md p-2 bg-faint-100 shadow-inner focus:ring-2 mx-5"
         , HP.value $ F.getInput _username form
-        , HE.onValueInput $ Just <<< F.set _username
+        , HE.onValueInput $ F.set _username
         , HP.placeholder "Username"
         ]
       , HH.input
         [ css $ "flex-grow rounded-md p-2 bg-faint-100 shadow-inner focus:ring-2 mx-5"
         , HP.value $ F.getInput _password form
-        , HE.onValueInput $ Just <<< F.set _password
+        , HE.onValueInput $ F.set _password
         , HP.type_ $ HP.InputPassword
         , HP.placeholder "Password"
         ]
@@ -113,11 +113,11 @@ formComponent = F.component formInput $ F.defaultSpec
         ]
       ]
       where
-        _username :: SProxy "username"
-        _username = SProxy
+        _username :: Proxy "username"
+        _username = Proxy
 
-        _password :: SProxy "password"
-        _password = SProxy
+        _password :: Proxy "password"
+        _password = Proxy
 
     formHandleEvent = F.raiseResult
 
@@ -149,7 +149,7 @@ component
   :: forall query input output m.
      MonadAff m
   => ManageLogin m
-  => H.Component HH.HTML query input output m
+  => H.Component query input output m
 component =
   H.mkComponent
   { initialState
@@ -175,7 +175,7 @@ render { isLoggedIn } =
   HH.div [ css "flex flex-1 h-screen bg-faint" ]
   [ if isLoggedIn
       then HH.div_ [ HH.text "Logged In" ]
-      else HH.slot F._formless unit formComponent unit (Just <<< HandleLoginForm)
+      else HH.slot F._formless unit formComponent unit HandleLoginForm
   ]
 
 
