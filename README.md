@@ -5,7 +5,7 @@ My personal portfolio website written in PureScript and Haskell.
 The project requires the following compilers and build tools to be installed for development:
 
 ### Frontend
-* purescript (v0.13.8)
+* purescript (v0.14.0)
 * spago
 * yarn
 * zephyr
