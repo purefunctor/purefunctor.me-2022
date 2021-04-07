@@ -1,8 +1,8 @@
 {
   "name": "purefunctor.me",
-  "version": "1.0.0",
-  "description": "My personal portfolio website written in PureScript and Haskell.",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "My personal portfolio website written in PureScript.",
+  "private": true,
   "scripts": {
     "css": "tailwindcss build ./css/tailwind.css -o ./css/style.css",
     "css:prod": "NODE_ENV=production yarn css",
@@ -24,9 +24,8 @@
   },
   "keywords": [
     "PureScript",
-    "Haskell",
     "Halogen",
-    "Yesod"
+    "Web"
   ],
   "author": "PureFunctor",
   "license": "BSD-3-Clause",

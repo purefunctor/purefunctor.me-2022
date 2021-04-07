@@ -1,29 +1,3 @@
-# Haskell
-dist
-dist-*
-cabal-dev
-*.o
-*.hi
-*.hie
-*.chi
-*.chs.h
-*.dyn_o
-*.dyn_hi
-.hpc
-.hsenv
-.cabal-sandbox/
-cabal.sandbox.config
-*.prof
-*.aux
-*.hp
-*.eventlog
-.stack-work/
-cabal.project.local
-cabal.project.local~
-.HTF/
-.ghc.environment.*
-
-# PureScript
 .psci_modules
 .spago
 bower_components
@@ -34,14 +8,5 @@ output
 static
 .psc-ide-port
 dce-output
-
-# Misc
 .cache
-.envrc
-result
-
-# Runtime
-database.sqlite3*
-config.toml
-ssl/
 style.css
