@@ -4,19 +4,15 @@
   "description": "My personal portfolio website written in PureScript.",
   "private": true,
   "scripts": {
-    "css": "tailwindcss build ./css/tailwind.css -o ./css/style.css",
-    "css:prod": "NODE_ENV=production yarn css",
-    "build": "spago build",
-    "build:zephyr": "spago build -u '--codegen corefn' && zephyr -f Main.main",
-    "parceldev": "parcel dev ./dev/index.html",
-    "parcelprod": "parcel build ./prod/index.html --no-source-maps --public-url '/static' --out-dir static",
-    "parcelprod:api": "parcel build ./dev/index.html --no-source-maps --public-url '/static' --out-dir static",
-    "dev": "spago build && yarn css && yarn parceldev",
-    "dev:api": "spago build && yarn css && yarn parcelprod:api && cabal run purefunctor-me",
-    "prod": "spago build && yarn css:prod && yarn parcelprod",
-    "prod:zephyr": "yarn build:zephyr && yarn css:prod && yarn parcelprod",
-    "purge": "rm -rf .spago dce-output output node_modules .cache .psci_modules",
-    "test": "spago test"
+    "css": "postcss build ./css/tailwind.css -o ./css/style.css",
+    "css:build": "NODE_ENV=production TAILWIND_MODE=build yarn css",
+    "ps:build": "spago build",
+    "ps:bundle": "spago bundle-app -t ./prod/index.js",
+    "ps:test": "spago test",
+    "parcel:build": "parcel build ./prod/index.html --no-source-maps --dist-dir public",
+    "dev": "parcel serve ./dev/index.html",
+    "prod": "yarn css:build && yarn ps:bundle && yarn parcel:build",
+    "purge": "rm -rf .spago output node_modules .cache .psci_modules"
   },
   "repository": {
     "type": "git",
