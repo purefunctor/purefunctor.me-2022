@@ -34,7 +34,9 @@
   },
   "homepage": "https://github.com/PureFunctor/purefunctor.me",
   "devDependencies": {
-    "parcel": "^1.12.4"
+    "parcel": "^1.12.4",
+    "purescript": "^0.14.0",
+    "spago": "^0.19.2"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.1",
