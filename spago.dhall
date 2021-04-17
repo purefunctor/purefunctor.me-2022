@@ -14,6 +14,8 @@ You can edit this file as you like.
   , "console"
   , "effect"
   , "either"
+  , "foldable-traversable"
+  , "foreign-object"
   , "halogen"
   , "halogen-formless"
   , "http-methods"

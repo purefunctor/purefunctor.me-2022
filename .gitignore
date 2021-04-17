@@ -19,3 +19,4 @@ assets/css/index.css
 assets/prod/index.js
 
 .vercel
+.env
