@@ -15,5 +15,5 @@ static
 .cache
 .parcel-cache
 
-css/style.css
-prod/index.js
+assets/css/index.css
+assets/prod/index.js
