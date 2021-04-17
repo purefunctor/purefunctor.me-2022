@@ -35,8 +35,19 @@ async function getRepositoryData(owner, repository) {
 };
 
 module.exports = (_, res) => {
-  getRepositoryData("PureFunctor", "purefunctor.me").then(
-    payload => res.json(payload)
+  const repositories = [
+    "purefunctor.me",
+    "amalgam-lisp",
+    "purescript-typelevel-lists",
+    "dotfiles",
+    "Fungoid",
+    "psvm-ps",
+  ].map(
+    repository => getRepositoryData("PureFunctor", repository)
+  );
+
+  Promise.all(repositories).then(
+    repositories => res.json(repositories)
   ).catch(
     () => res.json({"error": "an error was encountered!"})
   );
