@@ -3,6 +3,7 @@ module Website.Pages.Home.ProjectCards where
 import Prelude
 
 import Data.Array (length)
+import Data.Foldable (sum)
 import Data.Maybe (Maybe(..))
 import Data.Symbol (class IsSymbol)
 import Effect.Aff.Class (class MonadAff)
@@ -99,12 +100,12 @@ render { shown, repositories } =
             , HH.i [ css "far fa-star" ] [ ]
             ]
           , HH.div_
-            [ HH.text $ show repository.commits <> " "
+            [ HH.text $ show ( sum repository.commits ) <> " "
             , HH.i [ css "fas fa-history" ] [ ]
             ]
           ]
         ]
-       ]
+      ]
 
 
 handleAction

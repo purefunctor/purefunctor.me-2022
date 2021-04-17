@@ -27,10 +27,13 @@ async function getRepositoryData(owner, repository) {
   const participation = await gh(participationUrl);
 
   return {
+    name: repository,
+    owner: owner,
     description: basic["description"],
+    url: `https://github.com/${owner}/${repository}`,
     stars: basic["stargazers_count"],
     commits: participation["all"],
-    languages: languages,
+    languages: languages
   };
 };
 
