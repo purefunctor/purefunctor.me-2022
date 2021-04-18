@@ -60,6 +60,9 @@ render _ =
       [ HH.img
         [ css "h-56 w-56 rounded-full shadow-xl ring-2 ring-black"
         , HP.src "https://avatars.githubusercontent.com/u/66708316?v=4"
+        , HP.width 256
+        , HP.height 256
+        , HP.alt "Current GitHub profile image"
         ]
       , HH.div [ css "text-4xl font-extralight text-center" ]
         [ HH.text "PureFunctor"
