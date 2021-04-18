@@ -9,6 +9,7 @@ async function getScreenshot(url) {
   });
   const page = await browser.newPage();
   await page.goto(url);
+  await page.setViewport({ width: 1200, height: 630 });
   return await page.screenshot();
 };
 
