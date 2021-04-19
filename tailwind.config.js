@@ -26,7 +26,8 @@ module.exports = {
   },
   variants: {
     extend: {
-      textColor: ['visited']
+      textColor: ['visited'],
+      translate: ['focus'],
     },
   },
   plugins: [

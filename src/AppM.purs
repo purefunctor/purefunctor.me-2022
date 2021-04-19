@@ -14,9 +14,12 @@ import Effect.Class (class MonadEffect, liftEffect)
 import Routing.Duplex as RD
 import Simple.JSON (write)
 import Type.Equality (class TypeEquals, from)
+import Web.HTML (window)
+import Web.HTML.Window as Window
 import Website.API.Endpoint (Endpoint(..))
 import Website.API.Request (RequestMethod(..), mkRequest, mkRequest_)
 import Website.Capability.Navigation (class Navigate)
+import Website.Capability.OpenUrl (class OpenUrl)
 import Website.Capability.Resources (class ManageBlogPost, class ManageLogin, class ManageRepository, decode)
 import Website.Data.Resources (blogPostCodec, repositoryCodec)
 import Website.Data.Routes (routeCodec)
@@ -47,6 +50,11 @@ instance navigateAppM ∷ Navigate AppM where
   navigate route = do
     pushInterface <- asks _.pushInterface
     liftEffect $ pushInterface.pushState (write { }) (RD.print routeCodec route)
+
+
+instance openUrlAppM :: OpenUrl AppM where
+  openUrl url = liftEffect do
+    void $ window >>= Window.open url "" ""
 
 
 instance manageBlogPostAppM ∷ ManageBlogPost AppM where

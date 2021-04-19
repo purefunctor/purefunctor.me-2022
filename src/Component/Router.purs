@@ -8,6 +8,7 @@ import Halogen as H
 import Halogen.HTML as HH
 import Type.Proxy (Proxy(..))
 import Website.Capability.Navigation (class Navigate)
+import Website.Capability.OpenUrl (class OpenUrl)
 import Website.Capability.Resources (class ManageBlogPost, class ManageRepository, class ManageLogin)
 import Website.Data.Routes (Route(..))
 import Website.Pages.Admin as Admin
@@ -32,6 +33,7 @@ component
   => ManageRepository m
   => ManageLogin m
   => Navigate m
+  => OpenUrl m
   => H.Component Query Input output m
 component =
   H.mkComponent
@@ -54,6 +56,7 @@ render
   => ManageRepository m
   => ManageLogin m
   => Navigate m
+  => OpenUrl m
   => State
   -> H.ComponentHTML action ChildSlots m
 render { currentRoute } =
@@ -70,6 +73,7 @@ handleQuery
   => ManageRepository m
   => ManageLogin m
   => Navigate m
+  => OpenUrl m
   => Query a
   -> H.HalogenM State action ChildSlots output m (Maybe a)
 handleQuery = case _ of
