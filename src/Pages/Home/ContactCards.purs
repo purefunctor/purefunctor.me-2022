@@ -81,6 +81,7 @@ render _ =
       , HE.onClick \_ -> OpenLink link
       , HP.tabIndex 0
       , HPA.role "link"
+      , HPA.label $ "Navigate to URL: " <> link
       ]
       [ HH.div [ css "ring-2 ring-black h-20 bg-pixel-pattern" ] [ ]
       , HH.div [ css "flex flex-grow items-center justify-center" ] child

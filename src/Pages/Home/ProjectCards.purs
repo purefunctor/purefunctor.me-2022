@@ -87,6 +87,7 @@ render { shown, repositories } =
       , HE.onClick \_ -> OpenLink repository.url
       , HP.tabIndex 0
       , HPA.role "link"
+      , HPA.label $ "Navigate to repository: " <> repository.name
       ]
       [ HH.div
         [ css "flex p-4 text-2xl" ]
