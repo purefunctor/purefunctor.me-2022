@@ -9,9 +9,13 @@ import Data.Symbol (class IsSymbol)
 import Effect.Aff.Class (class MonadAff)
 import Halogen as H
 import Halogen.HTML as HH
+import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
+import Halogen.HTML.Properties.ARIA as HPA
 import Prim.Row (class Cons)
 import Type.Proxy (Proxy)
+import Web.HTML (window)
+import Web.HTML.Window as Window
 import Website.Capability.Resources (class ManageRepository, getRepositories)
 import Website.Component.Utils (css, css')
 import Website.Data.Resources (Repository)
@@ -21,7 +25,11 @@ type State =
   { shown :: Boolean
   , repositories :: Array Repository
   }
-data Action = Initialize
+
+data Action
+  = Initialize
+  | OpenLink String
+
 type Slot = forall query. H.Slot query Void Unit
 
 
@@ -56,7 +64,7 @@ initialState :: forall input. input -> State
 initialState _ = { shown: false, repositories: [ ] }
 
 
-render :: forall action slots m. State -> H.ComponentHTML action slots m
+render :: forall slots m. State -> H.ComponentHTML Action slots m
 render { shown, repositories } =
   HH.div [ css "p-5 flex-grow flex flex-wrap place-content-center" ]
   if shown && length repositories /= 0
@@ -66,9 +74,9 @@ render { shown, repositories } =
        [ HH.div [ css "text-4xl animate-pulse" ] [ HH.text "..." ]
        ]
   where
-    makeCard :: forall w i. Repository -> HH.HTML w i
+    makeCard :: forall w. Repository -> HH.HTML w Action
     makeCard repository =
-      HH.a
+      HH.div
       [ css'
         [ "md:w-max w-full h-40 m-2"
         , "flex flex-col flex-none"
@@ -76,7 +84,9 @@ render { shown, repositories } =
         , "transform transition ease-out hover:-translate-y-2 cursor-pointer hover-box"
         , "ring-2 ring-black"
         ]
-      , HP.href repository.url
+      , HE.onClick \_ -> OpenLink repository.url
+      , HP.tabIndex 0
+      , HPA.role "link"
       ]
       [ HH.div
         [ css "flex p-4 text-2xl" ]
@@ -120,3 +130,5 @@ handleAction = case _ of
       case _ of
         Just repositories -> H.put { shown: true, repositories }
         Nothing -> pure unit
+  OpenLink url -> H.liftEffect do
+    void $ window >>= Window.open url "" ""

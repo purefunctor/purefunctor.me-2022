@@ -16,7 +16,9 @@ import Website.Pages.Home.ProjectCards as ProjectCards
 
 type State = Unit
 type ChildSlots =
-  ( projects :: ProjectCards.Slot )
+  ( projects :: ProjectCards.Slot
+  , contacts :: ContactCards.Slot
+  )
 
 
 component
@@ -78,7 +80,7 @@ render _ =
       [ ProjectCards.make ( Proxy :: Proxy "projects" )
       ]
     , subsection "min-h-screen" "Contact"
-      [ ContactCards.element
+      [ ContactCards.make ( Proxy :: Proxy "contacts" )
       ]
     ]
   ]
