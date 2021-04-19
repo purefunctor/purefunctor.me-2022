@@ -9,7 +9,7 @@ import Website.Component.Utils (css)
 
 element :: forall w i. HH.HTML w i
 element =
-  HH.div [ css "p-5" ]
+  HH.article [ css "p-5" ]
   [ HH.p [ css "lg:text-lg text-md font-light text-left lg:w-5/6 lg:mx-auto" ]
     [ HH.text "Greetings, I'm Justin [or Pure]"
     , HH.br_

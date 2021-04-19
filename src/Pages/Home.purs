@@ -50,7 +50,7 @@ render _ =
     ]
   ]
   [ HH.div [ css "h-auto w-full lg:w-11/12 mx-auto" ]
-    [ HH.div
+    [ HH.section
       [ css'
         [ "h-screen flex flex-col"
         , "justify-center items-center space-y-5"
@@ -84,7 +84,7 @@ render _ =
   ]
   where
     subsection extra title child =
-      HH.div
+      HH.section
       [ css'
         [ extra
         , "flex flex-col"
@@ -92,7 +92,7 @@ render _ =
         , "divide-y divide-faint-200"
         ]
       ] $
-      [ HH.div [ css "font-extralight text-4xl p-5 mx-auto" ]
-        [ HH.text title
+      [ HH.header [ css "font-extralight text-4xl p-5 mx-auto" ]
+        [ HH.h1_ [ HH.text title ]
         ]
       ] <> child
