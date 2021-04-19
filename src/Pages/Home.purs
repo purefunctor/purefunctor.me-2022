@@ -67,7 +67,7 @@ render _ =
         , HP.src "https://avatars.githubusercontent.com/u/66708316?v=4"
         , HP.width 256
         , HP.height 256
-        , HP.alt "Current GitHub profile image"
+        , HP.alt "GitHub Profile Picture"
         ]
       , HH.div [ css "text-4xl font-extralight text-center" ]
         [ HH.text "PureFunctor"
