@@ -77,7 +77,8 @@ render _ =
       [ css'
         [ extra
         , "flex flex-col h-64 w-full overflow-hidden"
-        , "ring-2 ring-black shadow-xl rounded-xl"
+        , "ring-2 ring-black shadow-xl rounded-xl cursor-pointer"
+        , "transform transition hover:-translate-y-2 focus:-translate-y-2"
         ]
       , HE.onClick \_ -> OpenLink link
       , HP.tabIndex 0

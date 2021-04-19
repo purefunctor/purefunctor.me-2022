@@ -83,7 +83,7 @@ render { shown, repositories } =
         , "flex flex-col flex-none"
         , "bg-white rounded-xl md:shadow-lg shadow-md divide-solid divide-y-2"
         , "transform transition ease-out hover:-translate-y-2 cursor-pointer hover-box"
-        , "ring-2 ring-black"
+        , "focus:-translate-y-2 ring-2 ring-black"
         ]
       , HE.onClick \_ -> OpenLink repository.url
       , HP.tabIndex 0
