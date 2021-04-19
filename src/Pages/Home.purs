@@ -7,6 +7,7 @@ import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
 import Type.Proxy (Proxy(..))
+import Website.Capability.OpenUrl (class OpenUrl)
 import Website.Capability.Resources (class ManageRepository)
 import Website.Component.Utils (css, css')
 import Website.Pages.Home.AboutCard as AboutCard
@@ -25,6 +26,7 @@ component
   :: forall query input output m.
      MonadAff m
   => ManageRepository m
+  => OpenUrl m
   => H.Component query input output m
 component =
   H.mkComponent
@@ -42,6 +44,7 @@ render
   :: forall action m.
      MonadAff m
   => ManageRepository m
+  => OpenUrl m
   => State
   -> H.ComponentHTML action ChildSlots m
 render _ =

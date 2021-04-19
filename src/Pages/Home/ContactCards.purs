@@ -12,8 +12,7 @@ import Halogen.HTML.Properties as HP
 import Halogen.HTML.Properties.ARIA as HPA
 import Prim.Row (class Cons)
 import Type.Proxy (Proxy)
-import Web.HTML (window)
-import Web.HTML.Window as Window
+import Website.Capability.OpenUrl (class OpenUrl, openUrl)
 import Website.Component.Utils (css, css')
 
 
@@ -27,6 +26,7 @@ type Slot = forall query. H.Slot query Void Unit
 make
   :: forall l query _1 slots action m
    . MonadAff m
+  => OpenUrl m
   => Cons l (H.Slot query Void Unit) _1 slots
   => IsSymbol l
   => Proxy l
@@ -37,6 +37,7 @@ make label = HH.slot label unit component unit absurd
 component
   :: forall query input output m
    . MonadAff m
+  => OpenUrl m
   => H.Component query input output m
 component =
   H.mkComponent
@@ -91,8 +92,8 @@ render _ =
 handleAction
   :: forall slots output m
    . MonadEffect m
+  => OpenUrl m
   => Action
   -> H.HalogenM State Action slots output m Unit
 handleAction = case _ of
-  OpenLink url -> H.liftEffect do
-    void $ window >>= Window.open url "" ""
+  OpenLink url -> openUrl url
