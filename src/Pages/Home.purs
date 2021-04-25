@@ -6,20 +6,12 @@ import Effect.Aff.Class (class MonadAff)
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Properties as HP
-import Type.Proxy (Proxy(..))
 import Website.Capability.OpenUrl (class OpenUrl)
 import Website.Capability.Resources (class ManageRepository)
-import Website.Component.Utils (css, css')
-import Website.Pages.Home.AboutCard as AboutCard
-import Website.Pages.Home.ContactCards as ContactCards
-import Website.Pages.Home.ProjectCards as ProjectCards
+import Website.Component.Utils (css)
 
 
 type State = Unit
-type ChildSlots =
-  ( projects :: ProjectCards.Slot
-  , contacts :: ContactCards.Slot
-  )
 
 
 component
@@ -41,12 +33,12 @@ initialState _ = unit
 
 
 render
-  :: forall action m.
+  :: forall action slots m.
      MonadAff m
   => ManageRepository m
   => OpenUrl m
   => State
-  -> H.ComponentHTML action ChildSlots m
+  -> H.ComponentHTML action slots m
 render _ =
   HH.div
   [ css "bg-faint h-screen overflow-auto lg:scroll-snap-y-proximity no-scroll-snap-type"
@@ -78,34 +70,9 @@ render _ =
         [ -- Flexbox centering hack.
         ]
       ]
-
-    , subsection "min-h-screen" "About"
-      [ AboutCard.element ]
-
-    , subsection "min-h-screen" "Projects"
-      [ ProjectCards.make ( Proxy :: Proxy "projects" )
-      ]
-
-    , subsection "min-h-screen" "Contact"
-      [ ContactCards.make ( Proxy :: Proxy "contacts" )
-      ]
     ]
   ]
   where
-    subsection extra title child =
-      HH.section
-      [ css'
-        [ extra
-        , "flex flex-col"
-        , "lg:scroll-snap-align-start no-scroll-snap-align"
-        , "divide-y divide-faint-200"
-        ]
-      ] $
-      [ HH.header [ css "font-extralight text-4xl p-5 mx-auto" ]
-        [ HH.h1_ [ HH.text title ]
-        ]
-      ] <> child
-
     picture c w h =
       HH.img
       [ css c
