@@ -3,12 +3,19 @@ module Website.Pages.Home where
 import Prelude
 
 import Effect.Aff.Class (class MonadAff)
+import Effect.Class (class MonadEffect)
 import Halogen as H
 import Halogen.HTML as HH
+import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
-import Website.Capability.OpenUrl (class OpenUrl)
+import Website.Capability.Navigation (class Navigate, navigate)
 import Website.Capability.Resources (class ManageRepository)
 import Website.Component.Utils (css)
+import Website.Data.Routes (Route(..))
+
+
+data Action
+  = Navigate Route
 
 
 type State = Unit
@@ -18,13 +25,15 @@ component
   :: forall query input output m.
      MonadAff m
   => ManageRepository m
-  => OpenUrl m
+  => Navigate m
   => H.Component query input output m
 component =
   H.mkComponent
   { initialState
   , render
   , eval: H.mkEval $ H.defaultEval
+    { handleAction = handleAction
+    }
   }
 
 
@@ -33,12 +42,12 @@ initialState _ = unit
 
 
 render
-  :: forall action slots m.
+  :: forall slots m.
      MonadAff m
   => ManageRepository m
-  => OpenUrl m
+  => Navigate m
   => State
-  -> H.ComponentHTML action slots m
+  -> H.ComponentHTML Action slots m
 render _ =
   HH.div
   [ css "bg-faint h-screen overflow-auto lg:scroll-snap-y-proximity no-scroll-snap-type"
@@ -53,10 +62,12 @@ render _ =
             ]
           ]
         , HH.ul [ css "space-x-6" ]
-          [ navLink "About"
-          , navLink "Projects"
-          , navLink "Contact"
-          , navLink "Blog"
+          [ navLink "About" AboutR
+          , navLink "Projects" ProjectsR
+          , navLink "Contact" ContactR
+          , HH.a [ css "text-underline cursor-pointer", HP.href "https://blog.purefunctor.me" ]
+            [ HH.text "Blog"
+            ]
           ]
         ]
       ]
@@ -80,7 +91,21 @@ render _ =
       , HP.alt "GitHub Profile Picture"
       ]
 
-    navLink title =
-      HH.li [ css "inline text-underline cursor-pointer" ]
+    navLink title route =
+      HH.li
+      [ css "inline text-underline cursor-pointer"
+      , HE.onClick \_ -> Navigate route
+      ]
       [ HH.text title
       ]
+
+
+handleAction
+  :: forall state slots output m
+   . MonadEffect m
+  => Navigate m
+  => Action
+  -> H.HalogenM state Action slots output m Unit
+handleAction = case _ of
+  Navigate route -> do
+    navigate route
