@@ -87,6 +87,5 @@ handleQuery
   -> H.HalogenM State action ChildSlots output m (Maybe a)
 handleQuery = case _ of
   Navigate route a -> do
-    { currentRoute } <- H.get
     H.put { currentRoute: route }
     pure (Just a)
