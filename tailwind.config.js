@@ -45,11 +45,11 @@ module.exports = {
         ".no-scroll-snap-align": {
           "scroll-snap-align": "none",
         },
-      }
+      };
 
       addUtilities(scrollSnap, {
         variants: ["responsive"]
-      })
+      });
     }),
     plugin(function({ addUtilities }) {
       const hoverBox = {
@@ -61,9 +61,32 @@ module.exports = {
           "height": "15px",
           "bottom": "-15px",
         },
-      }
+      };
 
-      addUtilities(hoverBox, { })
-    })
+      addUtilities(hoverBox, { });
+    }),
+    plugin(function({ addUtilities }) {
+      const textUnderline = {
+        ".text-underline": {
+          "position": "relative",
+        },
+        ".text-underline::after": {
+          "content": '""',
+          "display": "block",
+          "position": "absolute",
+          "background-color": "black",
+          "width": "0",
+          "height": "5px",
+          "left": "50%",
+          "transition": "width 0.3s ease 0s, left 0.3s ease 0s",
+        },
+        ".text-underline:hover::after": {
+          "width": "100%",
+          "left": "0",
+        },
+      };
+
+      addUtilities(textUnderline, { });
+    }),
   ],
-}
+};
