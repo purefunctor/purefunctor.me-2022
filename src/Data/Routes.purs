@@ -14,6 +14,7 @@ data Route
   | NotFoundR
   | AboutR
   | ContactR
+  | ProjectsR
 
 
 derive instance genericRoutes :: Generic Route _
@@ -27,4 +28,5 @@ routeCodec = root $ sum
   , "NotFoundR": "404.html" / noArgs
   , "AboutR": "about" / noArgs
   , "ContactR": "contact" / noArgs
+  , "ProjectsR": "projects" / noArgs
   }

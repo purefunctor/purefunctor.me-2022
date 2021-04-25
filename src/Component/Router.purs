@@ -16,6 +16,7 @@ import Website.Pages.Admin as Admin
 import Website.Pages.Contact as Contact
 import Website.Pages.Home as Home
 import Website.Pages.NotFound as NotFound
+import Website.Pages.Projects as Projects
 
 
 type State = { currentRoute :: Route }
@@ -27,6 +28,7 @@ type ChildSlots =
   , notFound :: H.Slot Query Void Unit
   , about :: H.Slot Query Void Unit
   , contact :: H.Slot Query Void Unit
+  , projects :: H.Slot Query Void Unit
   )
 
 
@@ -70,6 +72,7 @@ render { currentRoute } =
     NotFoundR -> HH.slot (Proxy :: _ "notFound") unit NotFound.component unit absurd
     AboutR -> HH.slot (Proxy :: _ "about") unit About.component unit absurd
     ContactR -> HH.slot (Proxy :: _ "contact") unit Contact.component unit absurd
+    ProjectsR -> HH.slot (Proxy :: _ "projects") unit Projects.component unit absurd
 
 
 handleQuery
