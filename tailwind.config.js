@@ -84,6 +84,10 @@ module.exports = {
           "width": "100%",
           "left": "0",
         },
+        ".text-underline:focus::after": {
+          "width": "100%",
+          "left": "0",
+        },
       };
 
       addUtilities(textUnderline, { });

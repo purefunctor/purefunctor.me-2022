@@ -57,7 +57,7 @@ render _ =
   ]
   where
     makeCard extra link child =
-      HH.div
+      HH.button
       [ css'
         [ extra
         , "flex flex-col h-64 w-full overflow-hidden"

@@ -8,6 +8,7 @@ import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
+import Halogen.HTML.Properties.ARIA as HPA
 import Website.Capability.Navigation (class Navigate, navigate)
 import Website.Capability.Resources (class ManageRepository)
 import Website.Component.Utils (css)
@@ -92,9 +93,12 @@ render _ =
       ]
 
     navLink title route =
-      HH.li
+      HH.button
       [ css "inline text-underline cursor-pointer"
       , HE.onClick \_ -> Navigate route
+      , HP.tabIndex 0
+      , HPA.role "link"
+      , HPA.label $ "Navigate to " <> title <> " page"
       ]
       [ HH.text title
       ]

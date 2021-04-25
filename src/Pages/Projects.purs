@@ -60,7 +60,7 @@ render { shown, repositories } =
   where
     makeCard :: forall w. Repository -> HH.HTML w Action
     makeCard repository =
-      HH.div
+      HH.button
       [ css'
         [ "md:w-max w-full h-40 m-2"
         , "flex flex-col flex-none"
