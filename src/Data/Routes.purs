@@ -8,7 +8,13 @@ import Routing.Duplex.Generic (noArgs, sum)
 import Routing.Duplex.Generic.Syntax ((/))
 
 
-data Route = HomeR | AdminR | NotFoundR
+data Route
+  = HomeR
+  | AdminR
+  | NotFoundR
+  | AboutR
+  | ContactR
+  | ProjectsR
 
 
 derive instance genericRoutes :: Generic Route _
@@ -20,4 +26,7 @@ routeCodec = root $ sum
   { "HomeR": noArgs
   , "AdminR": "admin" / noArgs
   , "NotFoundR": "404.html" / noArgs
+  , "AboutR": "about" / noArgs
+  , "ContactR": "contact" / noArgs
+  , "ProjectsR": "projects" / noArgs
   }

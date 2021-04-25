@@ -11,9 +11,12 @@ import Website.Capability.Navigation (class Navigate)
 import Website.Capability.OpenUrl (class OpenUrl)
 import Website.Capability.Resources (class ManageBlogPost, class ManageRepository, class ManageLogin)
 import Website.Data.Routes (Route(..))
+import Website.Pages.About as About
 import Website.Pages.Admin as Admin
+import Website.Pages.Contact as Contact
 import Website.Pages.Home as Home
 import Website.Pages.NotFound as NotFound
+import Website.Pages.Projects as Projects
 
 
 type State = { currentRoute :: Route }
@@ -23,6 +26,9 @@ type ChildSlots =
   ( home :: H.Slot Query Void Unit
   , admin :: H.Slot Query Void Unit
   , notFound :: H.Slot Query Void Unit
+  , about :: H.Slot Query Void Unit
+  , contact :: H.Slot Query Void Unit
+  , projects :: H.Slot Query Void Unit
   )
 
 
@@ -64,6 +70,9 @@ render { currentRoute } =
     AdminR -> HH.slot (Proxy :: _ "admin") unit Admin.component unit absurd
     HomeR -> HH.slot (Proxy :: _ "home") unit Home.component unit absurd
     NotFoundR -> HH.slot (Proxy :: _ "notFound") unit NotFound.component unit absurd
+    AboutR -> HH.slot (Proxy :: _ "about") unit About.component unit absurd
+    ContactR -> HH.slot (Proxy :: _ "contact") unit Contact.component unit absurd
+    ProjectsR -> HH.slot (Proxy :: _ "projects") unit Projects.component unit absurd
 
 
 handleQuery
