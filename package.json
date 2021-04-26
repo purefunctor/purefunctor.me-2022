@@ -6,6 +6,7 @@
   "scripts": {
     "css": "postcss build ./assets/css/tailwind.css -o ./assets/css/index.css",
     "css:build": "NODE_ENV=production TAILWIND_MODE=build yarn css",
+    "scss:build": "sass ./assets/scss/index.scss ./assets/css/index.css",
     "ps:build": "spago build",
     "ps:bundle": "spago bundle-app -t ./assets/prod/index.js",
     "ps:test": "spago test",
@@ -44,6 +45,7 @@
     "got": "^11.8.2",
     "postcss": "^8.2.9",
     "puppeteer-core": "^8.0.0",
+    "sass": "^1.32.11",
     "tailwindcss": "^2.1.1"
   }
 }
