@@ -1,0 +1,38 @@
+$bg-faint: hsl(51, 100%, 90%);
+$bg-faint-100: hsl(51, 100%, 86%);
+$bg-faint-200: hsl(51, 100%, 82%);
+
+html {
+    font-family: Montserrat;
+    font-size: 16px;
+}
+
+body {
+    margin: 0;
+}
+
+button {
+    color: black;
+    border: none;
+    background-color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    padding: unset;
+}
+
+button:focus {
+  outline: 1px dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+img {
+    display: inline;
+    vertical-align: middle;
+}
