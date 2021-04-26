@@ -9,18 +9,24 @@ import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
 import Halogen.HTML.Properties.ARIA as HPA
+import Website.Capability.Navigation (class Navigate, navigate)
 import Website.Capability.OpenUrl (class OpenUrl, openUrl)
+import Website.Component.HTML.Navbar (navbar)
 import Website.Component.Utils (css, css')
+import Website.Data.Routes (Route)
 
 
 type State = Unit
 
-data Action = OpenLink String
+data Action
+  = OpenLink String
+  | Navigate Route
 
 
 component
  :: forall query input output m
   . MonadAff m
+ => Navigate m
  => OpenUrl m
  => H.Component query input output m
 component =
@@ -39,20 +45,25 @@ initialState _ = unit
 
 render :: forall slots m. State -> H.ComponentHTML Action slots m
 render _ =
-  HH.div
-  [ css'
-    [ "flex flex-1 md:flex-row flex-col"
-    , "md:space-x-5 md:space-y-0 space-y-5 p-5 justify-evenly"
-    ]
-  ]
-  [ makeCard "bg-pink-100 text-pink-500" "mailto:justin@purefunctor.me"
-    [ HH.i [ css "fas fa-mail-bulk fa-4x" ] [ ]
-    ]
-  , makeCard "bg-blue-100 text-blue-500" "https://twitter.com/PureFunctor"
-    [ HH.i [ css "fab fa-twitter fa-4x" ] [ ]
-    ]
-  , makeCard "bg-green-100 text-gray-900" "https://pythondiscord.org"
-    [ HH.i [ css "fab fa-discord fa-4x" ] [ ]
+  HH.div [ css "bg-faint h-screen" ]
+  [ HH.section [ css "flex flex-col h-full w-full lg:w-11/12 mx-auto" ]
+    [ navbar Navigate
+    , HH.div
+      [ css'
+        [ "flex flex-1 md:flex-row flex-col"
+        , "md:space-x-5 md:space-y-0 space-y-5 p-5 justify-evenly"
+        ]
+      ]
+      [ makeCard "bg-pink-100 text-pink-500" "mailto:justin@purefunctor.me"
+        [ HH.i [ css "fas fa-mail-bulk fa-4x" ] [ ]
+        ]
+      , makeCard "bg-blue-100 text-blue-500" "https://twitter.com/PureFunctor"
+        [ HH.i [ css "fab fa-twitter fa-4x" ] [ ]
+        ]
+      , makeCard "bg-green-100 text-gray-900" "https://pythondiscord.org"
+        [ HH.i [ css "fab fa-discord fa-4x" ] [ ]
+        ]
+      ]
     ]
   ]
   where
@@ -77,8 +88,10 @@ render _ =
 handleAction
   :: forall slots output m
    . MonadEffect m
+  => Navigate m
   => OpenUrl m
   => Action
   -> H.HalogenM State Action slots output m Unit
 handleAction = case _ of
   OpenLink url -> openUrl url
+  Navigate route -> navigate route
