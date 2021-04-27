@@ -5,10 +5,16 @@ import Prelude
 import Effect.Aff.Class (class MonadAff)
 import Halogen as H
 import Halogen.HTML as HH
+import Halogen.HTML.Events as HE
 import Halogen.HTML.Properties as HP
-import Website.Capability.OpenUrl (class OpenUrl)
+import Halogen.HTML.Properties.ARIA as HPA
+import Website.Capability.Navigation (class Navigate, navigate)
 import Website.Capability.Resources (class ManageRepository)
-import Website.Component.Utils (css, css')
+import Website.Data.Routes (Route(..))
+
+
+data Action
+  = Navigate Route
 
 
 type State = Unit
@@ -18,7 +24,6 @@ component
   :: forall query input output m.
      MonadAff m
   => ManageRepository m
-  => OpenUrl m
   => H.Component query input output m
 component =
   H.mkComponent
@@ -33,40 +38,64 @@ initialState _ = unit
 
 
 render
-  :: forall action slots m.
+  :: forall slots m.
      MonadAff m
   => ManageRepository m
-  => OpenUrl m
   => State
-  -> H.ComponentHTML action slots m
+  -> H.ComponentHTML Action slots m
 render _ =
-  HH.div
-  [ css'
-    [ "bg-faint h-screen overflow-auto"
-    , "lg:scroll-snap-y-proximity no-scroll-snap-type"
-    ]
-  ]
-  [ HH.div [ css "h-auto w-full lg:w-11/12 mx-auto" ]
-    [ HH.section
-      [ css'
-        [ "h-screen flex flex-col"
-        , "justify-center items-center space-y-5"
-        , "lg:scroll-snap-align-start no-scroll-snap-align"
+  HH.div [ HP.id "home-page" ]
+  [ HH.section [ HP.id "home-base" ]
+    [ HH.nav [ HP.id "home-top" ]
+      [ HH.span_
+        [ HH.img
+          [ HP.src "https://avatars.githubusercontent.com/u/66708316?v=4"
+          , HP.width 32
+          , HP.height 32
+          , HP.alt "GitHub Profile Picture"
+          ]
+        , navItem "Pure's Website" HomeR
+        ]
+      , HH.ul_
+        [ navItem "About" AboutR
+        , navItem "Projects" ContactR
+        , navItem "Contact" ProjectsR
+        , HH.a [ HP.href "https://blog.purefunctor.me" ]
+          [ HH.text "Blog"
+          ]
         ]
       ]
+    , HH.section [ HP.id "home-center" ]
       [ HH.img
-        [ css "h-56 w-56 rounded-full shadow-xl ring-2 ring-black"
-        , HP.src "https://avatars.githubusercontent.com/u/66708316?v=4"
+        [ HP.src "https://avatars.githubusercontent.com/u/66708316?v=4"
         , HP.width 256
         , HP.height 256
         , HP.alt "GitHub Profile Picture"
         ]
-      , HH.div [ css "text-4xl font-extralight text-center" ]
-        [ HH.text "PureFunctor"
-        ]
-      , HH.div [ css "text-4xl font-thin text-center" ]
-        [ HH.text "Student, Python, FP"
-        ]
+      ]
+    , HH.div [ HP.id "home-bottom" ]
+      [
       ]
     ]
   ]
+  where
+    navItem title route =
+      HH.button
+      [ HE.onClick \_ -> Navigate route
+      , HP.tabIndex 0
+      , HPA.role "link"
+      , HPA.label $ "Navigate to " <> title <> " page"
+      ]
+      [ HH.text title
+      ]
+
+
+handleAction
+  :: forall state slots output m
+   . MonadAff m
+  => Navigate m
+  => Action
+  -> H.HalogenM state Action slots output m Unit
+handleAction = case _ of
+  Navigate route -> do
+    navigate route
