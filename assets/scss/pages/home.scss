@@ -1,0 +1,57 @@
+@use "../core" as *;
+@use "../extra" as *;
+
+$top-bottom-height: 8rem;
+
+#home {
+    &-page {
+        display: flex;
+        background-color: $bg-faint;
+        height: 100vh;
+    }
+    &-base {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: (11 / 12) * 100%;
+        margin: 0 auto;
+    }
+    &-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: $top-bottom-height;
+        padding: 0 2rem;
+        & > span > img {
+            width: 32px;
+            height: 32px;
+            border-radius: 9999px;
+            margin: 0 1rem;
+        }
+        & > span > button {
+            @include text-underline;
+            cursor: pointer;
+        }
+        & > ul {
+            & > button, & > a {
+                @include text-underline;
+                cursor: pointer;
+                margin: 0 0.5rem;
+            }
+        }
+    }
+    &-center {
+        display: flex;
+        flex-grow: 1;
+        align-items: center;
+        margin: 0 auto;
+        & > img {
+            height: 256px;
+            width: 256px;
+            border-radius: 9999px;
+        }
+    }
+    &-bottom {
+        height: $top-bottom-height;
+    }
+}
