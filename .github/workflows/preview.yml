@@ -1,0 +1,58 @@
+name: Deploy Preview
+
+on:
+  push:
+    branches-ignore:
+    - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Start Deployment
+      uses: bobheadxi/deployments@v0.4.3
+      id: deployment
+      with:
+        step: start
+        token: ${{ secrets.GITHUB_TOKEN }}
+        env: Preview
+
+    - name: Setup PureScript
+      uses: purescript-contrib/setup-purescript@main
+
+    - name: Cache PureScript dependencies
+      uses: actions/cache@v2
+      with:
+        key: spago-${{ hashFiles('**/*.dhall') }}
+        path: |
+          .spago
+          output
+
+    - name: Install Dependencies
+      run: yarn
+
+    - name: Build Project
+      run: yarn prod
+
+    - name: Deploy Site
+      uses: amondnet/vercel-action@v20
+      id: vercel-action
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+        github-comment: false
+        working-directory: .
+
+    - name: Update Deployment Status
+      uses: bobheadxi/deployments@v0.4.3
+      if: always()
+      with:
+        step: finish
+        token: ${{ secrets.GITHUB_TOKEN }}
+        status: ${{ job.status }}
+        deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+        env_url: ${{ steps.vercel-action.outputs.preview-url }}
