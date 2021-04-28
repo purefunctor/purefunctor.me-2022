@@ -9,7 +9,6 @@ dce-output
 .psc-ide-port
 
 dist
-public
 static
 
 .cache
