@@ -1,0 +1,24 @@
+@use "../core" as *;
+@use "../extra" as *;
+
+#about {
+    &-page {
+        background-color: $bg-faint;
+        height: 100vh;
+    }
+    &-base {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: (11 / 12) * 100%;
+        margin: 0 auto;
+        & > article {
+            padding: 2rem;
+        }
+        & > article > p {
+            font-weight: 300;
+            font-size: 1.25rem;
+            line-height: 1.5rem;
+        }
+    }
+}
