@@ -37,12 +37,10 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.3",
     "autoprefixer": "^10.2.5",
-    "chrome-aws-lambda": "^8.0.2",
     "decimal.js": "^10.2.1",
     "dotenv": "^8.2.0",
     "got": "^11.8.2",
     "postcss": "^8.2.9",
-    "puppeteer-core": "^8.0.0",
     "sass": "^1.32.11",
     "tailwindcss": "^2.1.1"
   }
