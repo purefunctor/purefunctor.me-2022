@@ -6,8 +6,19 @@ on:
     - main
 
 jobs:
+  pre-deploy:
+    runs-on: ubuntu-20.04
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - name: Check for skips
+        id: skip_check
+        uses: fkirc/skip-duplicate-actions@master
+
   deploy:
-    runs-on: ubuntu-18.04
+    needs: pre-deploy
+    if: ${{ needs.pre-deploy.outputs.should_skip != 'true' }}
+    runs-on: ubuntu-20.04
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v2
