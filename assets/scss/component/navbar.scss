@@ -1,0 +1,27 @@
+@use "../core" as *;
+@use "../extra" as *;
+
+$navbar-height: 8rem;
+
+#navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: $navbar-height;
+    padding: 0 2rem;
+    & > span > img {
+        width: 32px;
+        height: 32px;
+        border-radius: 9999px;
+        margin: 0 1rem;
+    }
+    & > span > a {
+        @include text-underline;
+        cursor: pointer;
+    }
+    & > ul > a {
+        @include text-underline;
+        cursor: pointer;
+        margin: 0 0.5rem;
+    }
+}

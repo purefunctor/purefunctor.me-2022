@@ -35,6 +35,7 @@ You can edit this file as you like.
   , "type-equality"
   , "web-events"
   , "web-html"
+  , "web-uievents"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
