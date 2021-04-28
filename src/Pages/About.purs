@@ -6,18 +6,17 @@ import Data.Array (intercalate)
 import Effect.Aff.Class (class MonadAff)
 import Halogen as H
 import Halogen.HTML as HH
-import Website.Capability.Navigation (class Navigate, navigate)
-import Website.Capability.OpenUrl (class OpenUrl, openUrl)
-import Website.Component.HTML.Navbar (navbar)
+import Halogen.HTML.Properties as HP
+import Website.Capability.Navigation (class Navigate)
+import Website.Capability.OpenUrl (class OpenUrl)
+import Website.Component.Navbar (WithNavbar, _navbar)
+import Website.Component.Navbar as Navbar
 import Website.Component.Utils (css)
-import Website.Data.Routes (Route)
 
 
 type State = Unit
 
-data Action
-  = OpenLink String
-  | Navigate Route
+type Slots = WithNavbar ()
 
 
 component
@@ -31,8 +30,6 @@ component =
   { initialState
   , render
   , eval: H.mkEval $ H.defaultEval
-    { handleAction = handleAction
-    }
   }
 
 
@@ -40,13 +37,19 @@ initialState :: forall input. input -> State
 initialState _ = unit
 
 
-render :: forall w. State -> HH.HTML w Action
+render
+  :: forall action m.
+     MonadAff m
+  => Navigate m
+  => OpenUrl m
+  => State
+  -> H.ComponentHTML action Slots m
 render _ =
-  HH.div [ css "bg-faint h-screen overflow-auto" ]
-  [ HH.section [ css "flex flex-col h-full w-full lg:w-11/12 mx-auto" ]
-    [ navbar Navigate
-    , HH.article [ css "p-5" ]
-      [ HH.p [ css "lg:text-lg text-md font-light text-left lg:w-5/6 lg:mx-auto" ]
+  HH.div [ HP.id "about-page" ]
+  [ HH.section [ HP.id "about-base" ]
+    [ HH.slot _navbar unit Navbar.component unit absurd
+    , HH.article_
+      [ HH.p_
         [ HH.text "Greetings, I'm Justin [or Pure]"
         , HH.br_
         , HH.br_
@@ -80,15 +83,3 @@ render _ =
       ]
     ]
   ]
-
-
-handleAction
-  :: forall state slots output m
-   . MonadAff m
-  => Navigate m
-  => OpenUrl m
-  => Action
-  -> H.HalogenM state Action slots output m Unit
-handleAction = case _ of
-  OpenLink url -> openUrl url
-  Navigate route -> navigate route
