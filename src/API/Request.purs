@@ -34,7 +34,7 @@ type RequestOptions =
 defaultRequest :: Maybe XsrfToken -> RequestOptions -> Request Json
 defaultRequest mXsrfToken { endpoint, method } =
   { url: print endpointCodec endpoint
-  , method: Left method
+  , method: Left method'
   , content: RB.json <$> body
   , headers:
       case mXsrfToken of
@@ -48,7 +48,7 @@ defaultRequest mXsrfToken { endpoint, method } =
   , responseFormat: RF.json
   }
   where
-    Tuple method body = case method of
+    Tuple method' body = case method of
       Get -> Tuple GET Nothing
       Post r -> Tuple POST r
       Put r -> Tuple PUT r
