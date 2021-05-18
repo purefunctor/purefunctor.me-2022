@@ -1,0 +1,52 @@
+@use "../core" as *;
+@use "../extra" as *;
+@use "../component/navbar" as *;
+
+$email-color: hsl(12, 58%, 65%);
+$twitter-blue: hsl(202, 88%, 53%);
+$discord-blurple: hsl(227, 58%, 65%);
+
+#contact {
+    &-page {
+        background-color: $bg-faint;
+        height: 100vh;
+    }
+    &-base {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: (11 / 12) * 100%;
+        margin: 0 auto;
+        padding: 0 2rem;
+    }
+    &-center {
+        flex-grow: 1;
+    }
+    &-bottom {
+        height: $navbar-height;
+    }
+    &-list {
+        display: flex;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        & > a {
+            display: block;
+            float: left;
+            margin: 0 1.5rem;
+            cursor: pointer;
+        }
+    }
+}
+
+#email-card {
+    color: $email-color;
+}
+
+#twitter-card {
+    color: $twitter-blue;
+}
+
+#discord-card {
+    color: $discord-blurple;
+}
