@@ -3,7 +3,7 @@
 
 #about {
     &-page {
-        height: 100vh;
+        height: 100%;
     }
     &-base {
         display: flex;
@@ -14,7 +14,7 @@
             font-weight: 300;
             font-size: 1.25rem;
             line-height: 1.5rem;
-            margin: 0 2rem;
+            margin: 0 2rem 2rem 2rem;
         }
     }
 }
