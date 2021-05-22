@@ -10,6 +10,8 @@ $navbar-height: 8rem;
 #mobile-burger {
     display: unset;
     align-self: center;
+    height: 2em;
+    width: 2em;
 }
 
 @media (min-width: $breakpoint-mobile) {

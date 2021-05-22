@@ -78,7 +78,7 @@ component =
           [ HP.id "mobile-burger"
           , HE.onClick \_ -> ToggleBurger
           ]
-          [ HH.i [ css "fas fa-bars" ] [ ]
+          [ HH.i [ css "fas fa-bars fa-lg" ] [ ]
           ]
         ]
       ] <> case burgerToggle of
