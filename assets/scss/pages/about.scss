@@ -1,6 +1,12 @@
 @use "../core" as *;
 @use "../extra" as *;
 
+@media (min-width: $breakpoint-mobile) {
+    #about-base > article > p {
+        font-size: 1.25rem !important;
+    }
+}
+
 #about {
     &-page {
         height: 100%;
@@ -12,7 +18,7 @@
         width: 100%;
         & > article > p {
             font-weight: 300;
-            font-size: 1.25rem;
+            font-size: 1rem;
             line-height: 1.5rem;
             margin: 0 2rem 2rem 2rem;
         }
