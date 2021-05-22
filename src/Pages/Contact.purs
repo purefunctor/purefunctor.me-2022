@@ -53,7 +53,7 @@ render _ =
   [ HH.section [ HP.id "contact-base" ]
     [ HH.slot _navbar unit Navbar.component unit absurd
     , HH.div [ HP.id "contact-center" ]
-      [ HH.ul [ HP.id "contact-list" ]
+      [ HH.div [ HP.id "contact-list" ]
         [ contactItem
             "fas fa-at fa-4x" "email-card" "mailto:justin@purefunctor.me"
         , contactItem

@@ -6,6 +6,7 @@ $top-bottom-height: 8rem;
 #home {
     &-page {
         display: flex;
+        align-items: center;
         background-color: $bg-faint;
         height: 100vh;
     }
@@ -13,8 +14,7 @@ $top-bottom-height: 8rem;
         display: flex;
         flex-direction: column;
         height: 100%;
-        width: (11 / 12) * 100%;
-        margin: 0 auto;
+        width: 100%;
     }
     &-top {
         display: flex;

@@ -3,25 +3,52 @@
 
 $navbar-height: 8rem;
 
+#desktop-links {
+    display: none;
+}
+
+#mobile-burger {
+    display: unset;
+    align-self: center;
+}
+
+@media (min-width: $breakpoint-mobile) {
+    #navbar {
+        padding: 4rem 2rem !important;
+    }
+    #desktop-links {
+        display: unset;
+    }
+    #mobile-burger {
+        display: none;
+    }
+}
+
 #navbar {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
-    height: $navbar-height;
-    padding: 0 2rem;
+    padding: 2rem;
     & > span > img {
         width: 32px;
         height: 32px;
         border-radius: 9999px;
-        margin: 0 1rem;
+        margin: 0 1rem 0 0;
     }
     & > span > a {
         @include text-underline;
         cursor: pointer;
     }
-    & > ul > a {
+    & > div > a {
         @include text-underline;
         cursor: pointer;
         margin: 0 0.5rem;
     }
+}
+
+#mobile-items {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-evenly;
+    padding: 0 2rem 2rem 2rem;
 }

@@ -15,9 +15,7 @@ $discord-blurple: hsl(227, 58%, 65%);
         display: flex;
         flex-direction: column;
         height: 100%;
-        width: (11 / 12) * 100%;
-        margin: 0 auto;
-        padding: 0 2rem;
+        width: 100%;
     }
     &-center {
         flex-grow: 1;

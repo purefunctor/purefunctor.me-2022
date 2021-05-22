@@ -10,15 +10,12 @@
         display: flex;
         flex-direction: column;
         height: 100%;
-        width: (11 / 12) * 100%;
-        margin: 0 auto;
-        & > article {
-            padding: 2rem;
-        }
+        width: 100%;
         & > article > p {
             font-weight: 300;
             font-size: 1.25rem;
             line-height: 1.5rem;
+            margin: 0 2rem;
         }
     }
 }

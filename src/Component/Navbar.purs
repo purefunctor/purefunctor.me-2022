@@ -14,14 +14,16 @@ import Web.Event.Event as Event
 import Web.UIEvent.MouseEvent as MouseEvent
 import Website.Capability.Navigation (class Navigate, navigate)
 import Website.Capability.OpenUrl (class OpenUrl, openUrl)
+import Website.Component.Utils (css)
 import Website.Data.Routes (Route(..))
 
 
-type State = Unit
+type State = { burgerToggle :: Boolean }
 
 data Action
   = OpenUrl String
   | Navigate Event Route
+  | ToggleBurger
 
 
 type WithNavbar r =
@@ -49,29 +51,45 @@ component =
   }
   where
     initialState :: input -> State
-    initialState _ = unit
+    initialState _ = { burgerToggle : false }
 
     render :: forall w. State -> HH.HTML w Action
-    render _ =
-      HH.nav [ HP.id "navbar" ]
-      [ HH.span_
-        [ HH.img
-          [ HP.src "https://avatars.githubusercontent.com/u/66708316?v=4"
-          , HP.width 32
-          , HP.height 32
-          , HP.alt "GitHub Profile Picture"
+    render { burgerToggle } =
+      HH.div [ HP.id "container" ] $
+      [ HH.nav [ HP.id "navbar" ]
+        [ HH.span_
+          [ HH.img
+            [ HP.src "https://avatars.githubusercontent.com/u/66708316?v=4"
+            , HP.width 32
+            , HP.height 32
+            , HP.alt "GitHub Profile Picture"
+            ]
+          , navItem "Pure's Website" HomeR
           ]
-        , navItem "Pure's Website" HomeR
-        ]
-      , HH.ul_
-        [ navItem "About" AboutR
-        , navItem "Projects" ProjectsR
-        , navItem "Contact" ContactR
-        , HH.a [ HP.href "https://blog.purefunctor.me" ]
-          [ HH.text "Blog"
+        , HH.div [ HP.id "desktop-links" ]
+          [ navItem "About" AboutR
+          , navItem "Projects" ProjectsR
+          , navItem "Contact" ContactR
+          , HH.a [ HP.href "https://blog.purefunctor.me" ]
+            [ HH.text "Blog"
+            ]
+          ]
+        , HH.button
+          [ HP.id "mobile-burger"
+          , HE.onClick \_ -> ToggleBurger
+          ]
+          [ HH.i [ css "fas fa-bars" ] [ ]
           ]
         ]
-      ]
+      ] <> case burgerToggle of
+        true ->
+          [ HH.div [ HP.id "mobile-items" ]
+            [ navItem "About" AboutR
+            , navItem "Projects" ProjectsR
+            , navItem "Contact" ContactR
+            ]
+          ]
+        false -> [ ]
       where
         navItem title route =
           HH.a
@@ -82,6 +100,38 @@ component =
           ]
           [ HH.text title
           ]
+
+    -- render :: forall w. State -> HH.HTML w Action
+    -- render _ =
+    --   HH.nav [ HP.id "navbar" ]
+    --   [ HH.span_
+    --     [ HH.img
+    --       [ HP.src "https://avatars.githubusercontent.com/u/66708316?v=4"
+    --       , HP.width 32
+    --       , HP.height 32
+    --       , HP.alt "GitHub Profile Picture"
+    --       ]
+    --     , navItem "Pure's Website" HomeR
+    --     ]
+    --   , HH.ul_
+    --     [ navItem "About" AboutR
+    --     , navItem "Projects" ProjectsR
+    --     , navItem "Contact" ContactR
+    --     , HH.a [ HP.href "https://blog.purefunctor.me" ]
+    --       [ HH.text "Blog"
+    --       ]
+    --     ]
+    --   ]
+    --   where
+    --     navItem title route =
+    --       HH.a
+    --       [ HE.onClick $ flip Navigate route <<< MouseEvent.toEvent
+    --       , HP.tabIndex 0
+    --       , HPA.role "link"
+    --       , HPA.label $ "Navigate to " <> title <> " page"
+    --       ]
+    --       [ HH.text title
+    --       ]
 
     handleAction
       :: forall slots
@@ -96,3 +146,5 @@ component =
           H.liftEffect $ Event.preventDefault event
           navigate route
         OpenUrl url -> openUrl url
+        ToggleBurger ->
+          H.modify_ \s -> s { burgerToggle = not s.burgerToggle }
