@@ -84,7 +84,8 @@ component =
       ] <> case burgerToggle of
         true ->
           [ HH.div [ HP.id "mobile-items" ]
-            [ navItem "About" AboutR
+            [ navItem "Home" HomeR
+            , navItem "About" AboutR
             , navItem "Projects" ProjectsR
             , navItem "Contact" ContactR
             ]

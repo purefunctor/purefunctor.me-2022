@@ -17,6 +17,9 @@ $navbar-height: 8rem;
 @media (min-width: $breakpoint-mobile) {
     #navbar {
         padding: 4rem 2rem !important;
+        & > span > a {
+            display: unset !important;
+        }
     }
     #desktop-links {
         display: unset;
@@ -40,6 +43,7 @@ $navbar-height: 8rem;
     & > span > a {
         @include text-underline;
         cursor: pointer;
+        display: none;
     }
     & > div > a {
         @include text-underline;
