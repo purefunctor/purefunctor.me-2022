@@ -1,56 +1,92 @@
+@use "sass:map";
 @use "../core" as *;
 @use "../extra" as *;
 
-$top-bottom-height: 8rem;
+$home-pair-boxes-items: (
+  "tl": (
+    "margin": 0 0.5rem 0.5rem 0,
+    "rotation": 10deg
+  ),
+  "tr": (
+    "margin": 0 0 0.5rem 0.5rem,
+    "rotation": -10deg
+  ),
+  "bl": (
+    "margin": 0.5rem 0.5rem 0 0,
+    "rotation": -10deg
+  ),
+  "br": (
+    "margin": 0.5rem 0 0 0.5rem,
+    "rotation": 10deg
+  )
+);
 
-#home {
-    &-page {
+$button-background: hsla(0deg, 0%, 75%, 0.1);
+
+@media (min-width: $breakpoint-tablet) {
+  #home-pair {
+    flex-direction: row !important;
+    &-image {
+      margin: 0 1rem 0 0 !important;
+      height: 20rem !important;
+      width: 20rem !important;
+    }
+    &-boxes {
+      height: 20rem !important;
+      width: 20rem !important;
+      @each $name, $item in $home-pair-boxes-items {
+        &__item-#{$name} {
+          width: 9.5rem !important;
+        }
+      }
+    }
+  }
+}
+
+#home-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#home-pair {
+  display: flex;
+  flex-direction: column;
+  &-image {
+    margin: 0 0 1rem 0;
+    height: 16rem;
+    width: 16rem;
+    border-radius: 2.5%;
+    cursor: pointer;
+    transition: transform 100ms ease-in;
+    &:hover {
+      transform: scale(97.5%);
+    }
+  }
+  &-boxes {
+    display: flex;
+    flex-wrap: wrap;
+    height: 16rem;
+    width: 16rem;
+    @each $name, $item in $home-pair-boxes-items {
+      &__item-#{$name} {
         display: flex;
+        justify-content: center;
         align-items: center;
-        height: 100vh;
-    }
-    &-base {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        width: 100%;
-    }
-    &-top {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        height: $top-bottom-height;
-        padding: 0 2rem;
-        & > span > img {
-            width: 32px;
-            height: 32px;
-            border-radius: 9999px;
-            margin: 0 1rem;
+        margin: map.get($item, "margin");
+        background: $button-background;
+        width: 7.5rem;
+        cursor: pointer;
+        color: white;
+        font-size: 1.25rem;
+        transition: transform 100ms ease-in;
+        border-radius: 2.5%;
+        &:hover {
+          transform: scale(95%);
         }
-        & > span > button {
-            @include text-underline;
-            cursor: pointer;
-        }
-        & > ul {
-            & > button, & > a {
-                @include text-underline;
-                cursor: pointer;
-                margin: 0 0.5rem;
-            }
-        }
+      }
     }
-    &-center {
-        display: flex;
-        flex-grow: 1;
-        align-items: center;
-        margin: 0 auto;
-        & > img {
-            height: 256px;
-            width: 256px;
-            border-radius: 9999px;
-        }
-    }
-    &-bottom {
-        height: $top-bottom-height;
-    }
+  }
 }
