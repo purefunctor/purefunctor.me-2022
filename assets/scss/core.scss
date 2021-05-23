@@ -3,13 +3,13 @@ $bg-faint-100: hsl(51, 100%, 86%);
 $bg-faint-200: hsl(51, 100%, 82%);
 
 html {
-    font-family: Montserrat;
+    font-family: "Josefin Sans", sans-serif;
     font-size: 16px;
 }
 
 body {
     margin: 0;
-    background-color: $bg-faint;
+    background: url("../img/background.png");
 }
 
 button {
