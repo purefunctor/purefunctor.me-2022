@@ -12,6 +12,7 @@ $navbar-height: 8rem;
     align-self: center;
     height: 2em;
     width: 2em;
+    color: white;
 }
 
 @media (min-width: $breakpoint-mobile) {
@@ -60,6 +61,8 @@ $navbar-height: 8rem;
     justify-content: space-between;
     padding: 0 2rem 2rem 2rem;
     & > a {
+        color: white;
         font-size: 1.25rem;
+        cursor: pointer;
     }
 }
