@@ -15,8 +15,5 @@ static
 .cache
 .parcel-cache
 
-assets/css/index.css
-assets/prod/index.js
-
 .vercel
 .env
