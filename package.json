@@ -4,6 +4,11 @@
   "description": "My personal portfolio website written in PureScript.",
   "private": true,
   "scripts": {
+    "_pre": "rm -rf dist && mkdir dist && cp public/* dist",
+    "_build": "pnpm _pre && NODE_ENV=production node ./build.js",
+    "_live": "pnpm _pre && WATCH=true node ./build.js & live-server dist",
+    "build": "spago build -u '--codegen corefn' && pnpm _build",
+    "live": "spago build && pnpm _live"
   },
   "repository": {
     "type": "git",
