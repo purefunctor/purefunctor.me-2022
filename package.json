@@ -21,7 +21,10 @@
   },
   "homepage": "https://github.com/PureFunctor/purefunctor.me",
   "devDependencies": {
-  },
-  "dependencies": {
+    "esbuild": "^0.12.14",
+    "esbuild-plugin-purescript": "^1.0.2",
+    "esbuild-sass-plugin": "^1.4.8",
+    "live-server": "^1.2.1",
+    "sass": "^1.35.1"
   }
 }
