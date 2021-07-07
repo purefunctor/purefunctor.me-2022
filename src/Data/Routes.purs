@@ -5,9 +5,10 @@ import Data.Function (($))
 import Data.Generic.Rep (class Generic)
 import Routing.Duplex (RouteDuplex', root)
 import Routing.Duplex.Generic (noArgs, sum)
+import Routing.Duplex.Generic.Syntax ((/))
 
 
-data Route = NotFoundR
+data Route = HomeR | NotFoundR
 
 
 derive instance genericRoutes :: Generic Route _
@@ -16,5 +17,6 @@ derive instance eqRoutes :: Eq Route
 
 routeCodec :: RouteDuplex' Route
 routeCodec = root $ sum
-  { "NotFoundR": noArgs
+  { "HomeR": noArgs
+  , "NotFoundR": "null" / noArgs
   }

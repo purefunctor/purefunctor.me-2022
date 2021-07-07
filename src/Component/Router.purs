@@ -9,6 +9,7 @@ import Halogen.HTML as HH
 import Type.Proxy (Proxy(..))
 import Website.Capability.Navigation (class Navigate)
 import Website.Data.Routes (Route(..))
+import Website.Pages.Home as Home
 import Website.Pages.NotFound as NotFound
 
 
@@ -16,7 +17,8 @@ type State = { currentRoute :: Route }
 data Query a = Navigate Route a
 type Input = Route
 type ChildSlots =
-  ( notFound :: H.Slot Query Void Unit
+  ( home :: H.Slot Query Void Unit
+  , notFound :: H.Slot Query Void Unit
   )
 
 
@@ -47,6 +49,7 @@ render
   -> H.ComponentHTML action ChildSlots m
 render { currentRoute } =
   case currentRoute of
+    HomeR -> HH.slot (Proxy :: _ "home") unit Home.component unit absurd
     NotFoundR -> HH.slot (Proxy :: _ "notFound") unit NotFound.component unit absurd
 
 
