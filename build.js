@@ -15,11 +15,14 @@ esbuild
     outdir: "dist",
     watch: watch,
     plugins: [
-	PurescriptPlugin({
-	    output: production ? path.resolve(__dirname, "dce-output") : undefined,
-	}), 
-	sassPlugin(),
+      PurescriptPlugin({
+        output: production ? path.resolve(__dirname, "dce-output") : undefined,
+      }),
+      sassPlugin(),
     ],
-    loader: {".ico": "file"},
+    loader: {
+      ".ico": "file",
+      ".png": "file",
+    },
   })
   .catch((_e) => process.exit(1));

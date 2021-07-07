@@ -8,11 +8,12 @@ body {
     font-family:  "Yomogi", cursive;
     font-size: 16px;
     margin: 0;
+    background: url("../img/background.png");
 }
 
 // remove default link style
 a {
-    color: black;
+    color: white;
     text-decoration: none;
     font-family: inherit;
     font-size: inherit;
@@ -22,4 +23,9 @@ a {
 img {
     display: inline;
     vertical-align: middle;
+}
+
+// text should always be white
+p {
+    color: white;
 }
