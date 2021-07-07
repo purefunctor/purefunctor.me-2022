@@ -1,0 +1,25 @@
+/* core.scss - Core Definitions */
+
+// fonts
+@import url('https://fonts.googleapis.com/css2?family=Yomogi&display=swap');
+
+// enable full use of view port
+body {
+    font-family:  "Yomogi", cursive;
+    font-size: 16px;
+    margin: 0;
+}
+
+// remove default link style
+a {
+    color: black;
+    text-decoration: none;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+// images are inline and aligned
+img {
+    display: inline;
+    vertical-align: middle;
+}

@@ -4,6 +4,7 @@ import Prelude
 
 import Halogen as H
 import Halogen.HTML as HH
+import Halogen.HTML.Properties as HP
 
 
 component ∷
@@ -19,6 +20,8 @@ component = H.mkComponent
 
     render ∷ ∀ state w a. state → HH.HTML w a
     render _ =
-      HH.div [ ]
-        [ HH.text "🚧 Under Construction 🚧"
+      HH.div [ HP.id "home-page" ]
+        [ HH.p [ HP.id "home-page__notice" ]
+            [ HH.text "🚧 Under Construction 🚧"
+            ]
         ]
