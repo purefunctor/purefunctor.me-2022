@@ -4,9 +4,9 @@
   "description": "My personal portfolio website written in PureScript.",
   "private": true,
   "scripts": {
-    "_pre": "rm -rf dist && mkdir dist && cp public/* dist",
+    "_pre": "rm -rf dist && mkdir dist && cp public/* dist && cp dist/index.html dist/404.html",
     "_build": "pnpm _pre && NODE_ENV=production node ./build.js",
-    "_live": "pnpm _pre && WATCH=true node ./build.js & live-server dist",
+    "_live": "pnpm _pre; WATCH=true node ./build.js & http-server dist",
     "build": "spago build -u '--codegen corefn' && pnpm _build",
     "live": "spago build && pnpm _live"
   },
@@ -29,7 +29,7 @@
     "esbuild": "^0.12.14",
     "esbuild-plugin-purescript": "^1.0.2",
     "esbuild-sass-plugin": "^1.4.8",
-    "live-server": "^1.2.1",
+    "http-server": "^0.12.3",
     "sass": "^1.35.1"
   }
 }
