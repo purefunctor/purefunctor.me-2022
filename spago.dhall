@@ -1,12 +1,7 @@
-{-
-Welcome to a Spago project!
-You can edit this file as you like.
--}
 { name = "purefunctor-me"
 , dependencies =
   [ "aff"
   , "arrays"
-  , "console"
   , "effect"
   , "either"
   , "halogen"
@@ -21,5 +16,5 @@ You can edit this file as you like.
   , "web-html"
   ]
 , packages = ./packages.dhall
-, sources = [ "src/**/*.purs", "test/**/*.purs" ]
+, sources = [ "src/**/*.purs" ]
 }
