@@ -1,0 +1,12 @@
+name = "purefunctor-me"
+type = "javascript"
+account_id = "07496eca37b22133c9b63dc49c8d0d65"
+workers_dev = true
+
+[build]
+command = "pnpm install && pnpm build"
+upload.format = "service-worker"
+
+[site]
+bucket = "./dist"
+entry-point = "worker"
