@@ -8,7 +8,9 @@
     "_build": "pnpm _pre && NODE_ENV=production node ./build.js",
     "_live": "pnpm _pre; cp dist/index.html dist/404.html; WATCH=true node ./build.js & http-server dist",
     "build": "spago build -u '--codegen corefn' && zephyr -f Main.main && pnpm _build",
-    "live": "spago build && pnpm _live"
+    "live": "spago build && pnpm _live",
+    "worker:install": "pnpm --dir worker install",
+    "worker:build": "pnpm --dir worker build"
   },
   "repository": {
     "type": "git",
