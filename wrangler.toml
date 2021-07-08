@@ -1,7 +1,9 @@
 name = "purefunctor-me"
 type = "javascript"
 account_id = "07496eca37b22133c9b63dc49c8d0d65"
+zone_id = "5b66dd8b0080aaf80e71009f93d30352"
 workers_dev = true
+route = "purefunctor.me/*"
 
 [build]
 command = "pnpm install && pnpm build"
