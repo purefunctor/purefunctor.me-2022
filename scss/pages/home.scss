@@ -1,10 +1,68 @@
 /* home.scss - Home Page */
+@use "sass:color";
+
+@use "../breakpoints";
+@use "../colors";
+
+$flat-colors: (
+  "green"  : colors.$flat-green,
+  "blue"   : colors.$flat-blue,
+  "yellow" : colors.$flat-yellow,
+  "orange" : colors.$flat-orange,
+);
+
+
 #home-page {
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    &__notice {
-	font-size: 2em;
+    &-info {
+	display: grid;
+	grid-row-gap: 6px;
+	grid-column-gap: 6px;
+	&-pp {
+	    cursor: pointer;
+	    height: 256px;
+	    width: 256px;
+	}
+	&-bt {
+	    height: 256px;
+	    width: 256px;
+	    display: grid;
+	    grid-template-columns: repeat(2, 1fr);
+	    grid-row-gap: 6px;
+	    grid-column-gap: 6px;
+	    @each $name, $color in $flat-colors {
+		&-#{$name} {
+		    border: unset;
+		    border-radius: unset;
+		    background-color: $color;
+		    cursor: pointer;
+		    font-family: inherit;
+		    font-size: 1.5rem;
+		    position: relative;
+		    &::before {
+			background-color: color.adjust($color, $lightness: -20%);
+			content: "";
+			bottom: 0;
+			left: 0;
+			height: 0;
+			width: 100%;
+			position: absolute;
+			transition: height 66ms ease-out;
+		    }
+		    &:hover::before, &:focus::before {
+			height: 10%;
+		    }
+		}
+	    }
+	}
+    }
+}
+
+@media (min-width: breakpoints.$tablet) {
+    #home-page-info {
+	grid-template-columns: repeat(2, 1fr);
     }
 }
