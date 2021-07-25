@@ -4,13 +4,6 @@
 @use "../breakpoints";
 @use "../colors";
 
-$flat-colors: (
-  "green"  : colors.$flat-green,
-  "blue"   : colors.$flat-blue,
-  "yellow" : colors.$flat-yellow,
-  "orange" : colors.$flat-orange,
-);
-
 
 #home-page {
     height: 100vh;
@@ -23,6 +16,7 @@ $flat-colors: (
 	grid-column-gap: 6px;
 	&-pp {
 	    background-color: colors.$flat-dark;
+	    border-radius: 10% 10% 0 0;
 	    cursor: pointer;
 	    height: 256px;
 	    width: 256px;
@@ -34,16 +28,32 @@ $flat-colors: (
 	    grid-template-columns: repeat(2, 1fr);
 	    grid-row-gap: 6px;
 	    grid-column-gap: 6px;
+
+            $flat-colors: (
+                "green"  : colors.$flat-green,
+                "blue"   : colors.$flat-blue,
+                "yellow" : colors.$flat-yellow,
+                "orange" : colors.$flat-orange,
+            );
+
+	    &-yellow {
+		border-radius: 0 0 0 10%;
+	    }
+
+	    &-orange {
+		border-radius: 0 0 10% 0;
+	    }
+
 	    @each $name, $color in $flat-colors {
 		&-#{$name} {
 		    display: flex;
 		    border: unset;
-		    border-radius: unset;
 		    background-color: $color;
 		    cursor: pointer;
 		    font-family: inherit;
 		    font-size: 1.5rem;
 		    position: relative;
+		    overflow: hidden;
 		    & > p {
 			color: black;
 			margin: auto;
@@ -91,5 +101,19 @@ $flat-colors: (
 @media (min-width: breakpoints.$tablet) {
     #home-page-info {
 	grid-template-columns: repeat(2, 1fr);
+	&-pp {
+	    border-radius: 10% 0 0 10%;
+	}
+	&-bt {
+	    &-blue {
+		border-radius: 0 10% 0 0;
+	    }
+	    &-orange {
+		border-radius: 0 0 10% 0;
+	    }
+	    &-yellow {
+		border-radius: unset;
+	    }
+	}
     }
 }
