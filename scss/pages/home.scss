@@ -22,6 +22,7 @@ $flat-colors: (
 	grid-row-gap: 6px;
 	grid-column-gap: 6px;
 	&-pp {
+	    background-color: colors.$flat-dark;
 	    cursor: pointer;
 	    height: 256px;
 	    width: 256px;

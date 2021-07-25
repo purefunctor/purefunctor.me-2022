@@ -16,10 +16,6 @@ data Action
   | Null
 
 
-pp :: String
-pp = "https://avatars.githubusercontent.com/u/66708316?v=4"
-
-
 component ∷
   ∀ query input output m
   .  Navigate m
@@ -39,7 +35,7 @@ component = H.mkComponent
         [ HH.div [ HP.id "home-page-info" ]
             [ HH.img
                 [ HP.id "home-page-info-pp"
-                , HP.src pp
+                , HP.src "logo.svg"
                 , HP.height 128
                 , HP.width 128
                 , HP.alt "Profile Picture"
