@@ -68,7 +68,9 @@ component = H.mkComponent
               then NavigateTo route
               else Null
         ]
-        [ HH.p_
+        [ HH.div [ HP.id $ id <> "__deco-top" ] [ ]
+        , HH.div [ HP.id $ id <> "__deco-bot" ] [ ]
+        , HH.p_
             [ HH.text text
             ]
         ]

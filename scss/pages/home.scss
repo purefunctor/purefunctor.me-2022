@@ -35,6 +35,7 @@ $flat-colors: (
 	    grid-column-gap: 6px;
 	    @each $name, $color in $flat-colors {
 		&-#{$name} {
+		    display: flex;
 		    border: unset;
 		    border-radius: unset;
 		    background-color: $color;
@@ -42,18 +43,43 @@ $flat-colors: (
 		    font-family: inherit;
 		    font-size: 1.5rem;
 		    position: relative;
-		    &::before {
-			background-color: color.adjust($color, $lightness: -20%);
+		    & > p {
+			color: black;
+			margin: auto;
+		    }
+
+		    // Pseudo-elements for decorative swatches.
+		    &__deco-top::before, &__deco-top::after, &__deco-bot::before, &__deco-bot::after {
 			content: "";
-			bottom: 0;
-			left: 0;
-			height: 0;
 			width: 100%;
 			position: absolute;
+			height: 0;
 			transition: height 66ms ease-out;
 		    }
-		    &:hover::before, &:focus::before {
-			height: 10%;
+
+		    // Bottom swatches start at the bottom.
+		    &__deco-bot::before, &__deco-bot::after {
+			bottom: 0;
+		    }
+
+		    // Lighter swatches are taller and use ::before.
+		    @each $element in ( "&__deco-top::before", "&__deco-bot::before" ) {
+			#{$element} {
+			    background-color: color.adjust($color, $lightness: -20%);
+			}
+			&:hover > #{$element}, &:focus > #{$element} {
+			    height: 20%;
+			}
+		    }
+
+		    // Darker swatches are shorter and use ::after.
+		    @each $element in ( "&__deco-top::after", "&__deco-bot::after" ) {
+			#{$element} {
+			    background-color: color.adjust($color, $lightness: -30%);
+			}
+			&:hover > #{$element}, &:focus > #{$element} {
+			    height: 10%;
+			}
 		    }
 		}
 	    }
