@@ -42,7 +42,7 @@ component = H.mkComponent
                 , HP.tabIndex 0
                 ]
             , HH.div [ HP.id "home-page-info-bt" ]
-                [ routeLink NotFoundR "home-page-info-bt-green"  "About"
+                [ routeLink AboutR    "home-page-info-bt-green"  "About"
                 , routeLink NotFoundR "home-page-info-bt-blue"   "Works"
                 , routeLink NotFoundR "home-page-info-bt-yellow" "Posts"
                 , routeLink NotFoundR "home-page-info-bt-orange" "Contact"

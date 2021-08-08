@@ -11,6 +11,7 @@
   , "routing"
   , "routing-duplex"
   , "simple-json"
+  , "strings"
   , "transformers"
   , "type-equality"
   , "web-html"
