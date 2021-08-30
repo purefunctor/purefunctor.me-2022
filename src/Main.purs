@@ -5,7 +5,7 @@ import Prelude
 import Data.Either (hush)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Effect (Effect)
-import Effect.Aff (Aff, launchAff_)
+import Effect.Aff (launchAff_)
 import Effect.Class (liftEffect)
 import Halogen as H
 import Halogen.Aff as HA
@@ -19,16 +19,13 @@ import Website.AppM (runAppM)
 import Website.Component.Router as Router
 import Website.Data.Routes (Route(..), routeCodec)
 
-
 main :: Effect Unit
 main = HA.runHalogenAff do
   body <- HA.awaitBody
 
   pushInterface <- liftEffect makeInterface
 
-  let
-    rootComponent ∷ H.Component Router.Query Router.Input Void Aff
-    rootComponent = H.hoist (runAppM { pushInterface }) Router.component
+  rootComponent <- runAppM { pushInterface } Router.component
 
   route_ <- liftEffect $
     window >>= Window.location >>= Location.pathname
