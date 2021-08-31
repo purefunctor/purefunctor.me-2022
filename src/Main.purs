@@ -19,27 +19,27 @@ import Website.AppM (runAppM)
 import Website.Component.Router as Router
 import Website.Data.Routes (Route(..), routeCodec)
 
-main :: Effect Unit
+main ∷ Effect Unit
 main = HA.runHalogenAff do
-  body <- HA.awaitBody
+  body ← HA.awaitBody
 
-  pushInterface <- liftEffect makeInterface
+  pushInterface ← liftEffect makeInterface
 
-  rootComponent <- runAppM { pushInterface } Router.component
+  rootComponent ← runAppM { pushInterface } Router.component
 
-  route_ <- liftEffect $
+  route_ ← liftEffect $
     window >>= Window.location >>= Location.pathname
 
   let
     route = fromMaybe NotFoundR (hush $ parse routeCodec route_)
 
-  halogenIO <- runUI rootComponent route body
+  halogenIO ← runUI rootComponent route body
 
-  void $ liftEffect $ pushInterface.listen \location -> do
+  void $ liftEffect $ pushInterface.listen \location → do
     let
       mNew = hush $ parse routeCodec $ location.pathname
     case mNew of
-      Just new -> do
+      Just new → do
         launchAff_ $ halogenIO.query $ H.mkTell $ Router.Navigate new
-      Nothing ->
+      Nothing →
         pure unit

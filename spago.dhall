@@ -5,6 +5,7 @@
   , "effect"
   , "either"
   , "halogen"
+  , "halogen-hooks"
   , "halogen-store"
   , "maybe"
   , "prelude"
