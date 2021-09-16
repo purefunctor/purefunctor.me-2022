@@ -1,0 +1,45 @@
+/* navbar.scss - Generic Navigation Bar */
+@use "../colors";
+
+#navbar-toggle {
+    position: fixed;
+    &-button {
+	background: rgba(0, 0, 0, 0.5);
+	border: none;
+    }
+}
+
+#site-navbar-root {
+    position: fixed;
+    width: 100%;
+}
+
+#site-navbar-bar {
+    display: flex;
+    flex-direction: row;
+
+    background-color: rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid colors.$baby-powder;
+    padding: 0 1em 0 1em;
+
+    &-left {
+	font-size: 1.75em;
+    }
+}
+
+#site-navbar-dropdown {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    width: 100%;
+
+    font-size: 1.75em;
+}
+
+.site-navbar-dropdown-link {
+    background-color: rgba(0, 0, 0, 0.5);
+
+    text-align: center;
+    border-bottom: 1px solid colors.$baby-powder;
+    padding: 0.5em 0.5em 0.5em 0.5em;
+}

@@ -3,7 +3,15 @@
   "version": "3.0.0",
   "description": "My personal portfolio website.",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "build:html": "node bin/static.js",
+    "build:scss": "sass scss/index.scss public/index.css --no-source-map",
+    "build:assets": "cp assets/* public",
+    "build:all": "pnpm build:html && pnpm build:scss && pnpm build:assets",
+    "bundle": "pnpm build:all && parcel build public/index.html",
+    "serve": "pnpm build:all && parcel serve public/index.html",
+    "clean": "rm -r dist public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/PureFunctor/purefunctor.me.git"
@@ -18,10 +26,10 @@
   },
   "homepage": "https://github.com/PureFunctor/purefunctor.me",
   "devDependencies": {
+    "@parcel/transformer-image": "2.0.0-rc.0",
     "http-server": "^0.12.3",
+    "nunjucks": "^3.2.3",
+    "parcel": "^2.0.0-rc.0",
     "sass": "^1.35.1"
-  },
-  "dependencies": {
-    "nunjucks": "^3.2.3"
   }
 }
