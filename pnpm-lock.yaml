@@ -1,20 +1,22 @@
 lockfileVersion: 5.3
 
 specifiers:
-  esbuild: ^0.12.14
-  esbuild-plugin-purescript: ^1.0.2
-  esbuild-sass-plugin: ^1.4.8
   http-server: ^0.12.3
+  nunjucks: ^3.2.3
   sass: ^1.35.1
 
+dependencies:
+  nunjucks: 3.2.3
+
 devDependencies:
-  esbuild: 0.12.14
-  esbuild-plugin-purescript: 1.0.2
-  esbuild-sass-plugin: 1.4.8
   http-server: 0.12.3
   sass: 1.35.1
 
 packages:
+
+  /a-sync-waterfall/1.0.1:
+    resolution: {integrity: sha512-RYTOHHdWipFUliRFMCS4X2Yn2X8M87V/OpSqWzKKOGhzqyUxzyVmhHDH9sAvG+ZuQf/TAOFsLCpMw09I1ufUnA==}
+    dev: false
 
   /anymatch/3.1.2:
     resolution: {integrity: sha512-P43ePfOAIupkguHUycrc4qJ9kz8ZiuOUijaETwX7THt0Y/GNK7v0aa8rY816xWjZ7rJdA5XdMcpVFTKMq+RvWg==}
@@ -23,6 +25,10 @@ packages:
       normalize-path: 3.0.0
       picomatch: 2.3.0
     dev: true
+
+  /asap/2.0.6:
+    resolution: {integrity: sha1-5QNHYR1+aQlDIIu9r+vLwvuGbUY=}
+    dev: false
 
   /async/2.6.3:
     resolution: {integrity: sha512-zflvls11DCy+dQWzTW2dzuilv8Z5X/pjfmZOWba6TNIVDm+2UDaJmXSOXlasHKfNBs8oo3M0aT50fDEWfKZjXg==}
@@ -74,6 +80,11 @@ packages:
     engines: {node: '>=0.1.90'}
     dev: true
 
+  /commander/5.1.0:
+    resolution: {integrity: sha512-P0CysNDQ7rtVw4QIQtm+MRxV66vKFSvlsQvGYXZWR3qFU0jlMKHZZZgw8e+8DSah4UDKMqnknRDQz+xuQXQ/Zg==}
+    engines: {node: '>= 6'}
+    dev: false
+
   /corser/2.0.1:
     resolution: {integrity: sha1-jtolLsqrWEDc2XXOuQ2TcMgZ/4c=}
     engines: {node: '>= 0.4.0'}
@@ -93,25 +104,6 @@ packages:
       mime: 1.6.0
       minimist: 1.2.5
       url-join: 2.0.5
-    dev: true
-
-  /esbuild-plugin-purescript/1.0.2:
-    resolution: {integrity: sha512-uf0NAj4gNAuyVax8sCRPECjDpnxqfJsemdJx8GFULmtB3n1dPJ/6HO7WManFUsDyBZrZhNA6At9excPl12LdGQ==}
-    dev: true
-
-  /esbuild-sass-plugin/1.4.8:
-    resolution: {integrity: sha512-C+Wlug5NgP1K2eCEoDlTY5UwbG3ZGhqYP+mleLIpwzp+cbaiGQzlKElIuamLxRR6Kfr8NLC9sMtTzZG+0pbFqQ==}
-    dependencies:
-      esbuild: 0.12.14
-      picomatch: 2.3.0
-      resolve: 1.20.0
-      sass: 1.35.1
-    dev: true
-
-  /esbuild/0.12.14:
-    resolution: {integrity: sha512-z8p+6FGiplR7a3pPonXREbm+8IeXjBGvDpVidZmGB/AJMsJSfGCU+n7KOMCazA9AwvagadRWBhiKorC0w9WJvw==}
-    hasBin: true
-    requiresBuild: true
     dev: true
 
   /eventemitter3/4.0.7:
@@ -215,12 +207,6 @@ packages:
       binary-extensions: 2.2.0
     dev: true
 
-  /is-core-module/2.4.0:
-    resolution: {integrity: sha512-6A2fkfq1rfeQZjxrZJGerpLCTHRNEBiSgnu0+obeJpEPZRUooHgsizvzv0ZjJwOz3iWIHdJtVWJ/tmPr3D21/A==}
-    dependencies:
-      has: 1.0.3
-    dev: true
-
   /is-extglob/2.1.1:
     resolution: {integrity: sha1-qIwCU1eR8C7TfHahueqXc8gz+MI=}
     engines: {node: '>=0.10.0'}
@@ -268,6 +254,21 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
+  /nunjucks/3.2.3:
+    resolution: {integrity: sha512-psb6xjLj47+fE76JdZwskvwG4MYsQKXUtMsPh6U0YMvmyjRtKRFcxnlXGWglNybtNTNVmGdp94K62/+NjF5FDQ==}
+    engines: {node: '>= 6.9.0'}
+    hasBin: true
+    peerDependencies:
+      chokidar: ^3.3.0
+    peerDependenciesMeta:
+      chokidar:
+        optional: true
+    dependencies:
+      a-sync-waterfall: 1.0.1
+      asap: 2.0.6
+      commander: 5.1.0
+    dev: false
+
   /object-inspect/1.10.3:
     resolution: {integrity: sha512-e5mCJlSH7poANfC8z8S9s9S2IN5/4Zb3aZ33f5s8YqoazCFzNLloLU8r5VCG+G7WoqLvAAZoVMcy3tp/3X0Plw==}
     dev: true
@@ -275,10 +276,6 @@ packages:
   /opener/1.5.2:
     resolution: {integrity: sha512-ur5UIdyw5Y7yEj9wLzhqXiy6GZ3Mwx0yGI+5sMn2r0N0v3cKJvUmFH5yPP+WXh9e0xfyzyJX95D8l088DNFj7A==}
     hasBin: true
-    dev: true
-
-  /path-parse/1.0.7:
-    resolution: {integrity: sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==}
     dev: true
 
   /picomatch/2.3.0:
@@ -311,13 +308,6 @@ packages:
 
   /requires-port/1.0.0:
     resolution: {integrity: sha1-kl0mAdOaxIXgkc8NpcbmlNw9yv8=}
-    dev: true
-
-  /resolve/1.20.0:
-    resolution: {integrity: sha512-wENBPt4ySzg4ybFQW2TT1zMQucPK95HSh/nq2CFTZVOGut2+pQvSsgtda4d26YrYcr067wjbmzOG8byDPBX63A==}
-    dependencies:
-      is-core-module: 2.4.0
-      path-parse: 1.0.7
     dev: true
 
   /sass/1.35.1:

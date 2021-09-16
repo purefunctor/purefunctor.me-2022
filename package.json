@@ -1,24 +1,14 @@
 {
   "name": "purefunctor.me",
-  "version": "2.0.0",
-  "description": "My personal portfolio website written in PureScript.",
+  "version": "3.0.0",
+  "description": "My personal portfolio website.",
   "private": true,
-  "scripts": {
-    "_pre": "rm -rf dist && mkdir dist && cp public/* dist",
-    "_build": "pnpm _pre && NODE_ENV=production ./bundle.js",
-    "_live": "pnpm _pre; cp dist/index.html dist/404.html; WATCH=true ./bundle.js & http-server dist",
-    "build": "spago build -u '--codegen corefn' && zephyr -f Main.main && pnpm _build",
-    "live": "spago build && pnpm _live",
-    "worker:install": "pnpm --dir worker install",
-    "worker:build": "pnpm --dir worker build"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/PureFunctor/purefunctor.me.git"
   },
   "keywords": [
-    "PureScript",
-    "Halogen",
     "Web"
   ],
   "author": "PureFunctor",
@@ -28,10 +18,10 @@
   },
   "homepage": "https://github.com/PureFunctor/purefunctor.me",
   "devDependencies": {
-    "esbuild": "^0.12.14",
-    "esbuild-plugin-purescript": "^1.0.2",
-    "esbuild-sass-plugin": "^1.4.8",
     "http-server": "^0.12.3",
     "sass": "^1.35.1"
+  },
+  "dependencies": {
+    "nunjucks": "^3.2.3"
   }
 }
