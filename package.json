@@ -10,6 +10,8 @@
     "build:all": "pnpm build:html && pnpm build:scss && pnpm build:assets",
     "bundle": "pnpm build:all && parcel build public/index.html",
     "serve": "pnpm build:all && parcel serve public/index.html",
+    "worker:install": "pnpm --dir worker install",
+    "worker:build": "pnpm --dir worker build",
     "clean": "rm -rf dist public"
   },
   "repository": {

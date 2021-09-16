@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "build": "esbuild --bundle --minify _index.js --outfile=index.js"
+  },
+  "dependencies": {
+    "@cloudflare/kv-asset-handler": "^0.1.3"
+  },
+  "devDependencies": {
+    "esbuild": "^0.12.28"
+  }
+}
