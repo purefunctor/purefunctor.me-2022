@@ -42,6 +42,7 @@
     "sass": "^1.35.1"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.4"
+    "@fortawesome/fontawesome-free": "^5.15.4",
+    "glob": "^7.2.0"
   }
 }
