@@ -1,49 +1,10 @@
 {
-  "name": "purefunctor.me",
-  "version": "2.0.0",
-  "description": "My personal portfolio website written in PureScript.",
-  "private": true,
   "scripts": {
-    "css": "postcss build ./assets/css/tailwind.css -o ./assets/css/index.css",
-    "css:build": "NODE_ENV=production TAILWIND_MODE=build yarn css",
-    "ps:build": "spago build",
-    "ps:bundle": "spago bundle-app -t ./assets/prod/index.js",
-    "ps:test": "spago test",
-    "parcel:build": "parcel build ./assets/prod/index.html --no-source-maps --dist-dir public",
-    "dev": "parcel serve ./assets/dev/index.html",
-    "prod": "yarn css:build && yarn ps:bundle && yarn parcel:build",
-    "purge": "rm -rf .spago output node_modules .cache .psci_modules"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/PureFunctor/purefunctor.me.git"
-  },
-  "keywords": [
-    "PureScript",
-    "Halogen",
-    "Web"
-  ],
-  "author": "PureFunctor",
-  "license": "BSD-3-Clause",
-  "bugs": {
-    "url": "https://github.com/PureFunctor/purefunctor.me/issues"
-  },
-  "homepage": "https://github.com/PureFunctor/purefunctor.me",
-  "devDependencies": {
-    "parcel": "^2.0.0-beta.2",
-    "postcss-cli": "^8.3.1",
-    "purescript": "^0.14.0",
-    "spago": "^0.20.0"
+    "dev": "vuepress dev site",
+    "build": "vuepress build site"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.3",
-    "autoprefixer": "^10.2.5",
-    "chrome-aws-lambda": "^8.0.2",
-    "decimal.js": "^10.2.1",
-    "dotenv": "^8.2.0",
-    "got": "^11.8.2",
-    "postcss": "^8.2.9",
-    "puppeteer-core": "^8.0.0",
-    "tailwindcss": "^2.1.1"
+    "@vuepress/theme-default": "^2.0.0-beta.27",
+    "vuepress": "^2.0.0-beta.27"
   }
 }
