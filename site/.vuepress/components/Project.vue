@@ -47,6 +47,14 @@ p {
     display: flex;
     height: $project-size;
     width: 100%;
+    & > img {
+        display: none;
+    }
+    @media screen and (min-width: 768px) {
+        & > img {
+            display: unset;
+        }
+    }
 }
 .project-logo {
     height: 100%;
