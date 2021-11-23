@@ -33,12 +33,12 @@
   },
   "homepage": "https://github.com/PureFunctor/purefunctor.me",
   "devDependencies": {
-    "@parcel/transformer-image": "2.0.0-rc.0",
+    "@parcel/transformer-image": "^2.0.1",
     "chokidar-cli": "^3.0.0",
     "concurrently": "^6.2.1",
     "http-server": "^0.12.3",
     "nunjucks": "^3.2.3",
-    "parcel": "^2.0.0-rc.0",
+    "parcel": "^2.0.1",
     "sass": "^1.35.1"
   },
   "dependencies": {
