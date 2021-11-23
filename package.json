@@ -1,7 +1,8 @@
 {
   "scripts": {
     "dev": "vuepress dev site",
-    "build": "vuepress build site"
+    "build": "vuepress build site -d .vuepress/dist",
+    "worker": "pnpm --dir worker install && pnpm --dir worker build"
   },
   "dependencies": {
     "@vuepress/theme-default": "^2.0.0-beta.27",
