@@ -7,14 +7,12 @@
     height=256
     width=256 />
   <div class="project-description">
-    <article>
-      <h3>
-        {{ title }}
-      </h3>
-      <p>
-        {{ description }}
-      </p>
-    </article>
+    <a v-bind:href="link">
+      {{ title }}
+    </a>
+    <p>
+      {{ description }}
+    </p>
   </div>
 </div>
 </template>
@@ -24,6 +22,7 @@ export default {
   props: [
     "title",
     "description",
+    "link",
   ],
 }
 </script>
@@ -32,8 +31,13 @@ export default {
 $project-margin: 16px;
 $project-size: 166px - $project-margin;
 
-p, h3 {
+a {
+    font-size: 1.25em;
     margin: $project-margin;
+}
+
+p {
+    margin: 0 16px 0 16px;
 }
 
 .project-container {
@@ -42,7 +46,6 @@ p, h3 {
     overflow: hidden;
     display: flex;
     height: $project-size;
-    /* margin: $project-margin; */
     width: 100%;
 }
 .project-logo {
@@ -51,5 +54,7 @@ p, h3 {
 }
 .project-description {
     flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 </style>
