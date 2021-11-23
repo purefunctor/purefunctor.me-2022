@@ -40,6 +40,9 @@ jobs:
       - name: Prepare worker
         run: pnpm worker
 
+      - name: Build project
+        run: pnpm build
+
       - name: Publish project
         uses: cloudflare/wrangler-action@1.3.0
         with:
