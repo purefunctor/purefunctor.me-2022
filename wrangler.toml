@@ -6,7 +6,7 @@ workers_dev = true
 route = "purefunctor.me/*"
 
 [build]
-command = "pnpm install && pnpm clean && pnpm bundle"
+command = "pnpm build"
 upload.format = "service-worker"
 
 [site]
