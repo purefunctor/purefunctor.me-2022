@@ -117,5 +117,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# vuepress
-.temp
+# hugo
+public/
+.hugo_build.lock

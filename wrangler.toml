@@ -6,9 +6,9 @@ workers_dev = true
 route = "purefunctor.me/*"
 
 [build]
-command = "echo \"No Build Command\""
+command = "pnpm build"
 upload.format = "service-worker"
 
 [site]
-bucket = ".vuepress/dist"
+bucket = "public"
 entry-point = "worker"
