@@ -21,7 +21,12 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v2.0.1
         with:
-          version: 6.23.1
+          version: 6.32.2
+
+      - name: Install hugo
+        uses: peaceiris/actions-hugo@v2.5.0
+        with:
+          hugo-version: '0.91.2'
 
       - name: Cache dependencies
         uses: actions/cache@v2
@@ -36,9 +41,6 @@ jobs:
       - name: Install dependencies
         if: steps.pnpm-cache.outputs.cache-hit != 'true'
         run: pnpm install
-
-      - name: Prepare worker
-        run: pnpm worker
 
       - name: Build project
         run: pnpm build
